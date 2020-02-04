@@ -1,0 +1,18 @@
+[package]
+name = "nj-example-async-cb"
+version = "0.0.1"
+authors = ["fluvio.io"]
+edition = "2018"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+libc = "0.2.66"
+node-bindgen = { path = "../.."}
+flv-future-core = { version = "0.1.0" }
+
+[build-dependencies]
+node-bindgen = { path = "../../", features = ["build"] }

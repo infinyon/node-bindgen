@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "class",
+    "function",
+    "cb",
+    "promise",
+    "async-cb"
+]

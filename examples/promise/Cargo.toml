@@ -1,0 +1,17 @@
+[package]
+name = "nj-example-promise"
+version = "0.0.1"
+authors = ["fluvio.io"]
+edition = "2018"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+node-bindgen = { path = "../.."}
+flv-future-core = { version = "0.1.0" }
+
+[build-dependencies]
+node-bindgen = { path = "../../", features = ["build"] }
