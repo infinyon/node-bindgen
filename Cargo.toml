@@ -3,6 +3,10 @@ name = "node-bindgen"
 version = "0.1.0"
 authors = ["fluvio.io"]
 edition = "2018"
+description = "tool for generating nodejs binding from rust"
+repository = "https://github.com/infinyon/node-bindgen"
+readme = "README.md"
+license = "Apache-2.0"
 
 [lib]
 test = false
