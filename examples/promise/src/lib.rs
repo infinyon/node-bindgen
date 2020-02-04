@@ -4,7 +4,6 @@ use flv_future_core::sleep;
 use node_bindgen::derive::node_bindgen;
 
 
-
 #[node_bindgen]
 async fn hello(arg: f64) -> f64 {
     println!("sleeping");

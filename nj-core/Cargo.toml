@@ -3,6 +3,10 @@ name = "nj-core"
 version = "0.1.0"
 authors = ["fluvio.io"]
 edition = "2018"
+description = "high level wrapper for Node N-API"
+repository = "https://github.com/infinyon/node-bindgen"
+readme = "README.md"
+license = "Apache-2.0"
 
 [lib]
 test = false
@@ -15,5 +19,5 @@ inventory = "0.1.5"
 async-trait = "0.1.22"
 futures = { version = "0.3.1" }
 flv-util = { version = "0.1.0" }
-nj-sys = { path = "../nj-sys" }
+nj-sys = { version = "0.1.0", path = "../nj-sys" }
 flv-future-core = { version = "0.1.0" }

@@ -3,6 +3,10 @@ name = "nj-derive"
 version = "0.1.0"
 authors = ["fluvio.io"]
 edition = "2018"
+description = "procedure macro for node-bindgen"
+repository = "https://github.com/infinyon/node-bindgen"
+readme = "README.md"
+license = "Apache-2.0"
 
 [lib]
 proc-macro = true

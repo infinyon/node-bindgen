@@ -1,8 +1,11 @@
 [package]
 name = "nj-cli"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["fluvio.io"]
 edition = "2018"
+description = "build tool for node-bindgen"
+repository = "https://github.com/infinyon/node-bindgen"
+license = "Apache-2.0"
 
 [workspace]
 

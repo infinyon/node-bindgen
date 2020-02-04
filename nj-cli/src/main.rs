@@ -38,8 +38,6 @@ fn main() {
 // kick off build
 fn build() {
 
-
-    println!("invoking build");
     let mut build_command = Command::new("cargo")
         .arg("build")
         .stdout(Stdio::inherit())
@@ -57,19 +55,15 @@ fn copy_lib() {
 
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
-    //println!("target directory {:#?}",metadata.target_directory);
     if let Some(package) = find_current_package(&metadata,&manifest_path) {
-        //println!("found package: {:#?}",package);
         if let Some(target) = find_cdylib(&package) {
-            //println!("found cdy target: {:#?}",target);
             let lib_path = lib_path(&metadata.target_directory,"debug",&target.name);
-            //println!("lib path is: {:#?}",lib_path);
             copy_cdylib(&lib_path).expect("copy failed");
         } else {
-            println!("no cdylib target was founded");
+            eprintln!("no cdylib target was founded");
         }
     } else {
-        println!("no valid Cargo.toml was founded");
+        eprintln!("no valid Cargo.toml was founded");
     }
 }
 
