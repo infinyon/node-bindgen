@@ -1,6 +1,6 @@
 # node-bindgen
 
-Write native nodejs module using idiomatic rust easy way.
+Easy way to write native Node.js module using idiomatic rust.
 
 
 # Example
@@ -17,7 +17,7 @@ fn sum(first: i32, second: i32) -> i32 {
 
 ```
 
-Then can import as nodejs module!
+Import as Node.js module!
 
 
 ```js
@@ -29,29 +29,30 @@ addon.sum(1,2)
 
 # N-API
 
-This crates uses Node N-API.
+This crates utilizes Node N-API.
 
 # Build
 
-To build nodejs module, first install nj-cli.
+Use nj-cli to generate native module.  First install:
 
 ```
 cargo install nj-cli
 ```
 
-To generate nodejs module:
+Build command to generate module directory.
+
 ```
 nj-cli build
 ```
 
-This will generate 'dylib' in the current directory.
+This will generates ".dylib" folder.
 
 
 # More examples
 
 ##  Callback
 
-Javascript callback can be easily called:
+Use rust closure to invoke JS callback
 
 ```rust
 #[node_bindgen]
