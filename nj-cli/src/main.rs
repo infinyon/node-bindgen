@@ -20,23 +20,31 @@ use cargo_metadata::Target;
     name = "fluvio")]
 enum Opt {
     #[structopt(name = "build")]
-    Build
+    Build(BuildOpt)
 }
+
+#[derive(Debug,StructOpt)]
+struct BuildOpt {
+
+    #[structopt(short = "o", long = "out", default_value = "dist")]
+    output: String
+}
+
 
 fn main() {
 
     let opt = Opt::from_args();
 
     match opt {
-        Opt::Build => {
-            build()
+        Opt::Build(opt) => {
+            build(opt)
         }
     }
 }
 
 
 // kick off build
-fn build() {
+fn build(opt: BuildOpt) {
 
     let mut build_command = Command::new("cargo")
         .arg("build")
@@ -47,18 +55,18 @@ fn build() {
     build_command.wait()
         .expect("failed to wait on child");
 
-    copy_lib();
+    copy_lib(opt.output);
 
 }
 
-fn copy_lib() {
+fn copy_lib(out: String) {
 
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
     if let Some(package) = find_current_package(&metadata,&manifest_path) {
         if let Some(target) = find_cdylib(&package) {
             let lib_path = lib_path(&metadata.target_directory,"debug",&target.name);
-            copy_cdylib(&lib_path).expect("copy failed");
+            copy_cdylib(&lib_path,&out).expect("copy failed");
         } else {
             eprintln!("no cdylib target was founded");
         }
@@ -112,19 +120,19 @@ fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
 }
 
 // where we are outputting
-fn output_dir() -> Result<PathBuf> {
+fn output_dir(output: &str) -> Result<PathBuf> {
 
     let current_path = std::env::current_dir().expect("can't get current directory");
-    let output_dir = current_path.join("dylib");
+    let output_dir = current_path.join(output);
     // ensure we have directory
     std::fs::create_dir_all(&output_dir)?;
 
     Ok(output_dir)
 }
 
-fn copy_cdylib(lib_path: &Path) -> Result<()> {
+fn copy_cdylib(lib_path: &Path,out: &str) -> Result<()> {
 
-    let dir = output_dir()?;
+    let dir = output_dir(out)?;
     let output_path = dir.join("index.node");
     std::fs::copy(lib_path,output_path)?;
     Ok(())
