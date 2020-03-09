@@ -468,7 +468,6 @@ fn raw_napi_function_template(
 
     quote! {
 
-        #[no_mangle]
         extern "C" fn #ident_n_api_fn(env: node_bindgen::sys::napi_env,cb_info: node_bindgen::sys::napi_callback_info) -> node_bindgen::sys::napi_value
         {
             use node_bindgen::core::TryIntoJs;

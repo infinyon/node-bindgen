@@ -57,6 +57,13 @@ impl TestObject {
     fn value(&self) -> f64 {
         self.val.unwrap()
     }
+
+    #[node_bindgen]
+    fn test(&self) -> f64 {
+        0.0
+    }
+
+
 }
 
 struct MyObject {
@@ -71,6 +78,8 @@ impl MyObject {
     fn new(val: f64) -> Self {
         Self { val }
     }
+
+
 
 
     #[node_bindgen]
@@ -130,6 +139,11 @@ impl MyObject {
         let msg = format!("hello world");
         cb(msg);        
         
+    }
+
+    #[node_bindgen]
+    fn test(&self) -> f64 {
+        0.0
     }
 
 
