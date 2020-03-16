@@ -39,7 +39,7 @@ impl MyTypePath {
 
     /// generate code as part of invoking rust function
     /// for normal argument, it is just variable
-    /// other may like closure may need to convert to rust colsure
+    /// other may like closure may need to convert to rust closure
     pub fn as_arg_token_stream(&self,index: usize) -> TokenStream {
 
         let var_name = rust_arg_var(index);
@@ -77,4 +77,39 @@ impl MyReferenceType {
             _ => false
         }
     }
+
+    /// generate code as part of invoking rust function
+    pub fn as_arg_token_stream(&self,index: usize) -> TokenStream {
+
+        let var_name = rust_arg_var(index);
+
+        quote! {
+            #var_name,
+        }
+    }
+
+    /// return possible type name
+    pub fn type_name(&self) -> Option<Ident> {
+
+        match self.0.elem.as_ref() {
+            Type::Path(path) => {
+
+                for segment in &path.path.segments {
+                    return Some(segment.ident.clone());   
+                }
+                None
+
+            },
+            _ => None
+        }
+
+        
+    }
+}
+
+/// generate default property name for function which uses camel case
+pub fn default_function_property_name(fn_name: &str) -> String {
+    use inflector::Inflector;
+
+    fn_name.to_camel_case()
 }

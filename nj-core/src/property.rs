@@ -36,6 +36,11 @@ impl Property {
         self
     }
 
+    pub fn setter(mut self,setter: napi_callback_raw) -> Self {
+        self.setter = Some(setter);
+        self
+    }
+
     pub fn as_raw_property(&self) -> napi_property_descriptor {
 
         napi_property_descriptor {

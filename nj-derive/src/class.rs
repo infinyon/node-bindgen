@@ -7,12 +7,14 @@ use syn::LitStr;
 use proc_macro2::Span;
 use proc_macro2::TokenStream;
 use proc_macro2::TokenTree;
-use inflector::Inflector;
+use proc_macro2::Literal;
 
-use crate::MyTypePath;
+
+use crate::util::MyTypePath;
 use crate::FunctionArgMetadata;
 use crate::FunctionAttribute;
 use crate::FunctionContext;
+use crate::util::default_function_property_name;
 
 pub fn generate_class(impl_item: ItemImpl) -> TokenStream {
 
@@ -49,14 +51,19 @@ impl ClassMetadata {
                     ImplItem::Method(method) => {
                         if is_js_method(method) {
                             let method_ident = &method.sig.ident;
-                            let property_name = LitStr::new(&method_ident.to_string().to_camel_case(),Span::call_site());
-                            let napi_name = Ident::new(&format!("napi_{}",method_ident),Span::call_site());
-
+                           // println!("method: {:#?}",method);
                             let attribute = FunctionTags::parse_attr(method);
+                            let property_name = attribute.name().unwrap_or_else(|| Literal::string(&default_function_property_name(&method_ident.to_string())));
+                            let napi_name = Ident::new(&format!("napi_{}",method_ident),Span::call_site());
                             if attribute.is_getter() {
                                 Some(quote! {
                                     node_bindgen::core::Property::new(#property_name).getter(Self::#napi_name),
                                 })
+                            } else if attribute.is_setter() {
+                                Some(quote! {
+                                    node_bindgen::core::Property::new(#property_name).setter(Self::#napi_name),
+                                })
+
                             } else if attribute.is_constructor() {
                                 match constructor {
                                     Some(_) => {},
@@ -90,7 +97,7 @@ impl ClassMetadata {
 
             Some(method) => {
                 let method_ident = &method.sig.ident;
-                let arg_metadata = match FunctionArgMetadata::parse(&method.sig) {
+                let arg_metadata = match FunctionArgMetadata::parse(&method.sig,false) {
                     Ok(arg) => arg,
                     Err(err) => {
                         eprintln!("error parsing sig: {}",err);
@@ -273,21 +280,29 @@ fn is_js_method(method: &ImplItemMethod) -> bool {
 
 }
 
+/// contain list of function attributes
 struct FunctionTags(Vec<FunctionAttribute>);
+
 
 impl FunctionTags {
 
+    /// parse method into function tags
+    /// TODO: this need to be refactored to handle parsing error
+    /// currently, if this only handle happy case
     fn parse_attr(method: &ImplItemMethod) -> FunctionTags {
 
         let mut tags = vec![];
         for attr in method.attrs.iter() {
-        
+            
             for group_token in attr.tokens.clone().into_iter() {
             
                 match group_token {
 
                     TokenTree::Group(group) => {
-                        for iden_token in group.stream().into_iter() {
+
+                        let mut group_peekable = group.stream().into_iter().peekable();
+
+                        while let Some(iden_token ) = group_peekable.next() {
 
                             match iden_token {
                                 TokenTree::Ident(ident) => {
@@ -295,6 +310,30 @@ impl FunctionTags {
                                         tags.push(FunctionAttribute::Getter);
                                     } else if ident == "constructor" {
                                         tags.push(FunctionAttribute::Constructor);
+                                    } else if ident == "setter" {
+                                        tags.push(FunctionAttribute::Setter);
+                                    } else if ident == "register" {
+                                        tags.push(FunctionAttribute::Register);
+                                    }else if ident == "name" {
+                                        // name must have = and literal
+                                        if let Some(punch) = group_peekable.peek() {
+                                            match punch {
+                                                TokenTree::Punct(punc) => {
+                                                    if punc.as_char() == '=' {
+                                                        let _ = group_peekable.next();  // consume puctual
+                                                        if let Some(literal) = group_peekable.next() {
+                                                            match literal {
+                                                                TokenTree::Literal(name_literal) => {
+                                                                    tags.push(FunctionAttribute::Name(name_literal))
+                                                                },
+                                                                _=> {}
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                _ => {}
+                                            }   
+                                        }
                                     } else {
                                         tags.push(FunctionAttribute::Other);
                                     }
@@ -329,6 +368,25 @@ impl FunctionTags {
         }).is_some()
     }
 
+    fn is_setter(&self) -> bool {
+        self.0.iter().find(|tag| {
+            match tag {
+               FunctionAttribute::Setter => true,
+               _ => false 
+            }
+        }).is_some()
+    }
+
+    #[allow(unused)]
+    fn is_register(&self) -> bool {
+        self.0.iter().find(|tag| {
+            match tag {
+               FunctionAttribute::Register => true,
+               _ => false 
+            }
+        }).is_some()
+    }
+
     fn is_constructor(&self) -> bool {
         self.0.iter().find(|tag| {
             match tag {
@@ -337,6 +395,16 @@ impl FunctionTags {
             }
         }).is_some()
     }
+
+    /// optional name attribute, there should be only 1 name attribute
+    fn name(&self) -> Option<Literal> {
+        self.0.iter().find_map(|tag| {
+            match tag {
+               FunctionAttribute::Name(liter) => Some(liter.clone()),
+               _ => None
+            }
+        })
+    }   
 
 
 

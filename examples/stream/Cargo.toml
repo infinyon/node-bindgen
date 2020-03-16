@@ -1,0 +1,19 @@
+[package]
+name = "nj-example-stream"
+version = "0.0.1"
+authors = ["fluvio.io"]
+edition = "2018"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+futures = { version = "0.3.4", features = ['async-await'] }
+node-bindgen = { path = "../.."}
+flv-future-core = { version = "0.1.0" }
+async-std = { version = "1.5.0", features = ["default","unstable"] }
+
+[build-dependencies]
+node-bindgen = { path = "../../", features = ["build"] }

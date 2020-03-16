@@ -6,17 +6,17 @@ mod class;
 mod worker;
 mod convert;
 mod module;
+pub mod stream;
 
 pub use thread_fn::ThreadSafeFunction;
-pub use error::NjError;
-pub use error::NapiStatus;
+pub use error::*;
 pub use property::Property;
 pub use property::PropertiesBuilder;
 pub use class::JSClass;
 pub use worker::create_promise;
-pub use worker::JsFuture;
-pub use convert::IntoJs;
-pub use convert::TryIntoJs;
+pub use worker::JsPromiseFuture;
+pub use worker::NjFutureExt;
+pub use convert::*;
 pub use ctor::ctor;
 pub use module::submit_property;
 pub use module::submit_register_callback;
@@ -68,7 +68,7 @@ macro_rules! napi_call_result {
                 Ok(())
             } else { 
                 let nj_status: crate::NapiStatus = status.into();
-                log::error!("error executing napi call {:#?}",nj_status);
+                log::error!("node-bindgen error {:#?}",nj_status);
                 Err(NjError::NapiCall(nj_status))
             }
         }

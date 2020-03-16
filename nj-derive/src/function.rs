@@ -20,10 +20,12 @@ use syn::Meta;
 use syn::ReturnType;
 use proc_macro2::Span;
 use proc_macro2::TokenStream;
+use proc_macro2::Literal;
 
-use crate::MyTypePath;
-use crate::rust_arg_var;
-use crate::MyReferenceType;
+use crate::util::MyTypePath;
+use crate::util::rust_arg_var;
+use crate::util::MyReferenceType;
+use crate::util::default_function_property_name;
 
 pub fn generate_function(input_fn: ItemFn, args: AttributeArgs) -> TokenStream {
     
@@ -34,7 +36,10 @@ pub fn generate_function(input_fn: ItemFn, args: AttributeArgs) -> TokenStream {
 
 pub enum FunctionAttribute {
     Getter,
+    Setter,
     Constructor,
+    Name(Literal),
+    Register,
     Other,
 }
 
@@ -60,7 +65,18 @@ impl FunctionMetadata {
         }
     }
 
+    /// check if this method should be constructor
     fn is_constructor(&self) -> bool {
+        self.has_attribute("constructor")
+    }
+
+    /// check if closure should support multi-threaded
+    fn support_multi_threaded(&self) -> bool {
+        self.has_attribute("mt")
+    }
+
+    /// check if we have attribute, this should be refactored to use attribute parser
+    fn has_attribute(&self,attribute: &str) -> bool {
         self.args
             .iter()
             .find(|arg| match arg {
@@ -68,7 +84,7 @@ impl FunctionMetadata {
                     Meta::Path(path) => path
                         .segments
                         .iter()
-                        .find(|seg| seg.ident == "constructor")
+                        .find(|seg| seg.ident == attribute)
                         .is_some(),
                     _ => false,
                 },
@@ -90,7 +106,7 @@ impl FunctionMetadata {
 
 
     fn analyze_args(&self) -> Result<FunctionArgMetadata, Error> {
-        FunctionArgMetadata::parse(&self.fn_item.sig)
+        FunctionArgMetadata::parse(&self.fn_item.sig,self.support_multi_threaded())
     }
 
     /// start of code generation
@@ -108,7 +124,7 @@ impl FunctionMetadata {
             Err(err) => return err.to_compile_error(),
         };
 
-        let napi_code = self.generate_napi_code(&mut &args);
+        let napi_code =  self.generate_napi_code(&mut &args);
         let property_code = self.generate_property_code(&args);
 
         quote! {
@@ -130,6 +146,7 @@ impl FunctionMetadata {
 
         let mut ctx = FunctionContext {
             is_async: self.is_async(),
+            is_multi_threaded: args.is_multi_threaded(),
             name: self.name().to_string(),
             ..Default::default()
         };
@@ -201,7 +218,7 @@ impl FunctionMetadata {
                 let async_name = format!("{}_ft", self.name());
                 let async_lit = LitStr::new(&async_name, Span::call_site());
                 quote! {
-                    (node_bindgen::core::JsFuture::new(
+                    (node_bindgen::core::JsPromiseFuture::new(
                         #rust_invoke,#async_lit
                     )).try_to_js(&js_env)
                 }
@@ -215,7 +232,7 @@ impl FunctionMetadata {
 
         quote! {
 
-            let result: Result<node_bindgen::sys::napi_value,node_bindgen::core::NjError> = ( || {
+            let result: Result<node_bindgen::sys::napi_value,node_bindgen::core::NjError> = ( move || {
 
                 #js_to_rust_values
 
@@ -233,6 +250,8 @@ impl FunctionMetadata {
 
     /// generate code to register this function property to global property
     fn generate_property_code(&self, args: &FunctionArgMetadata) -> TokenStream {
+
+
         if args.is_method() {
             return quote! {};
         }
@@ -240,7 +259,7 @@ impl FunctionMetadata {
         let ident_n_api_fn = self.napi_fn_id();
 
         let register_fn_name = format!("register_{}", ident_n_api_fn);
-        let property_name = self.name().to_string();
+        let property_name = default_function_property_name(&self.name().to_string());
         let ident_register_fn = Ident::new(&register_fn_name, Span::call_site());
         let property_name_literal = LitStr::new(&property_name, Span::call_site());
 
@@ -261,17 +280,20 @@ impl FunctionMetadata {
 #[derive(Default)]
 pub struct FunctionContext {
     is_async: bool,
+    is_multi_threaded: bool,
     name: String,
     cb_args: Vec<TokenStream>            // accumulated arg structure
 }
 
+/// Represents functional arguments
 pub struct FunctionArgMetadata {
     receiver: Option<Receiver>,
     args: Vec<FunctionArg>,
+    multi_threaded: bool
 }
 
 impl FunctionArgMetadata {
-    pub fn parse(sig: &Signature) -> Result<FunctionArgMetadata, Error> {
+    pub fn parse(sig: &Signature,multi_threaded: bool) -> Result<FunctionArgMetadata, Error> {
         let generics = &sig.generics;
 
         let mut args: Vec<FunctionArg> = vec![];
@@ -291,6 +313,7 @@ impl FunctionArgMetadata {
                                 identity.ident.clone(),
                                 arg_type.ty.clone(),
                                 GenerericInfo::new(generics),
+                                multi_threaded
                             ) {
                                 args.push(arg);
                             } else {
@@ -306,7 +329,7 @@ impl FunctionArgMetadata {
             }
         }
 
-        Ok(FunctionArgMetadata { receiver, args })
+        Ok(FunctionArgMetadata { receiver, args, multi_threaded })
     }
 
     /// find receiver if any, this will be used to indicate if this is method
@@ -323,6 +346,10 @@ impl FunctionArgMetadata {
 
     fn is_method(&self) -> bool {
         self.receiver.is_some()
+    }
+
+    fn is_multi_threaded(&self) -> bool {
+        self.multi_threaded
     }
 
     /// used as argument
@@ -433,7 +460,7 @@ impl FunctionArgMetadata {
 
         if self.is_method() {
             quote! {
-                let receiver = (js_cb.unwrap::<Self>()?);
+                let receiver = (js_cb.unwrap_mut::<Self>()?);
             }
         } else {
             quote! {}
@@ -488,20 +515,21 @@ fn raw_napi_function_template(
 /// Categorize function argument
 enum FunctionArg {
     Path(MyTypePath),            // normal type
+    Ref(MyReferenceType),                          // reference type
     Closure(ClosureType),        // callback
     JSCallback(MyReferenceType), // indicating that we want to receive typed JsCallback
 }
 
 impl FunctionArg {
     /// given this, convert into normalized type signature
-    fn new(ident: Ident, ty: Box<Type>, generics: GenerericInfo) -> Option<Self> {
+    fn new(ident: Ident, ty: Box<Type>, generics: GenerericInfo,multi_threaded: bool) -> Option<Self> {
         match *ty {
             Type::Path(path_type) => {
                 let my_type = MyTypePath::new(path_type);
 
                 // check whether type references in the generic indicates this is closure
                 if let Some(param) = generics.find_generic(&my_type.type_name().unwrap()) {
-                    if let Some(closure) = ClosureType::from(ident,param) {
+                    if let Some(closure) = ClosureType::from(ident,param,multi_threaded) {
                         Some(Self::Closure(closure))
                     } else {
                         None
@@ -515,7 +543,7 @@ impl FunctionArg {
                 if my_type.is_callback() {
                     Some(Self::JSCallback(my_type))
                 } else {
-                    None
+                    Some(Self::Ref(my_type))
                 }
             }
             _ => None,
@@ -533,12 +561,9 @@ impl FunctionArg {
                     #name: #inner,
                 }
             }
-            Self::Closure(_) => {
-                quote! { compile_error!("closure can't be used in constructor ")}
-            }
-            Self::JSCallback(_) => {
-                quote! { compile_error!("JsCallback can't be used in constructor")}
-            }
+            Self::Closure(_) => quote! { compile_error!("closure can't be used in constructor ")},
+            Self::JSCallback(_) => quote! { compile_error!("JsCallback can't be used in constructor")},
+            Self::Ref(_) => quote! { compile_error!("ref can't be used in constructor")}
         }
     }
 
@@ -556,6 +581,11 @@ impl FunctionArg {
     fn as_arg_token_stream(&self, index: &mut usize,ctx: &mut FunctionContext) -> TokenStream {
         match self {
             Self::Path(t) => {
+                let output = t.as_arg_token_stream(*index);
+                *index = *index + 1;
+                output
+            },
+            Self::Ref(t) => {
                 let output = t.as_arg_token_stream(*index);
                 *index = *index + 1;
                 output
@@ -586,7 +616,8 @@ impl FunctionArg {
     ///
     fn js_to_rust_token_stream(&self, arg_index: usize, ctx: &FunctionContext) -> TokenStream {
 
-        fn rust_token(possible_type_name: Option<Ident>, index: usize) -> TokenStream {
+        // generate expression to convert napi value to rust value from callback
+        fn rust_value(possible_type_name: Option<Ident>, index: usize) -> TokenStream {
             if let Some(type_name) = possible_type_name {
                 let rust_value = rust_arg_var(index);
                 let index_literal = index.to_string();
@@ -601,15 +632,34 @@ impl FunctionArg {
             }
         }
 
+        /// generate expression to convert napi_value as rust ref
+        fn rust_ref(possible_type_name: Option<Ident>, index: usize) -> TokenStream {
+            if let Some(type_name) = possible_type_name {
+                let rust_value = rust_arg_var(index);
+                let index_literal = index.to_string();
+                let index_ident = LitInt::new(&index_literal, Span::call_site());
+                quote! {
+                    let #rust_value = js_cb.get_ref::<#type_name>(#index_ident)?;
+                }
+            } else {
+                quote! {
+                    compile_error!("not supported type ")
+                }
+            }
+        }
+
         match self {
             Self::Closure(ty) => {
                 if ctx.is_async {
                     ty.generate_as_async_token_stream(arg_index,ctx)
+                } else if ctx.is_multi_threaded {
+                    ty.generate_as_async_token_stream(arg_index,ctx)
                 } else {
-                    rust_token(Some(ty.type_name()), arg_index)
+                    rust_value(Some(ty.type_name()), arg_index)
                 }
             }
-            Self::Path(ty) => rust_token(ty.type_name(), arg_index),
+            Self::Path(ty) => rust_value(ty.type_name(), arg_index),
+            Self::Ref(ty) => rust_ref(ty.type_name(), arg_index),
             Self::JSCallback(_ty) => quote! { compile_error!("should not be converted from JS")},
         }
     }
@@ -639,12 +689,13 @@ impl<'a> GenerericInfo<'a> {
 
 struct ClosureType {
     ty: ParenthesizedGenericArguments,
-    ident: Ident
+    ident: Ident,
+    multi_threaded: bool
 }
 
 impl ClosureType {
     // try to see if we can find closure, otherwise return none
-    fn from(ident: Ident,param: TypeParam) -> Option<Self> {
+    fn from(ident: Ident,param: TypeParam,multi_threaded: bool) -> Option<Self> {
         for bound in param.bounds {
             match bound {
                 TypeParamBound::Trait(tt) => {
@@ -652,7 +703,8 @@ impl ClosureType {
                         match segment.arguments {
                             PathArguments::Parenthesized(path) => return Some(Self {
                                 ident,
-                                ty: path
+                                ty: path,
+                                multi_threaded
                             }),
                             _ => return None,
                         }
@@ -666,7 +718,14 @@ impl ClosureType {
     }
 
     fn type_name(&self) -> Ident {
-        Ident::new("JsCallbackFunction", Span::call_site())
+        
+        let callback_type = if self.multi_threaded {
+            "JsMultiThreadedCallbackFunction"
+        } else {
+            "JsCallbackFunction"
+        };
+
+        Ident::new(callback_type, Span::call_site())
     }
 
 
@@ -693,14 +752,14 @@ impl ClosureType {
             })
             .collect();
 
-        let inner_closure = if ctx.is_async {
+        let inner_closure = if ctx.is_async || ctx.is_multi_threaded {
             self.as_async_arg_token_stream(arg_index,closure_var,ctx) 
         } else {
             self.as_sync_arg_token_stream(arg_index,closure_var)
         };
 
         quote! {
-            | #(#args)* | {
+            move | #(#args)* | {
  
                  #inner_closure
             }
@@ -722,18 +781,19 @@ impl ClosureType {
                 let arg_name = format!("cb_arg{}", index);
                 let var_name = Ident::new(&arg_name, Span::call_site());
                 quote! {
-                    #var_name.try_to_js(&js_env)?,
+                    #var_name,
                 }
             })
             .collect();
 
         quote! {
 
-            let result: Result<node_bindgen::sys::napi_value,node_bindgen::core::NjError> = (|| {
+            // invoke sync closure
+            let result = (|| {
                 let args = vec![
                     #(#js_conversions)*
                 ];
-                #closure_var.call(args,&js_env)
+                #closure_var.call(args)
             })();
 
             result.to_js(&js_env);
@@ -800,6 +860,7 @@ impl ClosureType {
 
         ctx.cb_args.push(quote!{
 
+            #[derive(Debug)]
             struct #arg_struct_name {
                 #(#struct_fields)*
             }
@@ -812,15 +873,19 @@ impl ClosureType {
         
                 if env != std::ptr::null_mut() {
         
+                    node_bindgen::core::log::debug!("async cb invoked");
                     let js_env = node_bindgen::core::val::JsEnv::new(env);
         
                     let result: Result<(), node_bindgen::core::NjError> = (move ||{
         
                         let global = js_env.get_global()?;
                         let my_val: Box<#arg_struct_name> = unsafe { Box::from_raw(data as *mut #arg_struct_name) };
+                        node_bindgen::core::log::trace!("arg: {:#?}",my_val);
                         #(#js_complete_conversions)*
 
+                        node_bindgen::core::log::debug!("async cb, invoking js cb");
                         js_env.call_function(global,js_cb,vec![#(#js_call)*])?;
+                        node_bindgen::core::log::trace!("async cb, done");
                         Ok(())
         
                     })();
@@ -855,6 +920,7 @@ impl ClosureType {
                 #(#args)*
             };
 
+            node_bindgen::core::log::trace!("converting rust to raw ptr");
             let my_box = Box::new(arg);
             let ptr = Box::into_raw(my_box);
 
@@ -874,7 +940,7 @@ impl ClosureType {
         let js_cb_completion = self.async_js_callback_identifier();
         
         quote! {
-            let #rust_var_name = js_cb.create_thread_safe_function(#sf_identifier,0,Some(#js_cb_completion))?;
+            let #rust_var_name = js_cb.create_thread_safe_function(#sf_identifier,#index,Some(#js_cb_completion))?;
         }
 
     }

@@ -1,11 +1,13 @@
 use std::ptr;
 
+use log::debug;
+
 use crate::sys::napi_threadsafe_function;
 use crate::NjError;
 use crate::val::JsEnv;
 use crate::sys::napi_env;
 
-/// Wsrapper for Threas safe function that are safe to send and sync across thread
+/// Wrapper for thread safe function that are safe to send and sync across thread
 pub struct ThreadSafeFunction {
     env: JsEnv,
     tf: napi_threadsafe_function
@@ -40,6 +42,7 @@ impl ThreadSafeFunction {
             Some(ptr) => ptr,
             None => ptr::null_mut()
         };
+        debug!("calling thread safe");
         crate::napi_call_result!(
             crate::sys::napi_call_threadsafe_function(
                 self.tf,

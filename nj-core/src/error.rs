@@ -1,7 +1,7 @@
 
 use std::fmt;
-use std::ptr;
 use std::string::FromUtf8Error;
+use std::ptr;
 
 use crate::sys::napi_status;
 use crate::sys::napi_value;
@@ -14,18 +14,29 @@ pub enum NjError {
     NapiCall(NapiStatus),
     InvalidArgCount(usize,usize),
     InvalidArgIndex(usize,usize),
-    InvalidType,
+    InvalidType(String,String),
     NoPlainConstructor,
     Utf8Error(FromUtf8Error),
     Other(String)
 }
 
+// error are throw
 impl IntoJs for NjError {
 
     fn to_js(self, js_env: &JsEnv) -> napi_value {
         let msg = self.to_string();
         js_env.throw_type_error(&msg);
         ptr::null_mut()
+    }
+}
+
+impl NjError {
+
+    /// convert to napi value
+    pub fn as_js(self, js_env: &JsEnv) -> napi_value {
+
+        let msg = self.to_string();
+        js_env.create_error(&msg).expect("error cannot be created")
     }
 }
 
@@ -59,7 +70,7 @@ impl fmt::Display for NjError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Self::NapiCall(status) => write!(f,"napi call failed {:#?}",status),
-            Self::InvalidType => write!(f,"invalid type"),
+            Self::InvalidType(expected,actual) => write!(f,"invalid type, expected: {}, actual: {}",expected,actual),
             Self::Utf8Error(err) => write!(f,"ut8 error: {}",err),
             Self::InvalidArgIndex(index,len) => write!(f,"attempt to access arg: {} out of len: {}",index,len),
             Self::InvalidArgCount(actual_count,expected_count) => write!(f,"{} args expected but {} is present",expected_count,actual_count),

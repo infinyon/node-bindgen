@@ -1,6 +1,8 @@
 use std::ptr;
 
 use log::error;
+use log::trace;
+use log::debug;
 use async_trait::async_trait;
 use futures::Future;
 
@@ -17,12 +19,12 @@ use crate::IntoJs;
 use crate::assert_napi;
 use crate::ThreadSafeFunction;
 
-pub struct JsFuture<F>{
+pub struct JsPromiseFuture<F>{
     future: F,
     name: String
 }
 
-impl <F> JsFuture<F> 
+impl <F> JsPromiseFuture<F> 
     where F: Future, F::Output: TryIntoJs
 {
 
@@ -36,7 +38,7 @@ impl <F> JsFuture<F>
     }
 }
 
-impl <F>TryIntoJs for JsFuture<F> 
+impl <F>TryIntoJs for JsPromiseFuture<F> 
     where F: Future + 'static + Send , F::Output: TryIntoJs {
 
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
@@ -84,6 +86,8 @@ extern "C" fn promise_complete<O>(
     O: TryIntoJs
 {
     if env != ptr::null_mut() {
+
+        trace!("promise complete");        
         let js_env = JsEnv::new(env);
 
         let worker_result: Box<WorkerResult<O>> =
@@ -91,13 +95,18 @@ extern "C" fn promise_complete<O>(
 
         let result: Result<(), NjError> = (move || 
             match worker_result.result.try_to_js(&js_env) {
-                Ok(val) => js_env.resolve_deferred(worker_result.deferred.0, val),
-                Err(err) => js_env.reject_deferred(worker_result.deferred.0, err.to_js(&js_env)),
+                Ok(val) => {
+                    trace!("trying to resolve to deferred");
+                    js_env.resolve_deferred(worker_result.deferred.0, val)
+                },
+                Err(js_err) =>  {
+                    trace!("trying to resolve to deferred");
+                    js_env.reject_deferred(worker_result.deferred.0, js_err.as_js(&js_env))
+                }
         })();
         assert_napi!(result)
     }
 }
-
 
 fn finish_worker<O>(ts_fn: ThreadSafeFunction, result: O, deferred: JsDeferred)
 where
@@ -110,6 +119,7 @@ where
     }
 }
 
+
 #[async_trait]
 pub trait JSWorker: Sized + Send + 'static {
 
@@ -118,7 +128,7 @@ pub trait JSWorker: Sized + Send + 'static {
     /// create new worker based on argument based in the callback
     /// only need if it is called as method
     fn create_worker(_env: &JsEnv, _info: napi_callback_info) -> Result<Self, NjError> {
-        Err(NjError::InvalidType)
+        Err(NjError::InvalidType("worker".to_owned(),"worker".to_owned()))
     }
 
     /// call by Node to create promise
@@ -140,7 +150,7 @@ pub trait JSWorker: Sized + Send + 'static {
         let (promise, deferred) = js_env.create_promise()?;
         let function_name = format!("async_worker_th_{}", std::any::type_name::<Self>());
         let ts_fn =
-            js_env.create_thread_safe_function(&function_name, None, Some(Self::complete))?;
+            js_env.create_thread_safe_function(&function_name, None, Some(promise_complete::<Self::Output>))?;
         let js_deferred = JsDeferred(deferred);
 
         spawn(async move {
@@ -154,26 +164,48 @@ pub trait JSWorker: Sized + Send + 'static {
     /// execute this in async worker thread
     async fn execute(mut self) -> Self::Output;
 
-    // call by Node to convert result into JS value
-    extern "C" fn complete(
-        env: napi_env,
-        _js_cb: napi_value,
-        _context: *mut ::std::os::raw::c_void,
-        data: *mut ::std::os::raw::c_void,
-    ) {
-        if env != ptr::null_mut() {
-            let js_env = JsEnv::new(env);
-
-            let worker_result: Box<WorkerResult<Self::Output>> =
-                unsafe { Box::from_raw(data as *mut WorkerResult<Self::Output>) };
-
-            let result: Result<(), NjError> = (move || 
-                match worker_result.result.try_to_js(&js_env) {
-                    Ok(val) => js_env.resolve_deferred(worker_result.deferred.0,val),
-                    Err(err) => js_env.reject_deferred(worker_result.deferred.0, err.to_js(&js_env))
-            })();
-            assert_napi!(result);
-        }
-    }
+    
 }
 
+
+pub trait NjFutureExt: Future  {
+
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> 
+        where Self: Sized + Send + 'static,
+            Self::Output: TryIntoJs
+    {
+        
+
+        extern "C" fn promise_complete2<O>(
+            env: napi_env,
+            _js_cb: napi_value,
+            _context: *mut ::std::os::raw::c_void,
+            data: *mut ::std::os::raw::c_void,
+        ) 
+        {
+            if env != ptr::null_mut() {
+
+                trace!("promise complete");        
+                let _ = JsEnv::new(env);
+
+                let _: Box<O> =
+                    unsafe { Box::from_raw(data as *mut O) };
+
+            }
+        }
+
+        let function_name = format!("stream_example_1");
+        let _ = js_env.create_thread_safe_function(&function_name, None, Some(promise_complete2::<Self::Output>))?;
+
+        debug!("spawning task");
+        spawn(async move {
+            let _ = self.await;
+            debug!("task completed");
+        });
+    
+        Ok(ptr::null_mut())
+    }
+
+}
+
+impl<T: ?Sized> NjFutureExt for T where T: Future {}

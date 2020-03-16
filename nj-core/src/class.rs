@@ -24,6 +24,10 @@ impl <T>JSObjectWrapper<T> {
     pub fn mut_inner(&mut self) -> &mut T {
         &mut self.inner
     }
+
+    pub fn inner(&self) -> &T {
+        &self.inner
+    }
 }
 
 impl <T>JSObjectWrapper<T> where T: JSClass {
@@ -69,8 +73,12 @@ pub trait JSClass: Sized {
     }
 
     /// given instance, return my object
-    fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<&'static mut Self,NjError> {
-        Ok(js_env.unwrap::<JSObjectWrapper<Self>>(instance)?.mut_inner())
+    fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<&'static mut Self,NjError> {
+        Ok(js_env.unwrap_mut::<JSObjectWrapper<Self>>(instance)?.mut_inner())
+    }
+
+    fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<&'static Self,NjError> {
+        Ok(js_env.unwrap::<JSObjectWrapper<Self>>(instance)?.inner())
     }
 
     fn properties() -> PropertiesBuilder {

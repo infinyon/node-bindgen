@@ -4,5 +4,6 @@ members = [
     "function",
     "cb",
     "promise",
-    "async-cb"
+    "async-cb",
+    "stream"
 ]
