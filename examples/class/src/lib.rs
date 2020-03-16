@@ -2,7 +2,7 @@
 use std::time::Duration;
 use std::io::Error as IoError;
 
-use flv_future_core::sleep;
+use flv_future_aio::timer::sleep;
 
 use node_bindgen::sys::napi_value;
 use node_bindgen::core::val::JsCallback;

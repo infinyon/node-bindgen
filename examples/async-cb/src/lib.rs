@@ -1,7 +1,7 @@
 
 use std::time::Duration;
 
-use flv_future_core::sleep;
+use flv_future_aio::timer::sleep;
 use node_bindgen::derive::node_bindgen;
 
 

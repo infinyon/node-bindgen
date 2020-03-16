@@ -28,7 +28,7 @@ pub mod sys {
 }
 
 pub mod future {
-    pub use flv_future_core::spawn;
+    pub use flv_future_aio::task::spawn;
 }
 
 pub mod val {

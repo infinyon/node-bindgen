@@ -6,7 +6,7 @@ use log::debug;
 use async_trait::async_trait;
 use futures::Future;
 
-use flv_future_core::spawn;
+use flv_future_aio::task::spawn;
 
 use crate::sys::napi_deferred;
 use crate::sys::napi_value;

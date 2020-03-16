@@ -302,16 +302,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "flv-future-core"
-version = "0.1.0"
+name = "flv-future-aio"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a968e689fd27f04505d8fdf73432b62565e377693f92acd55fede4ad125dc173"
+checksum = "08536e6d7e3390bace5c0ca777692f38bbc8c125a506a03aa72ca6a292f5e8e3"
 dependencies = [
  "async-std",
+ "async-trait",
  "bytes",
+ "flv-util",
  "futures",
  "futures-timer",
+ "futures_codec",
  "log",
+ "memmap",
+ "nix",
  "pin-utils",
 ]
 
@@ -437,6 +442,18 @@ dependencies = [
  "proc-macro-hack",
  "proc-macro-nested",
  "slab",
+]
+
+[[package]]
+name = "futures_codec"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a0a73299e4718f5452e45980fc1d6957a070abe308d3700b63b8673f47e1c2b3"
+dependencies = [
+ "bytes",
+ "futures",
+ "memchr",
+ "pin-project",
 ]
 
 [[package]]
@@ -577,6 +594,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3197e20c7edb283f87c071ddfc7a2cca8f8e0b888c242959846a6fce03c72223"
 
 [[package]]
+name = "memmap"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6585fd95e7bb50d6cc31e20d4cf9afb4e2ba16c5846fc76793f11218da9c475b"
+dependencies = [
+ "libc",
+ "winapi 0.3.8",
+]
+
+[[package]]
 name = "memoffset"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -639,16 +666,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "nix"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd0eaf8df8bab402257e0a5c17a254e4cc1f72a93588a1ddfb5d356c801aa7cb"
+dependencies = [
+ "bitflags",
+ "cc",
+ "cfg-if",
+ "libc",
+ "void",
+]
+
+[[package]]
 name = "nj-build"
 version = "0.1.0"
 
 [[package]]
 name = "nj-core"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "async-trait",
  "ctor",
- "flv-future-core",
+ "flv-future-aio",
  "flv-util",
  "futures",
  "inventory",
@@ -660,7 +700,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -672,7 +712,7 @@ dependencies = [
 name = "nj-example-async-cb"
 version = "0.0.1"
 dependencies = [
- "flv-future-core",
+ "flv-future-aio",
  "libc",
  "node-bindgen",
 ]
@@ -688,7 +728,7 @@ dependencies = [
 name = "nj-example-class"
 version = "0.0.1"
 dependencies = [
- "flv-future-core",
+ "flv-future-aio",
  "node-bindgen",
 ]
 
@@ -703,7 +743,7 @@ dependencies = [
 name = "nj-example-promise"
 version = "0.0.1"
 dependencies = [
- "flv-future-core",
+ "flv-future-aio",
  "node-bindgen",
 ]
 
@@ -712,7 +752,7 @@ name = "nj-example-stream"
 version = "0.0.1"
 dependencies = [
  "async-std",
- "flv-future-core",
+ "flv-future-aio",
  "futures",
  "node-bindgen",
 ]
@@ -726,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "node-bindgen"
-version = "0.2.0"
+version = "1.0.0"
 dependencies = [
  "nj-build",
  "nj-core",
@@ -808,6 +848,26 @@ name = "peeking_take_while"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19b17cddbe7ec3f8bc800887bab5e717348c95ea2ca0b1bf0837fb964dc67099"
+
+[[package]]
+name = "pin-project"
+version = "0.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7804a463a8d9572f13453c516a5faea534a2403d7ced2f0c7e100eeff072772c"
+dependencies = [
+ "pin-project-internal",
+]
+
+[[package]]
+name = "pin-project-internal"
+version = "0.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "385322a45f2ecf3410c68d2a549a4a2685e8051d0f278e39743ff4e451cb9b3f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "pin-project-lite"
@@ -1021,6 +1081,12 @@ name = "version_check"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "914b1a6776c4c929a602fafd8bc742e06365d4bcbe48c30f9cca5824f70dc9dd"
+
+[[package]]
+name = "void"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 
 [[package]]
 name = "which"

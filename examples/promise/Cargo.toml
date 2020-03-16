@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 node-bindgen = { path = "../.."}
-flv-future-core = { version = "0.1.0" }
+flv-future-aio = { version = "1.0.0" }
 
 [build-dependencies]
 node-bindgen = { path = "../../", features = ["build"] }

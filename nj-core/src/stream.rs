@@ -8,7 +8,7 @@ use futures::stream::StreamExt;
 use pin_utils::unsafe_pinned;
 use pin_utils::unsafe_unpinned;
 
-use flv_future_core::spawn;
+use flv_future_aio::task::spawn;
 
 
 use crate::sys::napi_value;

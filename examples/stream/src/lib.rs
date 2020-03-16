@@ -8,7 +8,7 @@ use futures::stream;
 use futures::stream::StreamExt;
 
 
-use flv_future_core::sleep;
+use flv_future_aio::timer::sleep;
 use node_bindgen::core::NjError;
 use node_bindgen::derive::node_bindgen;
 use node_bindgen::core::stream::NjStream;
