@@ -74,6 +74,27 @@ impl JSValue for TestObject {
 }
 */
 
+struct MyJson {
+    val: f64
+}
+
+
+impl TryIntoJs for MyJson {
+
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
+
+        // create JSON
+        let mut json = JsObject::new(js_env.clone(), js_env.create_object()?);
+
+        let js_val = js_env.create_double(self.val)?;
+        json.set_property("val",js_val)?;
+        
+        json.try_to_js(js_env)
+    }
+}
+
+
+
 struct MyObject {
     val: f64,
 }
@@ -101,6 +122,18 @@ impl MyObject {
     #[node_bindgen(getter)]
     fn value(&self) -> f64 {
         self.val
+    }
+
+    /// Getter with custom name that return JSON
+    /// JS:  let y = obj.json
+    /// {
+    ///    value: f64,
+    /// }
+    #[node_bindgen(getter)]
+    fn json(&self) -> MyJson {
+        MyJson {
+            val: self.val
+        }
     }
 
     /// JS Setter

@@ -4,6 +4,7 @@ let addon = require('./dist');
 
 let obj = new addon.MyObject(10);
 assert.equal(obj.value,10,"verify value works");
+assert.deepEqual(obj.json, { val: 10},"verify json");
 assert.equal(obj.plusOne(),11);
 
 let obj2 = obj.multiply(-1);
@@ -34,6 +35,8 @@ obj.clear = true;
 assert.equal(obj.value,0);
 
 assert.equal(obj.plusScore( { score: 10 }),10);
+
+
 
 
 let t = new addon.TestObject();

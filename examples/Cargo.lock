@@ -684,7 +684,7 @@ version = "0.1.0"
 
 [[package]]
 name = "nj-core"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "ctor",
@@ -726,7 +726,7 @@ dependencies = [
 
 [[package]]
 name = "nj-example-class"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "flv-future-aio",
  "node-bindgen",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "node-bindgen"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "nj-build",
  "nj-core",

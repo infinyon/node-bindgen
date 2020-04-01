@@ -152,6 +152,19 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn create_object(&self) -> Result<napi_value,NjError>  {
+
+        let mut result = ptr::null_mut();
+
+        napi_call_result!(
+            crate::sys::napi_create_object(
+                self.0,
+                &mut result
+            )
+        )?;
+        Ok(result)
+    }
+
 
 
     pub fn get_global(&self) -> Result<napi_value,NjError> {
@@ -815,6 +828,23 @@ impl JsObject {
         })
     }
 
+    pub fn set_property(&mut self,key: &str, property_value: napi_value) -> Result<(),NjError> {
+
+        use crate::sys::napi_set_property;
+        
+        let property_key = self.env.create_string_utf8(key)?;
+
+        napi_call_result!(
+            napi_set_property(
+                self.env.inner(),
+                self.napi_value,
+                property_key,
+                property_value,
+            ))?;
+
+        Ok(())
+    }
+
     /// convert to equivalent rust object
     pub fn as_value<T>(&self) -> Result<T,NjError>  where T: JSValue {
         self.env.convert_to_rust(self.napi_value)
@@ -830,3 +860,13 @@ impl JSValue for JsObject {
     }
 
 }
+
+
+impl TryIntoJs for JsObject {
+
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value,NjError> {
+
+        Ok(self.napi_value)
+    }
+}
+

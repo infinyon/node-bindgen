@@ -1,6 +1,6 @@
 [package]
 name = "nj-core"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "high level wrapper for Node N-API"
