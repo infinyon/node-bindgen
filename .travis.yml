@@ -1,11 +1,6 @@
 language: rust
 dist: bionic
 
-addons:
-  homebrew:
-    packages:
-    - nvm
-
 jobs:
   include:
     # Test different Rust versions on Linux against Node LTS
