@@ -1,11 +1,6 @@
 language: rust
 dist: bionic
 
-rust:
-  - stable
-  - beta
-  - nightly
-
 addons:
   homebrew:
     packages:
@@ -14,6 +9,11 @@ addons:
 jobs:
   include:
     - env: NODE=--lts
+      rust: stable
+    - env: NODE=--lts
+      rust: beta
+    - env: NODE=--lts
+      rust: nightly
     - env: NODE=12
     - env: NODE=11
     - env: NODE=10
