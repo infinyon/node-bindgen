@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eux -o pipefail
+
+nvm install $NODE
+nvm use $NODE
+cargo build
+cargo test
+cargo install --path nj-cli
+cd examples && make test
