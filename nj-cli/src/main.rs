@@ -66,7 +66,7 @@ fn copy_lib(out: String) {
     if let Some(package) = find_current_package(&metadata,&manifest_path) {
         if let Some(target) = find_cdylib(&package) {
             let lib_path = lib_path(&metadata.target_directory,"debug",&target.name);
-            copy_cdylib(&lib_path,&out).expect("copy failed");
+            copy_cdylib(&lib_path,&out).expect(&format!("copy failed of {:?}", lib_path));
         } else {
             eprintln!("no cdylib target was founded");
         }
