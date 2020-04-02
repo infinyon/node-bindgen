@@ -1,0 +1,37 @@
+language: rust
+dist: bionic
+
+rust:
+  - stable
+  - beta
+  - nightly
+
+addons:
+  homebrew:
+    packages:
+    - nvm
+
+jobs:
+  include:
+    - env: NODE=--lts
+    - env: NODE=12
+    - env: NODE=11
+    - env: NODE=10
+    - env: NODE=8
+    - os: osx
+      osx_image: xcode11.3 # macOS 10.14
+      env: NODE=--lts
+    - os: osx
+      osx_image: xcode10.1 # macOS 10.13
+      env: NODE=--lts
+    - os: osx
+      osx_image: xcode9.2  # macOS 10.12
+      env: NODE=--lts
+
+script:
+  - nvm ls
+  - nvm use $NODE
+  - cargo build
+  - cargo test
+  - cargo install --path nj-cli
+  - cd examples && make test
