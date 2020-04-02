@@ -2,6 +2,7 @@
 
 set -eux -o pipefail
 
+source ~/.nvm/nvm.sh
 nvm install $NODE
 nvm use $NODE
 cargo build
