@@ -114,8 +114,10 @@ fn manifest_path() -> PathBuf {
 }
 
 fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
-
-    let file_name = format!("lib{}.dylib",target_name).replace("-","_");
+    let file_name = format!("lib{}.{}",
+        target_name,
+        if cfg!(target_os = "macos") { "dylib" } else {"so"}
+    ).replace("-","_");
     target.join(target).join(build_type).join(file_name)
 }
 
