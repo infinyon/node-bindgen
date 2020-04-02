@@ -35,10 +35,6 @@ jobs:
       osx_image: xcode10.1 # macOS 10.13
       rust: stable
       env: NODE=--lts
-    - os: osx
-      osx_image: xcode9.2  # macOS 10.12
-      rust: stable
-      env: NODE=--lts
 
 script:
   - ./travis.sh
