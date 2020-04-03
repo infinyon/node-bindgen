@@ -14,12 +14,14 @@ jobs:
     # Test different Node versions on Linux against Rust stable
     - env: NODE=12
       rust: stable
-    - env: NODE=11
-      rust: stable
     - env: NODE=10
       rust: stable
-    - env: NODE=8
-      rust: stable
+
+    # Not working currently. Probably needs bindgen in nj-sys regenerating.
+    # - env: NODE=11
+    #   rust: stable
+    # - env: NODE=8
+    #   rust: stable
 
     # Test different OSX versions against Rust stable and Node LTS
     - os: osx
