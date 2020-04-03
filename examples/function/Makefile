@@ -5,7 +5,7 @@ all:	build
 
 
 build:	
-	nj-cli build || find .. | sort
+	nj-cli build
 
 test:	build
 	node test.js
