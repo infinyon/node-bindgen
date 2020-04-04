@@ -1,6 +1,3 @@
-
-#![feature(prelude_import)]
-
 use std::time::Duration;
 
 use futures::Stream;

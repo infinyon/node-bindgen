@@ -66,7 +66,7 @@ fn copy_lib(out: String) {
     if let Some(package) = find_current_package(&metadata,&manifest_path) {
         if let Some(target) = find_cdylib(&package) {
             let lib_path = lib_path(&metadata.target_directory,"debug",&target.name);
-            copy_cdylib(&lib_path,&out).expect("copy failed");
+            copy_cdylib(&lib_path,&out).expect(&format!("copy failed of {:?}", lib_path));
         } else {
             eprintln!("no cdylib target was founded");
         }
@@ -114,8 +114,10 @@ fn manifest_path() -> PathBuf {
 }
 
 fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
-
-    let file_name = format!("lib{}.dylib",target_name).replace("-","_");
+    let file_name = format!("lib{}.{}",
+        target_name,
+        if cfg!(target_os = "macos") { "dylib" } else {"so"}
+    ).replace("-","_");
     target.join(target).join(build_type).join(file_name)
 }
 

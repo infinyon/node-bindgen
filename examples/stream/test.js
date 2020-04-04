@@ -26,7 +26,6 @@ console.log("stream started");
 
 // wait for stream to finish, since stream produce event at every 100ms we should wait at least 1 second
 setTimeout(() => {
-
   console.log("timer finished");
   assert.equal(sum,45);
-}, 1200);
+}, 3000); // Made a bit larger so it reliably works on Travis

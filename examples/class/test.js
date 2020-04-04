@@ -60,5 +60,5 @@ obj.sleep((msg) => {
 
 
 addon.create(10).then( (test_object) => {
-    console.log("test value is {}",test_object.value2);
+    console.log("test value is %s",test_object.value2);
 });
