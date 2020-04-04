@@ -1,5 +1,4 @@
 # node-bindgen
-[![Build Status](https://travis-ci.com/palfrey/node-bindgen.svg?branch=master)](https://travis-ci.com/palfrey/node-bindgen)
 
 Easy way to write native Node.js module using idiomatic rust.
 
