@@ -100,7 +100,7 @@ async fn hello(arg: f64) -> f64 {
 let addon = require('./dylib');
 
 addon.hello(5).then((val) => {
-  console.log("future value is{}",val);
+  console.log("future value is %s",val);
 });
 
 ```

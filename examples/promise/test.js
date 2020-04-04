@@ -4,7 +4,7 @@ let addon = require('./dist');
 
 addon.hello(5).then((val) => {
   assert.equal(val,15);
-  console.log("promise test succeed: {}",val);
+  console.log("promise test succeed: %s",val);
 });
 
 (
