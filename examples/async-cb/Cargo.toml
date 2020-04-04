@@ -10,7 +10,6 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-libc = "0.2.66"
 node-bindgen = { path = "../.."}
 flv-future-aio = { version = "1.0.0" }
 

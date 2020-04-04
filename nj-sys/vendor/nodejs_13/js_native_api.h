@@ -54,7 +54,7 @@ NAPI_EXTERN napi_status napi_get_null(napi_env env, napi_value* result);
 NAPI_EXTERN napi_status napi_get_global(napi_env env, napi_value* result);
 NAPI_EXTERN napi_status napi_get_boolean(napi_env env,
                                          bool value,
-                     x                    napi_value* result);
+                                        napi_value* result);
 
 // Methods to create Primitive types/Objects
 NAPI_EXTERN napi_status napi_create_object(napi_env env, napi_value* result);
