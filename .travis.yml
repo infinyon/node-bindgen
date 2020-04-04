@@ -1,0 +1,37 @@
+language: rust
+dist: bionic
+
+jobs:
+  include:
+    # Test different Rust versions on Linux against Node LTS
+    - env: NODE=--lts
+      rust: stable
+    - env: NODE=--lts
+      rust: beta
+    - env: NODE=--lts
+      rust: nightly
+
+    # Test different Node versions on Linux against Rust stable
+    - env: NODE=12
+      rust: stable
+    - env: NODE=10
+      rust: stable
+
+    # Not working currently. Probably needs bindgen in nj-sys regenerating.
+    # - env: NODE=11
+    #   rust: stable
+    # - env: NODE=8
+    #   rust: stable
+
+    # Test different OSX versions against Rust stable and Node LTS
+    - os: osx
+      osx_image: xcode11.3 # macOS 10.14
+      rust: stable
+      env: NODE=--lts
+    - os: osx
+      osx_image: xcode10.1 # macOS 10.13
+      rust: stable
+      env: NODE=--lts
+
+script:
+  - ./travis.sh
