@@ -57,9 +57,9 @@ dependencies = [
 
 [[package]]
 name = "async-trait"
-version = "0.1.22"
+version = "0.1.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8df72488e87761e772f14ae0c2480396810e51b2c2ade912f97f0f7e5b95e3c"
+checksum = "da71fef07bc806586090247e971229289f64c210a278ee5ae419314eb386b31d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -216,9 +216,9 @@ dependencies = [
 
 [[package]]
 name = "flv-future-aio"
-version = "1.0.0"
+version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08536e6d7e3390bace5c0ca777692f38bbc8c125a506a03aa72ca6a292f5e8e3"
+checksum = "788eba7d5da1ff2b2d3f6bd3b4c6f3ef6ad534468ad44909cf829336e8339f28"
 dependencies = [
  "async-std",
  "async-trait",
@@ -226,11 +226,12 @@ dependencies = [
  "flv-util",
  "futures",
  "futures-timer",
- "futures_codec",
  "log",
  "memmap",
  "nix",
+ "pin-project",
  "pin-utils",
+ "tokio",
 ]
 
 [[package]]
@@ -243,6 +244,12 @@ dependencies = [
  "env_logger",
  "log",
 ]
+
+[[package]]
+name = "fnv"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2fad85553e09a6f881f739c29f0b00b0f01357c743266d478b68951ce23285f3"
 
 [[package]]
 name = "fuchsia-zircon"
@@ -355,18 +362,6 @@ dependencies = [
  "proc-macro-hack",
  "proc-macro-nested",
  "slab",
-]
-
-[[package]]
-name = "futures_codec"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0a73299e4718f5452e45980fc1d6957a070abe308d3700b63b8673f47e1c2b3"
-dependencies = [
- "bytes",
- "futures",
- "memchr",
- "pin-project",
 ]
 
 [[package]]
@@ -575,7 +570,7 @@ version = "0.1.0"
 
 [[package]]
 name = "nj-core"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "async-trait",
  "ctor",
@@ -601,7 +596,7 @@ dependencies = [
 
 [[package]]
 name = "nj-example-async-cb"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "flv-future-aio",
  "node-bindgen",
@@ -609,7 +604,7 @@ dependencies = [
 
 [[package]]
 name = "nj-example-cb"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "node-bindgen",
 ]
@@ -624,14 +619,14 @@ dependencies = [
 
 [[package]]
 name = "nj-example-function"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "node-bindgen",
 ]
 
 [[package]]
 name = "nj-example-promise"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "flv-future-aio",
  "node-bindgen",
@@ -639,9 +634,8 @@ dependencies = [
 
 [[package]]
 name = "nj-example-stream"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
- "async-std",
  "flv-future-aio",
  "futures",
  "node-bindgen",
@@ -653,7 +647,7 @@ version = "1.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "nj-build",
  "nj-core",
@@ -897,6 +891,17 @@ dependencies = [
  "libc",
  "redox_syscall",
  "winapi 0.3.8",
+]
+
+[[package]]
+name = "tokio"
+version = "0.2.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34ef16d072d2b6dc8b4a56c70f5c5ced1a37752116f8e7c1e80c659aa7cb6713"
+dependencies = [
+ "bytes",
+ "fnv",
+ "pin-project-lite",
 ]
 
 [[package]]

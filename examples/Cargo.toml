@@ -7,3 +7,6 @@ members = [
     "async-cb",
     "stream"
 ]
+
+#[patch.crates-io]
+#flv-future-aio = { path = "../../flv-future/src/future-aio"}
