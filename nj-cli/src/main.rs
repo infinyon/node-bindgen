@@ -114,10 +114,16 @@ fn manifest_path() -> PathBuf {
 }
 
 fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
-    let file_name = format!("lib{}.{}",
-        target_name,
-        if cfg!(target_os = "macos") { "dylib" } else {"so"}
-    ).replace("-","_");
+    let file_name = if cfg!(target_os = "windows") {
+        format!("{}.dll", target_name)
+    }else if cfg!(target_os = "macos") {
+        format!("lib{}.dylib", target_name)
+    }else if cfg!(target_os = "linux") {
+        format!("lib{}.so", target_name)
+    }else{
+        panic!("Unsupported operating system.");
+    }.replace("-","_");
+    
     target.join(target).join(build_type).join(file_name)
 }
 
