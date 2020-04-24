@@ -2,19 +2,19 @@
 test: test-function test-cb test-class test-promise test-stream
 
 test-function:
-	cd function;make test
+	make -C function test
 
 test-async-cb:
-	cd async-cb;make test
+	make -C async-cb test
 
 test-cb:
-	cd cb;make test
+	make -C cb test
 
 test-promise:
-	cd promise;make test
+	make -C promise test
 
 test-class:
-	cd class;make test
+	make -C class test
 
 test-stream:
-	cd stream;make test	
+	make -C stream test	
