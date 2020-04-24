@@ -6,3 +6,6 @@ edition = "2018"
 description = "build configuration for node-bindgen"
 repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
+
+[target.'cfg(windows)'.dependencies]
+reqwest = { version = "0.10", features = ["native-tls", "blocking"] }
