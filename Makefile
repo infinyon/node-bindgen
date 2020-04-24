@@ -5,3 +5,7 @@ install_windows_on_mac:
 
 build-windows:
 	cargo build --target=x86_64-pc-windows-gnu
+
+
+test:
+	make -C examples test
