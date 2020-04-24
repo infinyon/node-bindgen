@@ -12,5 +12,5 @@ test:	build
 
 
 clean:
-	rm -rf dylib
+	rm -rf dist
 
