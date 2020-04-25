@@ -1,3 +1,6 @@
+
+![CI](https://github.com/infinyon/node-bindgen/workflows/CI/badge.svg)
+
 # node-bindgen
 
 Easy way to write native Node.js module using idiomatic rust.
