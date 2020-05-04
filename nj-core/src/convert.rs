@@ -16,12 +16,7 @@ pub trait TryIntoJs {
 
 impl TryIntoJs for bool {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
-        if self {
-            js_env.create_int32(1)
-        } else {
-            js_env.create_int32(0)
-        }
-       
+        js_env.create_boolean(self)
     }   
 }
 
