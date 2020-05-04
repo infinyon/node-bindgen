@@ -165,6 +165,17 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn create_boolean(&self,value: bool) -> Result<napi_value,NjError>  {
+        let mut result = ptr::null_mut();
+        napi_call_result!(
+            crate::sys::napi_get_boolean(
+                self.0,
+                value,
+                &mut result,
+            )
+        )?;
+        Ok(result)
+    }
 
 
     pub fn get_global(&self) -> Result<napi_value,NjError> {
