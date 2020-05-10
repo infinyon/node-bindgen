@@ -82,9 +82,12 @@ pub trait IntoJs {
 
 
 
-
-
+/// Try to convert napi value to Rust value
 pub trait JSValue: Sized {
+
+    fn label() -> &'static str {
+        std::any::type_name::<Self>()
+    }
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError>;
 }

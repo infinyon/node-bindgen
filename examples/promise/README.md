@@ -1,1 +1,1 @@
-simple hello world callback
+regular async fn return as promise

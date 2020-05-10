@@ -1,11 +1,15 @@
 [workspace]
 members = [
-    "class",
     "function",
     "cb",
     "promise",
     "async-cb",
-    "stream"
+    "json",
+    "js-env",
+    "class-simple",
+    "class-wrapper",
+    "class-async",
+    "stream",
 ]
 
 #[patch.crates-io]

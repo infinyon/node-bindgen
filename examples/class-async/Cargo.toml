@@ -1,5 +1,5 @@
 [package]
-name = "nj-example-class"
+name = "nj-example-class-async"
 version = "0.1.0"
 authors = ["fluvio.io"]
 edition = "2018"

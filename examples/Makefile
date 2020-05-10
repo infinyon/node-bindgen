@@ -1,12 +1,17 @@
 clean:
+	cargo clean
 	make -C function clean
 	make -C async-cb clean
 	make -C cb clean
 	make -C promise clean
-	make -C class clean
 	make -C stream clean
+	make -C json clean
+	make -C class-simple clean
+	make -C class-wrapper clean
+	make -C class-async clean
 
-test: test-function test-cb test-class test-promise test-stream
+
+test: test-function test-cb test-async-cb test-promise test-json test-class-simple test-class-wrapper test-class-async test-stream
 
 test-function:
 	make -C function test
@@ -20,8 +25,17 @@ test-cb:
 test-promise:
 	make -C promise test
 
-test-class:
-	make -C class test
+test-json:
+	make -C json test
 
 test-stream:
-	make -C stream test	
+	make -C stream test
+
+test-class-simple:
+	make -C class-simple test
+
+test-class-wrapper:
+	make -C class-wrapper test
+
+test-class-async:
+	make -C class-async test	

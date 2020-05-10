@@ -7,5 +7,9 @@ addon.hello(2,function(msg){
 });
 
 assert.throws( () => addon.hello(2),{
-  message: '2 args expected but 1 is present'
+  message: 'expected argument of type: callback'
 }); 
+
+addon.example(function(val){
+  assert.equal(val,20);
+},10);
