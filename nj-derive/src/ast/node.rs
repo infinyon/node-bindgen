@@ -4,6 +4,7 @@ use syn::parse::{Parse, ParseStream};
 use syn::ItemImpl;
 use syn::ItemFn;
 
+#[derive(Debug)]
 pub enum NodeItem {
     Function(ItemFn),
     Impl(ItemImpl),

@@ -1,20 +1,13 @@
 extern crate proc_macro;
 
-mod function;
-mod class;
-mod util;
-mod parser;
 
-use function::generate_function;
-use function::FunctionAttribute;
-use class::generate_class;
-use parser::NodeItem;
-use function::FunctionArgMetadata;
-use function::FunctionContext;
+mod util;
+mod ast;
+mod generator;
 
 use proc_macro::TokenStream;
-use syn::AttributeArgs;
 
+ 
 
 /// This turns regular rust function into N-API compatible native module
 /// 
@@ -39,12 +32,36 @@ use syn::AttributeArgs;
 #[proc_macro_attribute]
 pub fn node_bindgen(args: TokenStream, item: TokenStream) -> TokenStream {
 
-    let parsed_item = syn::parse_macro_input!(item as NodeItem);
+    use syn::AttributeArgs;
+
+    use ast::FunctionAttributes;
+    use ast::NodeItem;    
+    use generator::generate_function;
+    use generator::generate_class;
+
     let attribute_args = syn::parse_macro_input!(args as AttributeArgs);
-    let expand_expression = match parsed_item {
-        NodeItem::Function(fn_item) => generate_function(fn_item,attribute_args),
-        NodeItem::Impl(impl_item) => generate_class(impl_item)
+    
+    let attribute: FunctionAttributes = 
+        match FunctionAttributes::from_ast(attribute_args) {
+            Ok(attr) => attr,
+            Err(err) => return err.to_compile_error().into()
+        };
+
+    let parsed_item = syn::parse_macro_input!(item as NodeItem);
+    
+    let out_express = match parsed_item {
+        NodeItem::Function(fn_item) => {           
+            generate_function(fn_item,attribute)
+        }
+        NodeItem::Impl(impl_item) => {
+            generate_class(impl_item)
+        }
     };
-    expand_expression.into()
+    
+    // used for debugging, if error occurs println do not work so should uncomment express
+    //println!("{}",out_express);
+    //let out_express = quote::quote! {};
+    
+    out_express.into()
 }
 

@@ -1,5 +1,6 @@
 use std::ptr;
 use std::ffi::CString;
+use std::collections::VecDeque;
 
 use libc::size_t;
 use log::error;
@@ -213,52 +214,34 @@ impl JsEnv {
         Ok(result)
     }
 
-    /// get callback with argument size
-    pub fn get_cb_info(&self,info: napi_callback_info,arg_count: usize) -> Result<JsCallback,NjError> {
+    /// get callback information 
+    pub fn get_cb_info(&self,info: napi_callback_info,max_count: usize) -> Result<JsCallback,NjError> {
 
         use nj_sys::napi_get_cb_info;
 
         let mut this = ptr::null_mut();
 
-        let args = if arg_count == 0 {
-            napi_call_result!(
-                napi_get_cb_info(
-                    self.0, 
-                    info,
-                    ptr::null_mut(),
-                    ptr::null_mut(),
-                    &mut this,
-                    ptr::null_mut()
-                ))?;
-            vec![]
+       
+        let mut argc: size_t  = max_count as size_t;
+        let mut args = vec![ptr::null_mut();max_count];
+        napi_call_result!(
+            napi_get_cb_info(
+                self.0, 
+                info,
+                &mut argc,
+                args.as_mut_ptr(),
+                &mut this,
+                ptr::null_mut()
+            ))?;
 
-        } else {
-            let mut argc: size_t  = arg_count as size_t;
-            let mut args = vec![ptr::null_mut();arg_count];
-            napi_call_result!(
-                napi_get_cb_info(
-                    self.0, 
-                    info,
-                    &mut argc,
-                    args.as_mut_ptr(),
-                    &mut this,
-                    ptr::null_mut()
-                ))?;
+       // truncate arg to actual received count
+       args.resize(argc,ptr::null_mut());
 
-            if argc != arg_count {
-                debug!("expected {}, actual {}",arg_count,argc);
-                return Err(NjError::InvalidArgCount(argc as usize,arg_count));
-            }
+        Ok(JsCallback::new(
+            JsEnv::new(self.0),
+            this,
             args
-        };
-    
-
-        Ok(JsCallback {
-            env: JsEnv::new(self.0),
-            args,
-            this
-            
-        })
+        ))
     }
 
     /// define classes
@@ -573,13 +556,21 @@ impl JsEnv {
 pub struct JsCallback {
     env:  JsEnv,
     this: napi_value,
-    args: Vec<napi_value>
+    args: VecDeque<napi_value>,
 }
    
 unsafe impl Send for JsCallback{}
 unsafe impl Sync for JsCallback{}
 
 impl JsCallback  {
+
+    pub fn new(env: JsEnv,this: napi_value,args: Vec<napi_value>) -> Self {
+        Self {
+            env,
+            this,
+            args: args.into()
+        }
+    }
 
     pub fn env(&self) -> &JsEnv {
         &self.env
@@ -597,67 +588,36 @@ impl JsCallback  {
         self.this
     }
 
+    pub fn remove_napi(&mut self) -> Option<napi_value> {
+        self.args.remove(0)
+    }
+
     /// get value of callback info and verify type
-    pub fn get_value<T>(&self, index: usize) -> Result<T,NjError>
-        where T: JSValue 
+    pub fn get_value<T>(&mut self) -> Result<T,NjError>
+        where T: ExtractFromJs 
     {
-       
-        trace!("trying get cb value: {},len: {}",index,self.args.len());
+        trace!("trying extract value out of {} args", self.args.len());
 
-        if index >= self.args.len() {
-            error!("attempt to access callback: {} len: {}",index,self.args.len());
-            return Err(NjError::InvalidArgIndex(index,self.args.len()))
-        }
-
-        self.env.convert_to_rust::<T>(self.args[index])
+        T::extract(self)
     }
 
-
-    /// get reference to wrapper object
-    pub fn get_ref<T>(&self, index: usize) -> Result<&'static T,NjError>
-    {
-        use crate::sys::napi_typeof;
-
-        let mut valuetype: napi_valuetype = 0;
-  
-        trace!("get value: {},len: {}",index,self.args.len());
-
-        if index >= self.args.len() {
-            debug!("attempt to access callback: {} len: {}",index,self.args.len());
-            return Err(NjError::InvalidArgIndex(index,self.args.len()))
-        }
-
-        napi_call_result!(
-            napi_typeof(
-                self.env.inner(),
-                self.args[index],
-                &mut valuetype
-            ))?;
-
-        /*
-        if  valuetype != T::JS_TYPE {
-            debug!("value type is: {} but should be: {}",valuetype,T::JS_TYPE);
-            return Err(NjError::InvalidType)
-        }
-        */
-
-        Ok(self.env.unwrap::<JSObjectWrapper<T>>(self.args[index])?.inner())
-        
-    }
-
-
-
+    /// create thread safe function
     pub fn create_thread_safe_function(
-        &self, 
-        name: &str, 
-        index: usize, 
+        &mut self, 
+        name: &str,
         call_js_cb: napi_threadsafe_function_call_js) -> Result<crate::ThreadSafeFunction,NjError> {
 
-        self.env.create_thread_safe_function(
-            name,
-            Some(self.args[index]),
-            call_js_cb
-        )
+        if let Some(n_value) = self.remove_napi() {
+            self.env.create_thread_safe_function(
+                name,
+                Some(n_value),
+                call_js_cb
+            )
+        } else {
+            return Err(NjError::Other("expected js callback".to_owned()))
+        }
+
+        
 
     }
 
@@ -669,8 +629,59 @@ impl JsCallback  {
     pub fn unwrap<T>(&self) -> Result<&'static T,NjError>  {
         Ok(self.env.unwrap::<JSObjectWrapper<T>>(self.this())?.inner())
     }
+   
+}
 
-    
+
+pub trait ExtractFromJs: Sized {
+
+    fn label() -> &'static str {
+        std::any::type_name::<Self>()
+    }
+
+    /// extract from js callback
+    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError>;
+}
+
+impl<T: ?Sized> ExtractFromJs for T where T: JSValue {
+
+    fn label() -> &'static str {
+        T::label()
+    }
+
+
+    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
+
+        if let Some(n_value) = js_cb.remove_napi() {
+            T::convert_to_rust(js_cb.env(), n_value)
+        } else {
+            return Err(NjError::Other(format!("expected argument of type: {}",Self::label())))
+        }
+    }
+}
+
+/// for optional argument
+impl<T: Sized> ExtractFromJs for Option<T> where T: JSValue {
+
+    fn label() -> &'static str {
+        T::label()
+    }
+
+    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
+
+        if let Some(n_value) = js_cb.remove_napi() {
+            Ok(Some(T::convert_to_rust(js_cb.env(), n_value)?))
+        } else {
+            Ok(None)
+        }
+    }
+}
+
+impl ExtractFromJs for JsEnv {
+
+    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
+        Ok(js_cb.env().clone())
+    }
 }
 
 
@@ -743,6 +754,10 @@ unsafe impl Sync for JsCallbackFunction{}
 
 
 impl JSValue for JsCallbackFunction {
+
+    fn label() -> &'static str {
+       "callback"
+    }
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
         

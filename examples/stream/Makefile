@@ -1,6 +1,3 @@
-
-DYLIB = ../target/debug/libnj_example_stream.dylib
-
 all:	build
 
 

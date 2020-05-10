@@ -1,8 +1,4 @@
-
-DYLIB = ../target/debug/libnj_example_async_cb.dylib
-
 all:	build
-
 
 build:	
 	nj-cli build
