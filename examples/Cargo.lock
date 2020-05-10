@@ -883,6 +883,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "nj-example-param"
+version = "0.1.0"
+dependencies = [
+ "node-bindgen",
+]
+
+[[package]]
 name = "nj-example-promise"
 version = "0.1.0"
 dependencies = [

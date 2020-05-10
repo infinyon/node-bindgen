@@ -9,6 +9,7 @@ clean:
 	make -C class-simple clean
 	make -C class-wrapper clean
 	make -C class-async clean
+	make -C param clean
 
 
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple test-class-wrapper test-class-async test-stream
@@ -38,4 +39,7 @@ test-class-wrapper:
 	make -C class-wrapper test
 
 test-class-async:
-	make -C class-async test	
+	make -C class-async test
+
+test-param:
+	make -C param test	
