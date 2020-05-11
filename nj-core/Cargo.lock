@@ -559,7 +559,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "1.2.1"
+version = "2.0.1-alpha.0"
 dependencies = [
  "async-trait",
  "ctor",
