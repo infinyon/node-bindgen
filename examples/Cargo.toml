@@ -5,6 +5,7 @@ members = [
     "promise",
     "async-cb",
     "json",
+    "param",
     "js-env",
     "class-simple",
     "class-wrapper",

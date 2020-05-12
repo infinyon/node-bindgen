@@ -820,7 +820,7 @@ impl JsObject {
     }
 
     /// get property
-    pub fn get_property(&self,key: &str) -> Result<Self,NjError> {
+    pub fn get_property(&self,key: &str) -> Result<Option<Self>,NjError> {
 
         
         let property_key = self.env.create_string_utf8(key)?;
@@ -835,7 +835,7 @@ impl JsObject {
             ))?;
 
         if !exist  {
-            return Err(NjError::Other(format!("property {} not founded",key)))
+            return Ok(None);
         }
 
         let mut property_value = ptr::null_mut();
@@ -848,10 +848,10 @@ impl JsObject {
                 &mut property_value,
             ))?;
 
-        Ok(Self {
+        Ok(Some(Self {
             env: self.env.clone(),
             napi_value: property_value
-        })
+        }))
     }
 
     pub fn set_property(&mut self,key: &str, property_value: napi_value) -> Result<(),NjError> {
@@ -882,6 +882,7 @@ impl JSValue for JsObject {
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
+        env.assert_type(js_value, crate::sys::napi_valuetype_napi_object)?;
         Ok(Self::new(env.clone(),js_value))
     }
 
