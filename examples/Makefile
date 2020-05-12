@@ -12,7 +12,8 @@ clean:
 	make -C param clean
 
 
-test: test-function test-cb test-async-cb test-promise test-json test-class-simple test-class-wrapper test-class-async test-stream
+test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
+	test-class-wrapper test-class-async test-stream test-buffer
 
 test-function:
 	make -C function test
@@ -42,4 +43,7 @@ test-class-async:
 	make -C class-async test
 
 test-param:
-	make -C param test	
+	make -C param test
+
+test-buffer:
+	make -C buffer test	
