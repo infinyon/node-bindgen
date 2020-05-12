@@ -6,6 +6,7 @@ mod class;
 mod worker;
 mod convert;
 mod module;
+pub mod buffer;
 pub mod stream;
 
 pub use thread_fn::ThreadSafeFunction;

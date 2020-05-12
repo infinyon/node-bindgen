@@ -804,11 +804,17 @@ unsafe impl Send for JsObject {}
 
 impl JsObject {
 
+    /// create js object from js object
     pub fn new(env: JsEnv,napi_value: napi_value) -> Self {
         Self {
             env,
             napi_value
         }
+    }
+
+    /// create new js object from env
+    pub fn create(env: &JsEnv) -> Result<Self,NjError> {
+        Ok(Self::new(env.clone(), env.create_object()?))
     }
 
     pub fn env(&self) -> &JsEnv {
