@@ -79,7 +79,7 @@ This is one time step.
 
 Add two dependencies to your projects' ```Cargo.toml```.  
 
-Add ```node-bindgen``` as as regular dependencies as below:
+Add ```node-bindgen``` as a regular dependency (as below):
 ```
 [dependencies]
 node-bindgen = { version = "2.0.0-beta.1" }
