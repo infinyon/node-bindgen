@@ -73,6 +73,21 @@ impl TryIntoJs for napi_value {
     }
 }
 
+
+impl <T>TryIntoJs for Vec<T> where T: TryIntoJs {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
+        
+        let array = js_env.create_array_with_len(self.len())?;
+        for (i,element) in self.into_iter().enumerate() {
+            let js_element = element.try_to_js(js_env)?;
+            js_env.set_element(array, js_element, i)?;
+        }
+
+        Ok(array)
+    }   
+}
+
+
 /// convert to js including error
 pub trait IntoJs {
 
@@ -125,6 +140,24 @@ impl JSValue for i32 {
     }
 }
 
+impl JSValue for u32 {
+    
+
+    fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
+
+        env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
+
+        let mut value: u32 = 0;
+
+        napi_call_result!(
+            crate::sys::napi_get_value_uint32(env.inner(),js_value, &mut value)
+        )?;
+
+        Ok(value)
+    }
+}
+
+
 impl JSValue for i64 {
     
 
@@ -160,7 +193,7 @@ impl JSValue for bool {
 
 
 
-impl JSValue for String {
+impl  JSValue for String {
 
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
@@ -181,4 +214,30 @@ impl JSValue for String {
         String::from_utf8(my_chars).map_err(|err| err.into())
     }
 
+}
+
+
+impl <T>JSValue for Vec<T> where T: JSValue  {
+
+    fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
+    
+        env.assert_type(js_value, crate::sys::napi_valuetype_napi_object)?;
+
+        use crate::sys::napi_get_array_length;
+
+        let mut length: u32 = 0;
+
+        napi_call_result!(
+            napi_get_array_length(env.inner(),js_value,&mut length)
+        )?;
+
+        let mut elements = vec![];
+
+        for i in 0..length {
+            let js_element = env.get_element(js_value, i)?;
+            elements.push(T::convert_to_rust(env,js_element)?);
+        }
+
+        Ok(elements)
+    }
 }
