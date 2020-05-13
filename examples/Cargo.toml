@@ -11,7 +11,8 @@ members = [
     "class-wrapper",
     "class-async",
     "stream",
-    "buffer"
+    "buffer",
+    "array"
 ]
 
 #[patch.crates-io]

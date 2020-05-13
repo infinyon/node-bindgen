@@ -13,7 +13,7 @@ clean:
 
 
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
-	test-class-wrapper test-class-async test-stream test-buffer
+	test-class-wrapper test-class-async test-stream test-buffer test-array
 
 test-function:
 	make -C function test
@@ -46,4 +46,7 @@ test-param:
 	make -C param test
 
 test-buffer:
-	make -C buffer test	
+	make -C buffer test
+
+test-array:
+	make -C array test	

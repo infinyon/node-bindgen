@@ -800,7 +800,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "2.0.0"
+version = "2.1.0-beta.1"
 dependencies = [
  "async-trait",
  "ctor",
@@ -822,6 +822,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "nj-example-array"
+version = "0.1.0"
+dependencies = [
+ "node-bindgen",
 ]
 
 [[package]]

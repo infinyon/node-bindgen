@@ -178,6 +178,49 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn create_array_with_len(&self,len: usize) -> Result<napi_value,NjError>  {
+
+        let mut array = ptr::null_mut();
+
+        napi_call_result!(
+            crate::sys::napi_create_array_with_length(
+                self.0,
+                len,
+                &mut array
+            )
+        )?;
+        Ok(array)
+    }
+
+    pub fn set_element(&self,object: napi_value,element: napi_value,index: usize) -> Result<(),NjError> {
+
+        napi_call_result!(
+            crate::sys::napi_set_element(
+                self.0,
+                object,
+                index as u32,
+                element)
+        )?;
+        Ok(())
+
+    }
+
+
+    pub fn get_element(&self,array: napi_value,index: u32) -> Result<napi_value,NjError> {
+
+        let mut element = ptr::null_mut();
+
+        napi_call_result!(
+            crate::sys::napi_get_element(
+                self.0,
+                array,
+                index,
+                &mut element)
+        )?;
+        Ok(element)
+
+    }
+
 
     pub fn get_global(&self) -> Result<napi_value,NjError> {
 
