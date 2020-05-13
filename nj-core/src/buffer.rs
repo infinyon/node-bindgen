@@ -68,8 +68,16 @@ impl TryIntoJs for ArrayBuffer {
     }
 }
 
+use std::fmt;
+use std::fmt::Debug;
 
+impl Debug for ArrayBuffer {
+   
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("ArrayBuffer len: {}",self.data.len()))
+    }
 
+}
 
 
 
