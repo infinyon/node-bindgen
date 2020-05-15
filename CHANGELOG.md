@@ -5,7 +5,8 @@
 # [2.1.0-beta.1] - 2020-05-07
 
 ## Improvements
-- Support for Typed Array Buffer [#23]
+- Support for Typed Array Buffer [#24](https://github.com/infinyon/node-bindgen/pull/24)
+- Support for Array [#26](https://github.com/infinyon/node-bindgen/pull/26)
 
 # [2.0.0] - 2020-05-011
 

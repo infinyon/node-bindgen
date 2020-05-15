@@ -7,6 +7,24 @@ use node_bindgen::core::val::JsEnv;
 use node_bindgen::core::TryIntoJs;
 use node_bindgen::derive::node_bindgen;
 
+/// simple wrapper
+#[node_bindgen]
+fn simple(val: f64) -> Result<TestObject,IoError> {
+    Ok(TestObject{ val: Some(val) })
+}
+
+impl TryIntoJs for TestObject {
+
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
+        let instance = Self::new_instance(js_env,vec![])?;
+        let test_object = Self::unwrap_mut(js_env,instance)?;
+        test_object.set_value(self.val.unwrap());
+        Ok(instance)   
+    }
+}
+
+
+/// indirect wrapper
 #[node_bindgen]
 async fn create(val: f64) -> Result<MyObjectWrapper,IoError> {
     Ok(MyObjectWrapper{ val })

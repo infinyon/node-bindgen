@@ -221,6 +221,83 @@ impl JsEnv {
 
     }
 
+    /// check if napi value is array
+    pub fn is_array(&self,array: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_array(
+                self.0,
+                array,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
+    /// check if napi value is array buffer
+    pub fn is_array_buffer(&self,array: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_arraybuffer(
+                self.0,
+                array,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
+    pub fn is_buffer(&self,n_value: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_buffer(
+                self.0,
+                n_value,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
+    pub fn is_date(&self,n_value: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_date(
+                self.0,
+                n_value,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
+    pub fn is_error(&self,n_value: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_error(
+                self.0,
+                n_value,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
 
     pub fn get_global(&self) -> Result<napi_value,NjError> {
 

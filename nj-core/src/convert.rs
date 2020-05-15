@@ -221,8 +221,11 @@ impl <T>JSValue for Vec<T> where T: JSValue  {
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
     
-        env.assert_type(js_value, crate::sys::napi_valuetype_napi_object)?;
-
+        if !env.is_array(js_value)? {
+            return Err(NjError::Other("not array".to_owned()));
+        }
+        
+    
         use crate::sys::napi_get_array_length;
 
         let mut length: u32 = 0;
