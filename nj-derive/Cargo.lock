@@ -581,7 +581,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "2.0.0"
+version = "2.1.0-beta.1"
 dependencies = [
  "async-trait",
  "ctor",
@@ -614,7 +614,7 @@ version = "1.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "2.0.1-alpha.0"
+version = "2.1.0-beta.1"
 dependencies = [
  "nj-core",
  "nj-derive",

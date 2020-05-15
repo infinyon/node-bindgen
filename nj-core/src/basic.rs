@@ -221,6 +221,22 @@ impl JsEnv {
 
     }
 
+    /// check if napi value is array
+    pub fn is_array(&self,array: napi_value) -> Result<bool,NjError> {
+
+        let mut result: bool = false;
+
+        napi_call_result!(
+            crate::sys::napi_is_array(
+                self.0,
+                array,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }
+
 
     pub fn get_global(&self) -> Result<napi_value,NjError> {
 
