@@ -657,8 +657,6 @@ impl JsEnv {
     }
 
 
-
-
     /// convert napi value to rust value
     pub fn convert_to_rust<T>(&self,napi_value: napi_value) -> Result<T,NjError>
         where T: JSValue 
@@ -668,7 +666,19 @@ impl JsEnv {
     }
 
 
-    
+    pub fn get_undefined(&self) -> Result<napi_value,NjError> {
+
+        let mut result = ptr::null_mut();
+
+        napi_call_result!(
+            crate::sys::napi_get_undefined(
+                self.0,
+                &mut result
+            )
+        )?;
+
+        Ok(result)
+    }    
 
 }
 

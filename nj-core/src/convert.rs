@@ -51,8 +51,8 @@ impl TryIntoJs for String {
 }
 
 impl TryIntoJs for () {
-    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value,NjError> {
-        Ok(std::ptr::null_mut())
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
+        js_env.get_undefined()
     }
 
 }

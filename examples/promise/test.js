@@ -24,3 +24,7 @@ async () => {
     }
   );
 })();
+
+(async () => {
+  await addon.justSleep(3);
+})();
