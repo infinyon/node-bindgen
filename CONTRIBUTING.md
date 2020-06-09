@@ -17,7 +17,7 @@ This project uses v5 of Node N-API. Please see following [compatibility](https:/
 
 Familiarity with
 - [Rust](https://www.rust-lang.org)
-- [Kubernetes](https://kubernetes.io)
+- [Node.js](https://nodejs.org/en/docs/)
 
 Currently, node-bindgen supports the following platforms:
 
