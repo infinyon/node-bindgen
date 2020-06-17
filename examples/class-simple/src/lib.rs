@@ -1,14 +1,16 @@
 use node_bindgen::derive::node_bindgen;
 
+
 struct MyObject {
     val: f64,
+    val2: i64
 }
 
 #[node_bindgen]
 impl MyObject {
     #[node_bindgen(constructor)]
-    fn new(val: f64) -> Self {
-        Self { val }
+    fn new(val: f64,val2: i64) -> Self {
+        Self { val, val2 }
     }
 
     /// simple method which return f64
@@ -27,6 +29,13 @@ impl MyObject {
         self.val
     }
 
+    /// JS getter
+    /// Js:  let y = obj.value2;
+    #[node_bindgen(getter)]
+    fn value2(&self) -> i64 {
+        self.val2
+    }
+
     /// JS Setter
     /// Js:  obj.value3 = 10;
     #[node_bindgen(setter)]
@@ -35,8 +44,8 @@ impl MyObject {
     }
 
     /// method with custom name instead of generated name
-    /// Js:  obj.set_value(10);
-    #[node_bindgen(name = "value2")]
+    /// Js:  obj.updateValue(10);
+    #[node_bindgen(name = "updateValue")]
     fn set_value(&mut self, val: f64) {
         self.val = val;
     }
@@ -63,3 +72,4 @@ impl MyObject {
         }
     }
 }
+

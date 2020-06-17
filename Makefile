@@ -7,9 +7,11 @@ build-windows:
 	cargo build --target=x86_64-pc-windows-gnu
 
 
-test:	test-derive
-	make -C examples test
+test:	test-derive test-examples
+	
 
+test-examples:
+	make -C examples test	
 
 test-derive:
 	cd nj-derive; RUST_LOG=debug cargo test derive_ui -- --nocapture
