@@ -3,15 +3,15 @@ const assert = require('assert');
 let addon = require('./dist');
 
 
-let obj = new addon.MyObject(10);
+let obj = new addon.MyObject(10,2);
 assert.equal(obj.value,10,"verify value works");
 assert.equal(obj.plusOne(),11);
-
+assert.equal(obj.value2,2);
 
 obj.changeValue(100);
 assert.equal(obj.value,100);
 
-obj.value2(50);
+obj.updateValue(50);
 assert.equal(obj.value,50);
 
 obj.value3 = 10;

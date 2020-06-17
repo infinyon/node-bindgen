@@ -18,7 +18,7 @@ libc = "0.2.66"
 inventory = "0.1.5"
 async-trait = "0.1.22"
 futures = { version = "0.3.4" }
-flv-util = { version = "0.1.0" }
+flv-util = { version = "0.2.0" }
 nj-sys = { version = "1.0.0", path = "../nj-sys" }
 flv-future-aio = { version = "2.0.0" }
 pin-utils = "0.1.0-alpha.4"

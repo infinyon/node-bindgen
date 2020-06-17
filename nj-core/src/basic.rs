@@ -872,7 +872,7 @@ impl JsExports {
   
 }
 
-
+/// Js callback function
 pub struct JsCallbackFunction {
     ctx: napi_value,
     js_func: napi_value,
@@ -904,6 +904,7 @@ impl JSValue for JsCallbackFunction {
 
 impl JsCallbackFunction {
 
+    /// invoke 
     pub fn call<T>(&self, rust_argv: Vec<T>) -> Result<napi_value,NjError> 
         where T: TryIntoJs
     {

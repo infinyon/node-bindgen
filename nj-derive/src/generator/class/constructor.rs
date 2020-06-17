@@ -22,12 +22,12 @@ pub fn class_constructor(method: Option<&Method>) -> TokenStream {
         
         let mut cb_args = vec![];
         let rust_inputs = rust_args_input(&ctx,&mut cb_args);
-
+        
         quote! {
 
             #arg_tokens
 
-            let rust_value = Self::#method_ident(  #(#rust_inputs)* );
+            let rust_value = Self::#method_ident(  #(#rust_inputs),* );
             Ok((rust_value,js_cb))
             
         }
@@ -39,7 +39,10 @@ pub fn class_constructor(method: Option<&Method>) -> TokenStream {
     };
     
     quote! {
-        fn create_from_js(js_env: &node_bindgen::core::val::JsEnv, cb_info: node_bindgen::sys::napi_callback_info) ->  Result<(Self,node_bindgen::core::val::JsCallback),node_bindgen::core::NjError> {
+        fn create_from_js(
+            js_env: &node_bindgen::core::val::JsEnv, 
+            cb_info: node_bindgen::sys::napi_callback_info) -> 
+         Result<(Self,node_bindgen::core::val::JsCallback),node_bindgen::core::NjError> {
 
             #expansion
         }

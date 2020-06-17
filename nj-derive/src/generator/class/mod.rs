@@ -26,10 +26,6 @@ pub fn generate_class(impl_item: ItemImpl) -> TokenStream {
     
             }
 
-           // quote!{}
-            
-        
-
         }
         
     }
@@ -84,7 +80,7 @@ fn generate_class_helper(class: Class) -> TokenStream {
                 fn properties() -> node_bindgen::core::PropertiesBuilder {
         
                     vec![
-                        #(#properties)*
+                        #(#properties),*
                     ].into()
                 }
 
@@ -128,15 +124,15 @@ fn generate_properties(class: &Class) -> Vec<TokenStream> {
                 Some(
                     if method.attributes.is_getter() {
                         quote! {
-                            node_bindgen::core::Property::new(#property_name).getter(Self::#napi_name),
+                            node_bindgen::core::Property::new(#property_name).getter(Self::#napi_name)
                         }
                     } else if method.attributes.is_setter() {
                         quote! {
-                            node_bindgen::core::Property::new(#property_name).setter(Self::#napi_name),
+                            node_bindgen::core::Property::new(#property_name).setter(Self::#napi_name)
                         }
                     }   else {                               
                         quote! {
-                            node_bindgen::core::Property::new(#property_name).method(Self::#napi_name),
+                            node_bindgen::core::Property::new(#property_name).method(Self::#napi_name)
                         }
                     }
                 )
