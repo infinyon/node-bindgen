@@ -82,13 +82,13 @@ Add two dependencies to your projects' ```Cargo.toml```.
 Add ```node-bindgen``` as a regular dependency (as below):
 ```
 [dependencies]
-node-bindgen = { version = "2.0.0-beta.1" }
+node-bindgen = { version = "2.1.1" }
 ```
 
 Then add ```node-bindgen```'s procedure macro to your build-dependencies as below:
 ```
 [build-dependencies]
-node-bindgen = { path = "../../", features = ["build"] }
+node-bindgen = { version = "2.1.1", features = ["build"] }
 ```
 
 Then update crate type to ```cdylib``` to generate node.js compatible native module:
