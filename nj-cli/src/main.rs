@@ -27,7 +27,9 @@ enum Opt {
 struct BuildOpt {
 
     #[structopt(short = "o", long = "out", default_value = "dist")]
-    output: String
+    output: String,
+
+    extras: Vec<String>,
 }
 
 
@@ -46,8 +48,11 @@ fn main() {
 // kick off build
 fn build(opt: BuildOpt) {
 
+    let mut args = vec!["build".to_string()];
+    args.extend(opt.extras);
+
     let mut build_command = Command::new("cargo")
-        .arg("build")
+        .args(&args)
         .stdout(Stdio::inherit())
         .spawn()
         .expect("Failed to execute command");
