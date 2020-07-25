@@ -42,13 +42,13 @@
 - __Easy:__ Just write idiomatic Rust code, node-bindgen take care of generating Node.js FFI wrapper codes.
 - __Safe:__ Node.js arguments are checked automatically based on Rust types.
 - __Async:__ Support Async Rust.  Async codes are translated into Node.js promises.
-- __Class:__ Rust struct can be access using Node.js classes.
+- __Class:__ Rust struct can be accessed using Node.js classes.
 - __Stream:__ Implement Node.js stream using Rust
-- __N-API:__ Use Node.js N-API which means you don't have to recompile your module. 
+- __N-API:__ Use Node.js N-API, which means you don't have to recompile your module. 
 
 # Compatibility with Node.js version
 
-This project uses v5 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
+This project uses the v5 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
 
 Following OS are supported:
 * Linux
@@ -59,7 +59,7 @@ Following OS are supported:
 
 # Why node-bindgen?
 
-Writing native node-js requires lots of boiler plate code.  Node-bindgen generates external "C" glue code from rust code including native module registration.  This make it writing node-js module easy and fun.  
+Writing native node-js requires lots of boilerplate code.  Node-bindgen generates external "C" glue code from rust code, including native module registration.  node-bindgen make it writing node-js module easy and fun.  
 
 Node-bi
 
@@ -67,7 +67,7 @@ Node-bi
 
 ## CLI Installation
 
-Install nj-cli command line which will be used to generate native library.
+Install nj-cli command line, which will be used to generate the native library.
 
 ```
 cargo install nj-cli
@@ -99,7 +99,7 @@ crate-type = ["cdylib"]
 
 # Example
 
-A simple functional example which add two integers.  Noticed that you don't need to worry about JS conversion.
+Here is a function that adds two numbers.  Note that you don't need to worry about JS conversion.
 
 
 ```rust
@@ -124,10 +124,15 @@ nj-cli build
 
 This will generate Node.js module in "./dist" folder.
 
+To build a release version:
+```
+nj-clid build --release
+```
+
 
 ## Using in Node.js
 
-Then in the Node.js, rust function can invoked as normal node.js function:
+Then in the Node.js, rust function can be invoked as normal node.js function:
 
 ```js
 $ node
@@ -169,7 +174,7 @@ Then sum can be invoked as
 
 ##  Callback
 
-JS callback are mapped as Rust closure
+JS callback are mapped as Rust closure.
 
 ```rust
 #[node_bindgen]
@@ -264,7 +269,7 @@ assert.equal(obj.value,10,"verify value works");
 assert.equal(obj.plusOne(),11);
 ```
 
-There are more features in the examples folder
+There are more features in the examples folder.
 
 ## Contributing
 

@@ -17,7 +17,7 @@ use cargo_metadata::Target;
 #[structopt(
     about = "Nj Command Line Interface",
     author = "",
-    name = "fluvio")]
+    name = "node-bindgen cli")]
 enum Opt {
     #[structopt(name = "build")]
     Build(BuildOpt)
@@ -28,6 +28,9 @@ struct BuildOpt {
 
     #[structopt(short = "o", long = "out", default_value = "dist")]
     output: String,
+
+    #[structopt(long)]
+    release: bool,
 
     extras: Vec<String>,
 }
@@ -60,17 +63,24 @@ fn build(opt: BuildOpt) {
     build_command.wait()
         .expect("failed to wait on child");
 
-    copy_lib(opt.output);
+    let target = if opt.release {
+        "release"
+    } else {
+        "debug"
+    };
+
+    copy_lib(opt.output,target);
 
 }
 
-fn copy_lib(out: String) {
+/// copy library to target directory 
+fn copy_lib(out: String,target_type: &str) {
 
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
     if let Some(package) = find_current_package(&metadata,&manifest_path) {
         if let Some(target) = find_cdylib(&package) {
-            let lib_path = lib_path(&metadata.target_directory,"debug",&target.name);
+            let lib_path = lib_path(&metadata.target_directory,target_type,&target.name);
             copy_cdylib(&lib_path,&out).expect(&format!("copy failed of {:?}", lib_path));
         } else {
             eprintln!("no cdylib target was founded");
