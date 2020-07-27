@@ -97,6 +97,15 @@ Then update crate type to ```cdylib``` to generate node.js compatible native mod
 crate-type = ["cdylib"]
 ```
 
+Finally, add ```build.rs``` at the top of the project with following content:
+
+```
+fn main() {
+    node_bindgen::build::configure();
+}
+```
+
+
 # Example
 
 Here is a function that adds two numbers.  Note that you don't need to worry about JS conversion.
