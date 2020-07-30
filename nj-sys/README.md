@@ -21,3 +21,5 @@ Run following shell command:
 Which performs following:
 * Install required bindgen execution version
 * Generate src/binding.rs using bindgen binary
+
+After testing, check-in generated code.

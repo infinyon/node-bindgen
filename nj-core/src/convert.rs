@@ -1,6 +1,5 @@
-use libc::size_t;
-
 use crate::sys::napi_value;
+use crate::sys::size_t;
 use crate::val::JsEnv;
 use crate::NjError;
 use crate::napi_call_result;
@@ -209,7 +208,7 @@ impl  JSValue for String {
             napi_get_value_string_utf8(env.inner(),js_value,chars.as_mut_ptr() as *mut i8,1024,&mut size)
         )?;
 
-        let my_chars: Vec<u8> = chars[0..size].into();
+        let my_chars: Vec<u8> = chars[0..size as usize].into();
 
         String::from_utf8(my_chars).map_err(|err| err.into())
     }

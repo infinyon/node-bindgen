@@ -4,32 +4,40 @@ let addon = require('./dist');
 
 
 let obj = new addon.MyObject(10,2);
-assert.equal(obj.value,10,"verify value works");
-assert.equal(obj.plusOne(),11);
-assert.equal(obj.value2,2);
+
+/*
+assert.strictEqual(obj.value,10,"verify value works");
+
+
+assert.strictEqual(obj.plusOne(),11);
+assert.strictEqual(obj.value2,2);
+
 
 obj.changeValue(100);
-assert.equal(obj.value,100);
+assert.strictEqual(obj.value,100);
+
 
 obj.updateValue(50);
-assert.equal(obj.value,50);
+assert.strictEqual(obj.value,50);
 
 obj.value3 = 10;
-assert.equal(obj.value,10,"test setter");
+assert.strictEqual(obj.value,10,"test setter");
 
 obj.value4 = 60;
-assert.equal(obj.value,60,"test test setter with custom property");
+assert.strictEqual(obj.value,60,"test test setter with custom property");
 
 obj.value4 = -10;
-assert.equal(obj.isPositive,false);
+assert.strictEqual(obj.isPositive,false);
+
 
 obj.value4 = 10;
-assert.equal(obj.isPositive,true);
+assert.strictEqual(obj.isPositive,true);
 
 obj.clear = false;
-assert.equal(obj.value,10);
+assert.strictEqual(obj.value,10);
 
 obj.clear = true;
-assert.equal(obj.value,0);
+assert.strictEqual(obj.value,0);
+*/
 
 console.log("class simple test succeed");
