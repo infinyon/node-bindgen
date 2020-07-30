@@ -1,6 +1,6 @@
 [package]
 name = "nj-core"
-version = "2.1.0"
+version = "2.2.0"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "high level wrapper for Node N-API"
@@ -19,6 +19,6 @@ inventory = "0.1.5"
 async-trait = "0.1.22"
 futures = { version = "0.3.4" }
 flv-util = { version = "0.2.0" }
-nj-sys = { version = "1.0.0", path = "../nj-sys" }
+nj-sys = { version = "2.0.0", path = "../nj-sys" }
 flv-future-aio = { version = "2.0.0" }
 pin-utils = "0.1.0-alpha.4"

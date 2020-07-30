@@ -1,3 +1,3 @@
-#define NAPI_VERSION 5
+#define NAPI_VERSION 6
 
-#include "vendor/nodejs_13/node_api.h"
+#include "vendor/nodejs_14_6/node_api.h"
