@@ -120,13 +120,12 @@ fn has_attribute(name_value: &MetaNameValue,attr_name: &str) -> bool {
     name_value.path
         .segments
         .iter()
-        .find(|seg| seg.ident == attr_name)
-        .is_some()
+        .any(|seg| seg.ident == attr_name)
 }
 
 fn find_any_identifier(path: Path) -> Result<Ident> {
     
-    if path.segments.len() == 0 {
+    if path.segments.is_empty() {
         Err(Error::new(path.span(),"invalid attribute"))
     } else {
         Ok(path

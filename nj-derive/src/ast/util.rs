@@ -44,7 +44,7 @@ impl MethodUtil for ImplItemMethod {
 
         self.attrs.iter()
             .find(|attr| {
-                attr.path.segments.iter().find( |seg| seg.ident == "node_bindgen").is_some()
+                attr.path.segments.iter().any( |seg| seg.ident == "node_bindgen")
             })
 
     }

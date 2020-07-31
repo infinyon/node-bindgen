@@ -1,5 +1,5 @@
+#![allow(clippy::never_loop)]
 extern crate proc_macro;
-
 
 mod util;
 mod ast;

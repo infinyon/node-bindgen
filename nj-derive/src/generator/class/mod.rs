@@ -13,7 +13,7 @@ use crate::util::lit_str;
 pub fn generate_class(impl_item: ItemImpl) -> TokenStream {
 
     match Class::from_ast(&impl_item) {
-        Err(err) => return err.to_compile_error().into(),
+        Err(err) => err.to_compile_error(),
         Ok(class) => {
 
             let class_helper = generate_class_helper(class);

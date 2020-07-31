@@ -30,7 +30,7 @@ pub fn generate_function(input_fn: ItemFn,attributes: FunctionAttributes) -> Tok
     
 
     match FunctionArgs::from_ast(&input_fn.sig) {
-        Err(err) => return err.to_compile_error().into(),
+        Err(err) => err.to_compile_error(),
         Ok(args) => {
 
             // validate additional attribute in method context
@@ -38,14 +38,14 @@ pub fn generate_function(input_fn: ItemFn,attributes: FunctionAttributes) -> Tok
             if !args.is_method  {
                 
                 if let Err(err) = attributes.valid_as_non_method() {
-                    return err.to_compile_error().into()
+                    return err.to_compile_error()
                 }
                 
             }
             
            
 
-            let mut ctx = FnGeneratorCtx::new(&input_fn.sig,&args,&attributes);
+            let ctx = FnGeneratorCtx::new(&input_fn.sig,&args,&attributes);
 
             
             if attributes.is_constructor() {
@@ -55,7 +55,7 @@ pub fn generate_function(input_fn: ItemFn,attributes: FunctionAttributes) -> Tok
             }
             
         
-            let napi_code =  generate_napi_code(&mut ctx,&input_fn);
+            let napi_code =  generate_napi_code(&ctx,&input_fn);
             let property_code = generate_property_code(&ctx);
             
             let expansion = quote! {
@@ -557,12 +557,12 @@ mod args_input {
                 let arg_name = rust_arg_var(*index);
                 let output = generate_closure_invocation(t,*index,&arg_name,ctx,cb_args);
                 //println!("closure: {}",output);
-                *index = *index + 1;
+                *index += 1;
                 output
             },
             _ =>  {
                 let output = generate_rust_arg_var(*index);
-                *index = *index + 1;
+                *index += 1;
                 output
             }
         }

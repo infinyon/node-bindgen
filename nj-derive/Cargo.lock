@@ -498,7 +498,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "2.1.1"
+version = "2.1.0"
 dependencies = [
  "async-trait",
  "ctor",
@@ -514,7 +514,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [
  "Inflector",
  "flv-future-aio",

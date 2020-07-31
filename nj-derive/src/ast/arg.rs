@@ -87,12 +87,12 @@ impl <'a>FunctionArgs<'a> {
 /// find receiver if any, this will be used to indicate if this is method
 fn has_receiver(sig: &Signature) -> bool {
 
-    sig.inputs.iter().find(|input| {
+    sig.inputs.iter().any(|input| {
         match input {
             FnArg::Receiver(_rec) => true,
             _ => false
         }
-    }).is_some()
+    })
 }
 
 
@@ -174,7 +174,7 @@ pub enum FunctionArgType<'a> {
 fn find_generic<'a,'b>(generics: &'a Generics, ident: Option<&'b Ident>) -> Option<&'a TypeParam> {
 
     if let Some(ident) = ident {
-        generics.type_params().find(|ty| ty.ident.to_string() == ident.to_string())
+        generics.type_params().find(|ty| *ty.ident.to_string() == *ident.to_string())
     } else {
         None
     }
@@ -210,7 +210,7 @@ impl <'a>ClosureType<'a> {
                 TypeParamBound::Lifetime(_) => return Err(Error::new(param.span(), "not supported closure type")),
             }
         }
-        return Err(Error::new(param.span(), "not supported closure type"))
+        Err(Error::new(param.span(), "not supported closure type"))
     }
 
     
