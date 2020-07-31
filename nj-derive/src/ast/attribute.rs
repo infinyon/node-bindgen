@@ -79,17 +79,11 @@ impl FunctionAttribute {
     
 
     fn is_constructor(&self) -> bool {
-        match self {
-            Self::Constructor(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Constructor(_))
     }
 
     fn is_multi_threaded(&self) -> bool {
-        match self {
-            Self::MT(_) => true,
-            _ => false
-        }
+        matches!(self, Self::MT(_))
     }
 
     /// get function name, if this is not name, return none
@@ -101,17 +95,11 @@ impl FunctionAttribute {
     }
 
     fn is_getter(&self) -> bool {
-        match self {
-            Self::Getter(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Getter(_))
     }
 
     fn is_setter(&self) -> bool {
-        match self {
-            Self::Setter(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Setter(_))
     }
 }
 
@@ -120,13 +108,12 @@ fn has_attribute(name_value: &MetaNameValue,attr_name: &str) -> bool {
     name_value.path
         .segments
         .iter()
-        .find(|seg| seg.ident == attr_name)
-        .is_some()
+        .any(|seg| seg.ident == attr_name)
 }
 
 fn find_any_identifier(path: Path) -> Result<Ident> {
     
-    if path.segments.len() == 0 {
+    if path.segments.is_empty() {
         Err(Error::new(path.span(),"invalid attribute"))
     } else {
         Ok(path

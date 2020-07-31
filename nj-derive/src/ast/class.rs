@@ -28,16 +28,10 @@ impl <'a> Class<'a> {
 
         let mut methods = vec![];
         for item in &item.items {
-        
-            match item {
-                ImplItem::Method(method) => {
-
-                    if let Some(method) = Method::from_ast(method)? {
-                        methods.push(method);
-                    }
-                
-                },
-                _ => {}
+            if let ImplItem::Method(method) = item {
+                if let Some(method) = Method::from_ast(method)? {
+                    methods.push(method);
+                }
             }
         }
 

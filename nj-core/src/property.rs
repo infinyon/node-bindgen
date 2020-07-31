@@ -59,21 +59,21 @@ impl Property {
 
 
 
-
+#[derive(Default)]
 pub struct PropertiesBuilder(Vec<Property>);
 
 impl PropertiesBuilder {
 
     pub fn new() -> Self {
-        Self(vec![])
+        Self::default()
     }
 
-    pub fn add(mut self, property: Property) -> Self {
+    pub fn append(mut self, property: Property) -> Self {
        self.0.push(property);
        self
     }
 
-    pub fn mut_add(&mut self, property: Property) {
+    pub fn mut_append(&mut self, property: Property) {
         self.0.push(property);
      }
 

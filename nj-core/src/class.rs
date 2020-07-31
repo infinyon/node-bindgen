@@ -125,7 +125,7 @@ pub trait JSClass: Sized {
            
             let target = js_env.get_new_target(info)?;
     
-            if target == ptr::null_mut() {
+            if target.is_null() {
                 
                 Err(NjError::NoPlainConstructor)
             } else {

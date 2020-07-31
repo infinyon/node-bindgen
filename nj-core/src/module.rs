@@ -51,7 +51,7 @@ pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value
         match register {
             NapiRegister::Property(property) => {
                 debug!("registering property: {:#?}",property);
-                prop_builder.mut_add(property.to_owned());
+                prop_builder.mut_append(property.to_owned());
             },
             NapiRegister::Callback(callback) => {
                 debug!("invoking register callback");
@@ -65,7 +65,7 @@ pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value
     
     js_exports.define_property(prop_builder).expect("property should not fail");
 
-    return exports;
+    exports
 }
 
                             

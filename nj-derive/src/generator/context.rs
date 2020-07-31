@@ -55,10 +55,7 @@ impl <'a>FnGeneratorCtx<'a> {
 
     /// check whether this function return ()
     pub fn has_default_output(&self) -> bool {
-        match self.sig.output {
-            ReturnType::Default => true,
-            _ => false
-        }
+        matches!(self.sig.output, ReturnType::Default)
     }
 
     
