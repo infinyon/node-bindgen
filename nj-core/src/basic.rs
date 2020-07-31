@@ -387,7 +387,7 @@ impl JsEnv {
         Ok(js_constructor)
     }
 
-    pub fn create_reference(&self, cons: napi_value,count: u32)  -> Result<napi_ref,NjError> {
+    pub fn create_reference(&self, cons: napi_value,count: u32) -> Result<napi_ref,NjError> {
         
         let mut result = ptr::null_mut();
         napi_call_result!(
@@ -402,6 +402,9 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn delete_reference(&self, ref_: napi_ref) -> Result<(), NjError> {
+        Ok(napi_call_result!(crate::sys::napi_delete_reference(self.0, ref_))?)
+    }
 
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value,NjError> {
 
