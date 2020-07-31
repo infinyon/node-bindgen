@@ -48,7 +48,7 @@
 
 # Compatibility with Node.js version
 
-This project uses the v5 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
+This project uses the v6 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
 
 Following OS are supported:
 * Linux

@@ -13,7 +13,7 @@ impl MyObject {
         Self { val, val2 }
     }
 
-    /*
+    
     /// simple method which return f64
     /// rust values are automatically converted into equivalent JS value
     /// method name are generated from rust method name
@@ -72,6 +72,6 @@ impl MyObject {
             self.val = 0.0;
         }
     }
-    */
+    
 }
 

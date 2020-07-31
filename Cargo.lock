@@ -827,7 +827,6 @@ dependencies = [
  "flv-util",
  "futures",
  "inventory",
- "libc",
  "log",
  "nj-sys",
  "pin-utils",
