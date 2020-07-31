@@ -8,7 +8,6 @@ pub fn configure() {
     use std::env::temp_dir;
     use std::fs::File;
     use std::io::copy;
-    use std::path::PathBuf;
     use std::process::Command;
 
     let node_full_version = String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
