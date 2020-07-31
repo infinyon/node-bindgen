@@ -5,6 +5,7 @@ pub fn configure() {
         
     // On Windows, we need to download the dynamic library from the nodejs.org website first
     use std::env::var;
+    use std::env::temp_dir;
     use std::fs::File;
     use std::io::copy;
     use std::path::PathBuf;
@@ -12,16 +13,17 @@ pub fn configure() {
 
     let node_full_version = String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
         
-    let temp_dir =   PathBuf::from("C:\\Windows\\Temp\\");
-    let mut temp_lib =   temp_dir.clone();
-    
-    temp_lib.push(format!("node-{}.lib", node_full_version.trim_end()));
+    let temp_dir =   temp_dir().join(format!("node-{}.lib", node_full_version.trim_end()));
 
     if !temp_lib.exists() {
+
         let lib_file_download_url = format!(
             "https://nodejs.org/dist/{}/win-x64/node.lib",
             node_full_version
         );
+
+        println!("downloading nodejs: {} to: {}",lib_file_download_url,temp_dir);
+        
         let mut resp =
             reqwest::blocking::get(&lib_file_download_url).expect("Download node.lib file failed");
         let mut node_lib_file = File::create(&temp_lib).unwrap();
