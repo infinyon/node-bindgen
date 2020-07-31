@@ -55,6 +55,7 @@ impl <T>JSObjectWrapper<T> where T: JSClass {
         // then the finalize callback may never be invoked. Therefore, when obtaining a reference a 
         // finalize callback is also required in order to enable correct disposal of the reference."
         js_env.delete_reference(wrap)?;
+        debug!("wrapped reference deleted");
 
         Ok(js_cb.this_owned())
     }
@@ -136,7 +137,6 @@ pub trait JSClass: Sized {
                         inner: rust_obj,
                         wrapper: ptr::null_mut()
                     };
-    
                 my_obj.wrap(&js_env,js_cb)
             }
         })();
@@ -158,7 +158,6 @@ pub trait JSClass: Sized {
     extern "C" fn js_finalize(_env: napi_env,finalize_data: *mut ::std::os::raw::c_void,
         _finalize_hint: *mut ::std::os::raw::c_void
     ) {
-
         debug!("my object finalize");
         unsafe {
             let ptr: *mut JSObjectWrapper<Self> = finalize_data as *mut JSObjectWrapper<Self>;
