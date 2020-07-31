@@ -54,7 +54,7 @@ impl <T>JSObjectWrapper<T> where T: JSClass {
         // ONLY in response to the finalize callback invocation. If it is deleted before then, 
         // then the finalize callback may never be invoked. Therefore, when obtaining a reference a 
         // finalize callback is also required in order to enable correct disposal of the reference."
-        js_env.delete_reference(wrap);
+        js_env.delete_reference(wrap)?;
 
         Ok(js_cb.this_owned())
     }
