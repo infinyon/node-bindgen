@@ -1,5 +1,4 @@
 #![allow(clippy::never_loop)]
-#![allow(clippy::match_like_matches_macro)]
 extern crate proc_macro;
 
 mod util;

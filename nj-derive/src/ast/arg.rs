@@ -88,10 +88,7 @@ impl <'a>FunctionArgs<'a> {
 fn has_receiver(sig: &Signature) -> bool {
 
     sig.inputs.iter().any(|input| {
-        match input {
-            FnArg::Receiver(_rec) => true,
-            _ => false
-        }
+        matches!(input, FnArg::Receiver(_rec))
     })
 }
 

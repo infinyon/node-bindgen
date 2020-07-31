@@ -79,17 +79,11 @@ impl FunctionAttribute {
     
 
     fn is_constructor(&self) -> bool {
-        match self {
-            Self::Constructor(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Constructor(_))
     }
 
     fn is_multi_threaded(&self) -> bool {
-        match self {
-            Self::MT(_) => true,
-            _ => false
-        }
+        matches!(self, Self::MT(_))
     }
 
     /// get function name, if this is not name, return none
@@ -101,17 +95,11 @@ impl FunctionAttribute {
     }
 
     fn is_getter(&self) -> bool {
-        match self {
-            Self::Getter(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Getter(_))
     }
 
     fn is_setter(&self) -> bool {
-        match self {
-            Self::Setter(_) => true,
-            _ => false
-        }
+        matches!(self, Self::Setter(_))
     }
 }
 
