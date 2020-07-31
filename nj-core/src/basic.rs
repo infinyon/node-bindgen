@@ -98,7 +98,7 @@ impl JsEnv {
         Ok(js_value)
     }
 
-    pub fn create_string_utf8_from_bytes(&self,r_string: &Vec<u8>)  -> Result<napi_value,NjError> {
+    pub fn create_string_utf8_from_bytes(&self,r_string: &[u8])  -> Result<napi_value,NjError> {
 
         use nj_sys::napi_create_string_utf8;
 
@@ -747,7 +747,7 @@ impl JsCallback  {
                 call_js_cb
             )
         } else {
-            return Err(NjError::Other("expected js callback".to_owned()))
+            Err(NjError::Other("expected js callback".to_owned()))
         }
 
         
@@ -788,7 +788,7 @@ impl<T: ?Sized> ExtractFromJs for T where T: JSValue {
         if let Some(n_value) = js_cb.remove_napi() {
             T::convert_to_rust(js_cb.env(), n_value)
         } else {
-            return Err(NjError::Other(format!("expected argument of type: {}",Self::label())))
+            Err(NjError::Other(format!("expected argument of type: {}",Self::label())))
         }
     }
 }
@@ -813,7 +813,7 @@ impl<T: Sized> ExtractFromJs for Option<T> where T: JSValue {
 impl ExtractFromJs for JsEnv {
 
     fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
-        Ok(js_cb.env().clone())
+        Ok(*js_cb.env())
     }
 }
 
@@ -900,7 +900,7 @@ impl JSValue for JsCallbackFunction {
         Ok(Self {
             ctx,
             js_func: js_value,
-            env: env.clone()
+            env: *env
         })
     }
 }
@@ -948,7 +948,7 @@ impl JsObject {
 
     /// create new js object from env
     pub fn create(env: &JsEnv) -> Result<Self,NjError> {
-        Ok(Self::new(env.clone(), env.create_object()?))
+        Ok(Self::new(*env, env.create_object()?))
     }
 
     pub fn env(&self) -> &JsEnv {
@@ -989,7 +989,7 @@ impl JsObject {
             ))?;
 
         Ok(Some(Self {
-            env: self.env.clone(),
+            env: self.env,
             napi_value: property_value
         }))
     }
@@ -1023,7 +1023,7 @@ impl JSValue for JsObject {
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_object)?;
-        Ok(Self::new(env.clone(),js_value))
+        Ok(Self::new(*env,js_value))
     }
 
 }

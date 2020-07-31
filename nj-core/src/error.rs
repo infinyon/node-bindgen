@@ -33,7 +33,7 @@ impl IntoJs for NjError {
 impl NjError {
 
     /// convert to napi value
-    pub fn as_js(self, js_env: &JsEnv) -> napi_value {
+    pub fn as_js(&self, js_env: &JsEnv) -> napi_value {
 
         let msg = self.to_string();
         js_env.create_error(&msg).expect("error cannot be created")

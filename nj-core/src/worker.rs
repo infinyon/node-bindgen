@@ -85,7 +85,7 @@ extern "C" fn promise_complete<O>(
 ) where
     O: TryIntoJs
 {
-    if env != ptr::null_mut() {
+    if !env.is_null() {
 
         trace!("promise complete");        
         let js_env = JsEnv::new(env);
@@ -93,17 +93,16 @@ extern "C" fn promise_complete<O>(
         let worker_result: Box<WorkerResult<O>> =
             unsafe { Box::from_raw(data as *mut WorkerResult<O>) };
 
-        let result: Result<(), NjError> = (move || 
-            match worker_result.result.try_to_js(&js_env) {
-                Ok(val) => {
-                    trace!("trying to resolve to deferred");
-                    js_env.resolve_deferred(worker_result.deferred.0, val)
-                },
-                Err(js_err) =>  {
-                    trace!("trying to resolve to deferred");
-                    js_env.reject_deferred(worker_result.deferred.0, js_err.as_js(&js_env))
-                }
-        })();
+        let result: Result<(), NjError> = match worker_result.result.try_to_js(&js_env) {
+            Ok(val) => {
+                trace!("trying to resolve to deferred");
+                js_env.resolve_deferred(worker_result.deferred.0, val)
+            },
+            Err(js_err) =>  {
+                trace!("trying to resolve to deferred");
+                js_env.reject_deferred(worker_result.deferred.0, js_err.as_js(&js_env))
+            }
+        };
         assert_napi!(result)
     }
 }
@@ -183,7 +182,7 @@ pub trait NjFutureExt: Future  {
             data: *mut ::std::os::raw::c_void,
         ) 
         {
-            if env != ptr::null_mut() {
+            if !env.is_null() {
 
                 trace!("promise complete");        
                 let _ = JsEnv::new(env);
@@ -194,7 +193,7 @@ pub trait NjFutureExt: Future  {
             }
         }
 
-        let function_name = format!("stream_example_1");
+        let function_name = "stream_example_1".to_string();
         let _ = js_env.create_thread_safe_function(&function_name, None, Some(promise_complete2::<Self::Output>))?;
 
         debug!("spawning task");
