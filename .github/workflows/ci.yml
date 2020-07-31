@@ -13,7 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         rust: [nightly, beta, stable]
-        node: [ '10', '12' ]
     steps:
       - uses: actions/checkout@v1
       - uses: actions-rs/toolchain@v1
