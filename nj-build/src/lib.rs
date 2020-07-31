@@ -13,16 +13,16 @@ pub fn configure() {
 
     let node_full_version = String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
         
-    let temp_dir =   temp_dir().join(format!("node-{}.lib", node_full_version.trim_end()));
+    let temp_lib =   temp_dir().join(format!("node-{}.lib", node_full_version.trim_end()));
 
-    if !temp_dir.exists() {
+    if !temp_lib.exists() {
 
         let lib_file_download_url = format!(
             "https://nodejs.org/dist/{}/win-x64/node.lib",
             node_full_version
         );
 
-        println!("downloading nodejs: {} to: {:#?}",lib_file_download_url,temp_dir);
+        println!("downloading nodejs: {} to: {:#?}",lib_file_download_url,temp_lib);
 
         let mut resp =
             reqwest::blocking::get(&lib_file_download_url).expect("Download node.lib file failed");
