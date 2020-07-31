@@ -32,7 +32,7 @@ pub fn configure() {
 
 
     println!("cargo:rustc-link-lib={}",&temp_lib.file_stem().unwrap().to_str().unwrap());
-    println!("cargo:rustc-link-search={}", temp_dir.to_str().unwrap());
+    println!("cargo:rustc-link-search={}", temp_dir().to_str().unwrap());
     // Link `win_delay_load_hook.obj` for windows electron
     let node_runtime_env = "npm_config_runtime";
     println!("cargo:rerun-if-env-changed={}", node_runtime_env);
