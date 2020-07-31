@@ -15,15 +15,15 @@ pub fn configure() {
         
     let temp_dir =   temp_dir().join(format!("node-{}.lib", node_full_version.trim_end()));
 
-    if !temp_lib.exists() {
+    if !temp_dir.exists() {
 
         let lib_file_download_url = format!(
             "https://nodejs.org/dist/{}/win-x64/node.lib",
             node_full_version
         );
 
-        println!("downloading nodejs: {} to: {}",lib_file_download_url,temp_dir);
-        
+        println!("downloading nodejs: {} to: {:#?}",lib_file_download_url,temp_dir);
+
         let mut resp =
             reqwest::blocking::get(&lib_file_download_url).expect("Download node.lib file failed");
         let mut node_lib_file = File::create(&temp_lib).unwrap();
