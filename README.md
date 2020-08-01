@@ -61,7 +61,6 @@ Following OS are supported:
 
 Writing native node-js requires lots of boilerplate code.  Node-bindgen generates external "C" glue code from rust code, including native module registration.  node-bindgen make it writing node-js module easy and fun.  
 
-Node-bi
 
 # Getting started
 
