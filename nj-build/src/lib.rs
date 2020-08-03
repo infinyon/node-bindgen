@@ -1,8 +1,9 @@
+mod win_delay_load_hook;
+
 /// Slightly modified from https://github.com/Brooooooklyn/napi-rs/blob/master/build/src/lib.rs
 /// configure linker to generate node.js dynamic library
 #[cfg(windows)]
 pub fn configure() {
-        
     // On Windows, we need to download the dynamic library from the nodejs.org website first
     use std::env::var;
     use std::fs::File;
@@ -10,11 +11,12 @@ pub fn configure() {
     use std::path::PathBuf;
     use std::process::Command;
 
-    let node_full_version = String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
-        
-    let temp_dir =   PathBuf::from("C:\\Windows\\Temp\\");
-    let mut temp_lib =   temp_dir.clone();
-    
+    let node_full_version =
+        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
+
+    let temp_dir = PathBuf::from("C:\\Windows\\Temp\\");
+    let mut temp_lib = temp_dir.clone();
+
     temp_lib.push(format!("node-{}.lib", node_full_version.trim_end()));
 
     if !temp_lib.exists() {
@@ -28,14 +30,22 @@ pub fn configure() {
         copy(&mut resp, &mut node_lib_file).expect("Save node.lib file failed");
     }
 
-
-    println!("cargo:rustc-link-lib={}",&temp_lib.file_stem().unwrap().to_str().unwrap());
+    println!(
+        "cargo:rustc-link-lib={}",
+        &temp_lib.file_stem().unwrap().to_str().unwrap()
+    );
     println!("cargo:rustc-link-search={}", temp_dir.to_str().unwrap());
+    
+    
     // Link `win_delay_load_hook.obj` for windows electron
     let node_runtime_env = "npm_config_runtime";
     println!("cargo:rerun-if-env-changed={}", node_runtime_env);
+
     if var(node_runtime_env).map(|s| s == "electron") == Ok(true) {
-        println!("cargo:rustc-cdylib-link-arg=win_delay_load_hook.obj");
+        // Build win_delay_load_hook
+        win_delay_load_hook::build(temp_dir.clone()).expect("Failed to build win_delay_load_hook");
+
+        println!("cargo:rustc-cdylib-link-arg=win_delay_load_hook.o");
         println!("cargo:rustc-cdylib-link-arg=delayimp.lib");
         println!("cargo:rustc-cdylib-link-arg=/DELAYLOAD:node.exe");
     }
