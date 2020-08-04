@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 #[cfg(windows)]
 pub fn build(dir: std::path::PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     use std::fs::{File, remove_file};
