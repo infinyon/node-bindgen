@@ -50,5 +50,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Test
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
       run: make test
 
