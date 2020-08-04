@@ -10,10 +10,11 @@ clean:
 	make -C class-wrapper clean
 	make -C class-async clean
 	make -C param clean
+	make -C electron clean
 
 
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
-	test-class-wrapper test-class-async test-stream test-buffer test-array
+	test-class-wrapper test-class-async test-stream test-buffer test-array test-electron
 
 test-function:
 	make -C function test
@@ -49,4 +50,7 @@ test-buffer:
 	make -C buffer test
 
 test-array:
-	make -C array test	
+	make -C array test
+
+test-electron:
+	make -C electron all
