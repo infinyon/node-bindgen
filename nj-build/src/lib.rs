@@ -47,8 +47,9 @@ pub fn configure() {
         win_delay_load_hook::build(tmp_dir).expect("Failed to build win_delay_load_hook");
 
         println!("cargo:rustc-cdylib-link-arg=win_delay_load_hook.o");
-        println!("cargo:rustc-cdylib-link-arg=delayimp.lib");
         println!("cargo:rustc-cdylib-link-arg=/DELAYLOAD:node.exe");
+        println!("cargo:rustc-cdylib-link-arg=/INCLUDE:__pfnDliNotifyHook2");
+        println!("cargo:rustc-cdylib-link-arg=/FORCE:MULTIPLE");
     }
 }
 
