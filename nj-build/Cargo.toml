@@ -9,3 +9,4 @@ license = "Apache-2.0"
 
 [target.'cfg(windows)'.dependencies]
 reqwest = { version = "0.10", features = ["native-tls", "blocking"] }
+cc = "1.0.58"
