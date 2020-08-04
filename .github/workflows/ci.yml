@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
         rust: [nightly, stable]
     steps:
       - uses: actions/checkout@v1
@@ -50,5 +50,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Test
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
       run: make test
 
