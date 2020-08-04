@@ -75,6 +75,7 @@ impl JsEnv {
     }
 
     pub fn create_string_utf8(&self, r_string: &str) -> Result<napi_value, NjError> {
+        debug!("Create utf8 string");
         trace!("create utf8 string: {}", r_string);
         use nj_sys::napi_create_string_utf8;
 
@@ -228,7 +229,12 @@ impl JsEnv {
     ) -> Result<napi_value, NjError> {
         use nj_sys::napi_call_function;
 
+        debug!("Calling function");
+
+
         let mut result = ptr::null_mut();
+
+        
 
         napi_call_result!(napi_call_function(
             self.0,
@@ -249,11 +255,13 @@ impl JsEnv {
         max_count: usize,
     ) -> Result<JsCallback, NjError> {
         use nj_sys::napi_get_cb_info;
+        
 
         let mut this = ptr::null_mut();
 
         let mut argc: size_t = max_count as size_t;
         let mut args = vec![ptr::null_mut(); max_count];
+        debug!("GET CB Info");
         napi_call_result!(napi_get_cb_info(
             self.0,
             info,
@@ -263,9 +271,12 @@ impl JsEnv {
             ptr::null_mut()
         ))?;
 
+        debug!("Received CB Info");
+
         // truncate arg to actual received count
         args.resize(argc as usize, ptr::null_mut());
 
+        
         Ok(JsCallback::new(JsEnv::new(self.0), this, args))
     }
 
@@ -308,6 +319,10 @@ impl JsEnv {
         ))?;
 
         Ok(result)
+    }
+
+    pub fn delete_reference(&self, ref_: napi_ref) -> Result<(), NjError> {
+        Ok(napi_call_result!(crate::sys::napi_delete_reference(self.0, ref_))?)
     }
 
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value, NjError> {
@@ -431,7 +446,7 @@ impl JsEnv {
         let work_name = self.create_string_utf8(name)?;
 
         let mut tsfn = ptr::null_mut();
-
+        debug!("create threadsafe function");
         trace!("trying to create threadsafe fn: {}", name);
 
         napi_call_result!(napi_create_threadsafe_function(
@@ -595,6 +610,7 @@ impl JsCallback {
         name: &str,
         call_js_cb: napi_threadsafe_function_call_js,
     ) -> Result<crate::ThreadSafeFunction, NjError> {
+        debug!("create thread safe function");
         if let Some(n_value) = self.remove_napi() {
             self.env
                 .create_thread_safe_function(name, Some(n_value), call_js_cb)

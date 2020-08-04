@@ -64,7 +64,9 @@ macro_rules! napi_call_result {
 
     ($napi_expr:expr) =>  {
         {
+            log::debug!("Attempting to receive napi result");
             let status = unsafe { $napi_expr };
+            log::debug!("Status: {:?}", status);
             if  status == crate::sys::napi_status_napi_ok  {
                 Ok(())
             } else { 

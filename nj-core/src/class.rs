@@ -47,6 +47,8 @@ impl <T>JSObjectWrapper<T> where T: JSClass {
             rust_ref.wrapper = wrap;
         }
 
+        js_env.delete_reference(wrap)?;
+
         Ok(js_cb.this_owned())
     }
 }

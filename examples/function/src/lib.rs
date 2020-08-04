@@ -1,9 +1,8 @@
-
 use node_bindgen::derive::node_bindgen;
 use node_bindgen::core::NjError;
 
 
-#[node_bindgen()]
+#[node_bindgen]
 fn hello(count: i32) -> String {        
     format!("hello world {}", count)
 }
@@ -32,7 +31,7 @@ fn mul(first: i32,second: i32) -> i32 {
 
 
 /// add second if supplied 
-#[node_bindgen()]
+#[node_bindgen]
 fn sum2(first: i32, second_arg: Option<i32>) -> i32 {        
     if let Some(second) = second_arg {
         first + second

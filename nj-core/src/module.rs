@@ -65,6 +65,8 @@ pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value
     
     js_exports.define_property(prop_builder).expect("property should not fail");
 
+    debug!("Finished initialization");
+
     return exports;
 }
 
