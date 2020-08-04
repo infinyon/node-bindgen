@@ -4,8 +4,8 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "test": "npx electron ./test.js",
-    "build": "npx electron-build-env nj-cli build",
+    "test": "npm run build && npx electron ./test.js",
+    "build": "npm install && npx electron-build-env nj-cli build",
     "start": "npm run test"
   },
   "keywords": [

@@ -1,17 +1,8 @@
-all:
-	install 
-	build 
-	test
+install: npm install
 
-install:
-	npm install
+build: npm run build
 
-build:
-	npm run build
+test: npm run test
 
-test:
-	npm run test
-
-clean:
-	rm -rf dist
+clean: rm -rf dist
 

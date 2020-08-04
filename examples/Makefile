@@ -53,4 +53,4 @@ test-array:
 	make -C array test
 
 test-electron:
-	make -C electron all
+	make -C electron test
