@@ -15,11 +15,15 @@ jobs:
         rust: [nightly, stable]
     steps:
       - uses: actions/checkout@v1
+      - name: Cancel Workflow Action
+        uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions-rs/toolchain@v1
         with:
-            toolchain: ${{ matrix.rust }}
-            components: clippy
-            override: true
+          toolchain: ${{ matrix.rust }}
+          components: clippy
+          override: true
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -36,6 +40,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Cancel Workflow Action
+      uses: styfle/cancel-workflow-action@0.4.1
+      with:
+        access_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install ${{ matrix.rust }}
       uses: actions-rs/toolchain@v1
       with:
