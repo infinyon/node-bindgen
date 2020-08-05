@@ -30,7 +30,7 @@
       alt="docs.rs docs" />
   </a>
 
-  <a href="https://discord.gg/m48dGA">
+  <a href="https://discord.gg/V5MhmEq">
     <img src="https://img.shields.io/discord/695712741381636168.svg?logo=discord&style=flat-square"
       alt="chat" />
   </a>
