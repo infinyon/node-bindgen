@@ -279,6 +279,15 @@ assert.equal(obj.plusOne(),11);
 
 There are more features in the examples folder.
 
+## Windows + Electron Support
+When using node-bindgen with electron on Windows, `nj-build` must
+compile a C++ file, `win_delay_load_hook.cc`, and therefore it is required that the development
+environment has a valid C/C++ compiler. 
+
+> If your machine does not have a valid C/C++ compiler, install [Microsoft VSCode](https://code.visualstudio.com/docs/cpp/config-mingw).
+
+In the future, this file will be re-written in Rust, removing this dependency.
+
 ## Contributing
 
 If you'd like to contribute to the project, please read our [Contributing guide](CONTRIBUTING.md).

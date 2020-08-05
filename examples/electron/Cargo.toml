@@ -1,0 +1,16 @@
+[package]
+name = "test-electron"
+version = "0.1.0"
+authors = ["fluvio.io"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+node-bindgen = { path = "../.."}
+
+
+[build-dependencies]
+node-bindgen = { path = "../../", features = ["build"] }

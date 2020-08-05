@@ -58,6 +58,7 @@ pub fn build(dir: std::path::PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     // Build the `win_delay_load_hook.o` file;
     cc::Build::new()
         .file(&tmp_file)
+        .static_crt(true)
         .out_dir(&dir)
         .compile(file_name);
 
