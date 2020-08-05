@@ -15,6 +15,8 @@ jobs:
         rust: [nightly, stable]
     steps:
       - uses: actions/checkout@v1
+      - name: Cancel Workflow Action
+        uses: styfle/cancel-workflow-action@0.4.1
       - uses: actions-rs/toolchain@v1
         with:
             toolchain: ${{ matrix.rust }}
@@ -36,6 +38,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Cancel Workflow Action
+      uses: styfle/cancel-workflow-action@0.4.1
     - name: Install ${{ matrix.rust }}
       uses: actions-rs/toolchain@v1
       with:
