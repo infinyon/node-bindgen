@@ -39,4 +39,6 @@ app.whenReady().then(() => {
     assert.equal(obj.value,0);
 
     console.log("class simple test succeed");
+
+    process.exit(0)
 })
