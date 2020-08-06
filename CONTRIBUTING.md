@@ -51,6 +51,14 @@ To suggest an enhancement, please create an issue on GitHub with the label `enha
 
 If you’d like to implement a new feature, please consider creating a `feature request` issue first to start a discussion about the feature.
 
+### Releasing New Versions
+
+By default, when `master` branch is merged into `release` branch, this automatically will bump the version of the package, tag the new version, build the binary for release and publish the crate to crates.io.
+
+#### Versioning
+
+when opening a PR to merge `master` to `release`, ensure the commit message includes `#major`, `#minor` or `#patch` to handle the versioning correctly.
+
 ### License
 
 This project is licensed under the [Apache license](LICENSE-APACHE). Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in Fluvio by you, shall be licensed as Apache, without any additional terms or conditions.
