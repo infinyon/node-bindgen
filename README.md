@@ -137,6 +137,17 @@ To build a release version:
 nj-clid build --release
 ```
 
+## Watching `./src` for Changes
+
+While developing your native module, you may want to watch for file changes and run a command when a change occurs, for example `cargo check` or `cargo build`.
+
+For this, we can use `nj-cli watch`. 
+
+`nj-cli watch` installs <small>[if it does not exist]</small> and passes arguments to [`cargo watch`](https://crates.io/crates/cargo-watch). By default, `nj-cli watch` will run `cargo check` against your `./src` files.
+
+To see all available methods for `nj-cli watch`, run the following command:
+
+> `nj-cli watch -- --help`
 
 ## Using in Node.js
 

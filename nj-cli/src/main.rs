@@ -1,5 +1,7 @@
 mod init;
+mod watch;
 
+use watch::{WatchOpt};
 use structopt::StructOpt;
 
 
@@ -24,7 +26,9 @@ enum Opt {
     #[structopt(name = "build")]
     Build(BuildOpt),
     #[structopt(name = "init")]
-    Init(InitOpt)
+    Init(InitOpt),
+    #[structopt(name = "watch")]
+    Watch(WatchOpt)
 }
 
 #[derive(Debug,StructOpt)]
@@ -55,6 +59,9 @@ fn main() {
         },
         Opt::Init(opt) => {
             init(opt)
+        },
+        Opt::Watch(opt) => {
+            watch::run(opt)
         }
     }
 }
@@ -63,8 +70,6 @@ fn main() {
 fn init(opt: InitOpt) {
     let mut args = vec!["init".to_string(), "--lib".to_string()];
     args.extend(opt.extras);
-
-    println!("Initializing New Project with args: {:?}", args);
 
     if args.len() <= 2 {
         panic!("please enter a path for this project, e.g.: ./my-project");
