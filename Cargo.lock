@@ -814,6 +814,7 @@ dependencies = [
 name = "nj-build"
 version = "0.2.0"
 dependencies = [
+ "cc",
  "reqwest",
 ]
 

@@ -1,3 +1,5 @@
+mod init;
+
 use structopt::StructOpt;
 
 
@@ -20,7 +22,9 @@ use cargo_metadata::Target;
     name = "node-bindgen cli")]
 enum Opt {
     #[structopt(name = "build")]
-    Build(BuildOpt)
+    Build(BuildOpt),
+    #[structopt(name = "init")]
+    Init(InitOpt)
 }
 
 #[derive(Debug,StructOpt)]
@@ -35,6 +39,11 @@ struct BuildOpt {
     extras: Vec<String>,
 }
 
+#[derive(Debug, StructOpt)]
+struct InitOpt {
+    extras: Vec<String>,
+}
+
 
 fn main() {
 
@@ -43,10 +52,52 @@ fn main() {
     match opt {
         Opt::Build(opt) => {
             build(opt)
+        },
+        Opt::Init(opt) => {
+            init(opt)
         }
     }
 }
 
+// Initialize a new project
+fn init(opt: InitOpt) {
+    let mut args = vec!["init".to_string(), "--lib".to_string()];
+    args.extend(opt.extras);
+
+    println!("Initializing New Project with args: {:?}", args);
+
+    if args.len() <= 2 {
+        panic!("please enter a path for this project, e.g.: ./my-project");
+    }
+
+    let path = &args[2];
+
+    let mut build_command = Command::new("cargo")
+        .args(&args)
+        .stdout(Stdio::inherit())
+        .spawn()
+        .expect("Failed to execute command");
+    
+    build_command.wait()
+        .expect("failed to wait on child");
+
+    if let Ok(mut dir) = std::env::current_dir() {
+        dir.push(path);
+        if let Err(e) = init::ProjectFiles::new(dir.clone()) {
+            panic!("Failed to create project: {:#?}", e);
+        } else {
+            let manifest_path = format!("--manifest-path={}/Cargo.toml", dir.display());
+            let mut fmt = Command::new("cargo")
+                .stdout(Stdio::inherit())
+                .args(&["fmt", &manifest_path])
+                .spawn()
+                .expect("Failed to execute command");
+            
+            fmt.wait()
+                .expect("Failed to execute command");
+        };
+    }
+}
 
 // kick off build
 fn build(opt: BuildOpt) {
