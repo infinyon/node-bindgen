@@ -1,6 +1,7 @@
 mod init;
 mod watch;
 
+use watch::{WatchOpt};
 use structopt::StructOpt;
 
 
@@ -47,11 +48,6 @@ struct InitOpt {
     extras: Vec<String>,
 }
 
-#[derive(Debug, StructOpt)]
-struct WatchOpt {
-    extras: Vec<String>,
-}
-
 
 fn main() {
 
@@ -65,15 +61,8 @@ fn main() {
             init(opt)
         },
         Opt::Watch(opt) => {
-            watch(opt)
+            watch::run(opt)
         }
-    }
-}
-
-// Watch a project during development
-fn watch(_opt: WatchOpt) {
-    if let Ok(_) = watch::check_cargo_watch() {
-        // Start watching files;
     }
 }
 
