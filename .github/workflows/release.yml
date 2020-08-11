@@ -23,12 +23,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build nj-cli
-        run: cargo build --manifest-path nj-cli/Cargo.toml
+        run: cargo build --release --manifest-path nj-cli/Cargo.toml
       - name: Upload binary to release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: nj-cli/target/release/${{ matrix.artifact_name }}
+          file: ./nj-cli/target/release/${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
   publish_crates:
