@@ -1,0 +1,47 @@
+name: Tag, Build, Release and Publish
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  release_cli:
+    name: Build nj-cli
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: nj-cli
+            asset_name: nj-cli-linux-amd64
+          - os: macos-latest
+            artifact_name: nj-cli
+            asset_name: nj-cli-macos-amd64
+          - os: windows-latest
+            artifact_name: nj-cli.exe
+            asset_name: nj-cli.exe
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build nj-cli
+        run: cargo build --manifest-path nj-cli/Cargo.toml
+      - name: Upload binary to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: nj-cli/target/release/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+  publish_crates:
+    name: Publish to Crates.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-publish-all
+          version: latest
+      - run: cargo-publish-all --dry-run
+      - run: cargo-publish-all --token ${{ secrets.CRATES_TOKEN }} --yes
