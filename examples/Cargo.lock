@@ -813,6 +813,15 @@ dependencies = [
 [[package]]
 name = "nj-build"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f16b83420c0ce610579c3b6865baa13f3a0c93acc6b34552234e65783a327a4"
+dependencies = [
+ "reqwest",
+]
+
+[[package]]
+name = "nj-build"
+version = "0.2.1"
 dependencies = [
  "cc",
  "reqwest",
@@ -830,7 +839,25 @@ dependencies = [
  "inventory",
  "libc",
  "log",
- "nj-sys",
+ "nj-sys 1.0.0",
+ "pin-utils",
+]
+
+[[package]]
+name = "nj-core"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1dab2c70601f6ce7723590dd2ddd6a0c00838b62dfe6dc749177c324c8b2dd81"
+dependencies = [
+ "async-trait",
+ "ctor",
+ "flv-future-aio",
+ "flv-util",
+ "futures",
+ "inventory",
+ "libc",
+ "log",
+ "nj-sys 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pin-utils",
 ]
 
@@ -845,10 +872,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "nj-derive"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c97296d35a6054982e5d4569032335c8d4d31d038168229281ddfcc3b74a172"
+dependencies = [
+ "Inflector",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "nj-example-array"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -856,14 +895,14 @@ name = "nj-example-async-cb"
 version = "0.1.0"
 dependencies = [
  "flv-future-aio",
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-buffer"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
  "serde",
  "serde_json",
 ]
@@ -872,7 +911,7 @@ dependencies = [
 name = "nj-example-cb"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -880,49 +919,49 @@ name = "nj-example-class-async"
 version = "0.1.0"
 dependencies = [
  "flv-future-aio",
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-class-simple"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-class-wrapper"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-function"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-jsenv"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-json"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
 name = "nj-example-param"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -930,7 +969,7 @@ name = "nj-example-promise"
 version = "0.1.0"
 dependencies = [
  "flv-future-aio",
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -939,7 +978,7 @@ version = "0.1.0"
 dependencies = [
  "flv-future-aio",
  "futures",
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -947,13 +986,31 @@ name = "nj-sys"
 version = "1.0.0"
 
 [[package]]
+name = "nj-sys"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "265486f44e56487f1fceb7f8637344f0a0c7764940ab0e8b52eb12f53a16b3d4"
+
+[[package]]
 name = "node-bindgen"
 version = "2.1.1"
 dependencies = [
- "nj-build",
- "nj-core",
- "nj-derive",
- "nj-sys",
+ "nj-build 0.2.1",
+ "nj-core 2.1.1",
+ "nj-derive 2.0.1",
+ "nj-sys 1.0.0",
+]
+
+[[package]]
+name = "node-bindgen"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f913a905854570d8cd1f3c6d76992b7a11cdf06b2bd01dc4cd4853ef3156fc6"
+dependencies = [
+ "nj-build 0.2.0",
+ "nj-core 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nj-derive 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nj-sys 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1396,7 +1453,7 @@ dependencies = [
 name = "test-electron"
 version = "0.1.0"
 dependencies = [
- "node-bindgen",
+ "node-bindgen 2.1.1",
 ]
 
 [[package]]
@@ -1406,6 +1463,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d40c6d1b69745a6ec6fb1ca717914848da4b44ae29d9b3080cbee91d72a69b14"
 dependencies = [
  "lazy_static",
+]
+
+[[package]]
+name = "threads"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "futures",
+ "node-bindgen 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
