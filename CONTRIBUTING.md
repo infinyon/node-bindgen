@@ -53,11 +53,13 @@ If you’d like to implement a new feature, please consider creating a `feature 
 
 ### Releasing New Versions
 
-By default, when `master` branch is merged into `release` branch, this automatically will bump the version of the package, tag the new version, build the binary for release and publish the crate to crates.io.
+When a tagged branch with `v*` is pushed, a new release with that reference will be created and all crates in the workspace will be automatically published to crates.io. See the note below about version management.
 
 #### Versioning
 
-when opening a PR to merge `master` to `release`, ensure the commit message includes `#major`, `#minor` or `#patch` to handle the versioning correctly.
+Version control is handled by the CI workflow using `cargo cvm -x` to check against the `master` or target branch. If the version has not been updated, the CI will error with a message of which crate(s) have outdated versions. If a version is outdated, the developer can run `cargo cvm -f -s [`major`, `minor` or `patch`]` to automatically bump the crate's version. 
+
+> NOTE: If you run this in the workspace root, it will update all workspace crate versions. If this is not desired, run the command in the crate directory.
 
 ### License
 
