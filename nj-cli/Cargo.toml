@@ -7,8 +7,6 @@ description = "build tool for node-bindgen"
 repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
 
-[workspace]
-
 [dependencies]
 log = "0.4.8"
 structopt = { version = "0.2.14", default-features = false }
