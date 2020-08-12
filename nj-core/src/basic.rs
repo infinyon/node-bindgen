@@ -18,6 +18,8 @@ use crate::sys::napi_has_property;
 use crate::sys::napi_ref;
 use crate::sys::napi_deferred;
 use crate::sys::napi_threadsafe_function_call_js;
+use crate::sys::napi_async_execute_callback;
+use crate::sys::napi_async_complete_callback;
 
 use crate::napi_call_result;
 use crate::napi_call_assert;
@@ -541,6 +543,17 @@ impl JsEnv {
                 rejection
             )
         )
+    }
+
+    pub fn create_async_work(
+        &self, 
+        async_resource: Option<napi_value>, 
+        async_resource_name: &str, 
+        execute: napi_async_execute_callback,
+        complete: napi_async_complete_callback,
+        data: *mut core::ffi::c_void
+    ) -> Result<(), NjError> {
+        unimplemented!()
     }
 
 

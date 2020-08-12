@@ -1,3 +1,4 @@
+mod async_work;
 mod basic;
 mod error;
 mod thread_fn;
