@@ -29,7 +29,7 @@ pub mod sys {
 }
 
 pub mod future {
-    pub use flv_future_aio::task::spawn;
+    pub use fluvio_future::task::spawn;
 }
 
 pub mod val {
@@ -144,6 +144,6 @@ macro_rules! method {
 
 
 pub fn init_logger() {
-    flv_util::init_logger();
+    fluvio_future::subscriber::init_logger();
 }
 
