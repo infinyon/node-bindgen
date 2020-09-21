@@ -3,12 +3,12 @@ use std::fmt::Debug;
 
 use log::debug;
 
-use futures::Stream;
-use futures::stream::StreamExt;
+use futures_lite::Stream;
+use futures_lite::stream::StreamExt;
 use pin_utils::unsafe_pinned;
 use pin_utils::unsafe_unpinned;
 
-use flv_future_aio::task::spawn;
+use fluvio_future::task::spawn;
 
 
 use crate::sys::napi_value;
