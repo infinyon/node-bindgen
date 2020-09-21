@@ -1,11 +1,11 @@
 use std::time::Duration;
 
-use futures::Stream;
-use futures::stream;
-use futures::stream::StreamExt;
+use futures_lite::Stream;
+use futures_lite::stream;
+use futures_lite::stream::StreamExt;
 
 
-use flv_future_aio::timer::sleep;
+use fluvio_future::timer::sleep;
 use node_bindgen::core::NjError;
 use node_bindgen::derive::node_bindgen;
 use node_bindgen::core::stream::NjStream;
