@@ -134,7 +134,7 @@ This will generate Node.js module in "./dist" folder.
 
 To build a release version:
 ```
-nj-clid build --release
+nj-cli build --release
 ```
 
 ## Watching `./src` for Changes
