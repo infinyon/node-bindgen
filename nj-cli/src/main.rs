@@ -108,6 +108,9 @@ fn init(opt: InitOpt) {
 fn build(opt: BuildOpt) {
 
     let mut args = vec!["build".to_string()];
+    if opt.release {
+        args.push("--release".to_string());
+    }
     args.extend(opt.extras);
 
     let mut build_command = Command::new("cargo")
