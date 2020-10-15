@@ -70,9 +70,9 @@ impl Debug for ArrayBuffer {
 }
 
 
-/*
-impl JSValue for &[u8] {
-    fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
+
+impl <'a>JSValue<'a> for &'a [u8] {
+    fn convert_to_rust(env: &'a JsEnv,js_value: napi_value) -> Result<Self,NjError> {
         
         // check if this is really buffer
         if !env.is_buffer(js_value)? {
@@ -84,4 +84,3 @@ impl JSValue for &[u8] {
         Ok(buffer)
     }
 }
-*/
