@@ -2,6 +2,7 @@ use serde::Serialize;
 
 use node_bindgen::derive::node_bindgen;
 use node_bindgen::core::buffer::ArrayBuffer;
+//use node_bindgen::core::buffer::JSBuffer;
 use node_bindgen::core::NjError;
 
 #[derive(Serialize)]
@@ -72,3 +73,11 @@ fn test2(b: i32) -> Result<Record,NjError> {
     })
 }
 
+/*
+/// accept arbitary
+#[node_bindgen]
+fn test3(data: &[u8]) -> Result<bool,NjError> {
+
+    Ok(true)
+}
+*/
