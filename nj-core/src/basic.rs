@@ -726,7 +726,14 @@ impl JsEnv {
     }
 
     
-    
+    pub fn env_clean_up()  {
+        /*
+        napi_add_env_cleanup_hook(napi_env env,
+            void (*fun)(void* arg),
+            void* arg);
+        */
+
+    }
     
 
 }
