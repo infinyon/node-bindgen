@@ -725,8 +725,9 @@ impl JsEnv {
 
     }
 
-    
-    pub fn add_env_clean_up_hook(
+    #[allow(unused_unsafe)]
+    #[allow(clippy::missing_safety_doc)]
+    pub unsafe fn add_env_clean_up_hook(
         &self,
         init_func: Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
         arg: *mut ::std::os::raw::c_void
