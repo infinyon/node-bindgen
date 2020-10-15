@@ -4,6 +4,7 @@ use node_bindgen::derive::node_bindgen;
 use node_bindgen::core::buffer::ArrayBuffer;
 use node_bindgen::core::NjError;
 
+
 #[derive(Serialize)]
 struct MyStruct {
     a: String,
@@ -71,4 +72,16 @@ fn test2(b: i32) -> Result<Record,NjError> {
         comment: "array buffer is cool!".to_owned()
     })
 }
+
+
+
+
+
+#[node_bindgen]
+fn test3(data: &[u8]) -> Result<String,NjError> {
+
+    let message = String::from_utf8(data.to_vec())?;
+    Ok(format!("reply {}",message))
+}
+
 

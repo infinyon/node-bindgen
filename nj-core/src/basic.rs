@@ -19,6 +19,7 @@ use crate::sys::napi_ref;
 use crate::sys::napi_deferred;
 use crate::sys::napi_threadsafe_function_call_js;
 
+
 use crate::napi_call_result;
 use crate::napi_call_assert;
 use crate::PropertiesBuilder;
@@ -631,10 +632,9 @@ impl JsEnv {
 
     }
 
-    
-    /// assert that napi value is certain type, otherwise raise exception
-    pub fn assert_type(&self,napi_value: napi_value, should_be_type: napi_valuetype) -> Result<(),NjError>
-    {
+    /// get value type
+    pub fn value_type(&self,napi_value: napi_value) -> Result<napi_valuetype,NjError> {
+
         use crate::sys::napi_typeof;
 
         let mut valuetype: napi_valuetype = 0;
@@ -645,6 +645,20 @@ impl JsEnv {
                 napi_value,
                 &mut valuetype
             ))?;
+
+        Ok(valuetype)
+
+    }
+
+    /// get string representation of value type
+    pub fn value_type_string(&self,napi_value: napi_value) -> Result<&'static str,NjError> {
+        Ok(napi_value_type_to_string(self.value_type(napi_value)?))
+    }
+    
+    /// assert that napi value is certain type, otherwise raise exception
+    pub fn assert_type(&self,napi_value: napi_value, should_be_type: napi_valuetype) -> Result<(),NjError>
+    {
+        let valuetype = self.value_type(napi_value)?;
 
         if  valuetype != should_be_type {
             debug!("value type is: {}-{} but should be: {}-{}", 
@@ -661,8 +675,8 @@ impl JsEnv {
 
 
     /// convert napi value to rust value
-    pub fn convert_to_rust<T>(&self,napi_value: napi_value) -> Result<T,NjError>
-        where T: JSValue 
+    pub fn convert_to_rust<'a,T>(&'a self,napi_value: napi_value) -> Result<T,NjError>
+        where T: JSValue<'a>
     {
         
         T::convert_to_rust(&self, napi_value)
@@ -681,7 +695,56 @@ impl JsEnv {
         )?;
 
         Ok(result)
-    }    
+    }
+
+    /// get buffer info
+    pub fn get_buffer_info(&self,napi_value: napi_value) -> Result<&[u8],NjError> {
+        use std::slice;
+        use crate::sys::napi_get_buffer_info;
+
+        let mut len: size_t  = 0;
+        let mut data = ptr::null_mut();
+
+      //  napi_status napi_get_buffer_info(napi_env env,
+      //      napi_value value,
+      //      void** data,
+      //      size_t* length)
+
+
+        napi_call_result!(
+            napi_get_buffer_info(
+                self.inner(),
+                napi_value,
+                &mut data,
+                &mut len
+            ))?;
+
+        let array: &[u8] = unsafe { slice::from_raw_parts(data as *const u8, len as usize) };
+
+        Ok(array)
+
+    }
+
+    #[allow(unused_unsafe)]
+    #[allow(clippy::missing_safety_doc)]
+    pub unsafe fn add_env_clean_up_hook(
+        &self,
+        init_func: Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
+        arg: *mut ::std::os::raw::c_void
+    )  -> Result<(), NjError> {
+        use crate::sys::napi_add_env_cleanup_hook;
+
+        napi_call_result!(
+            napi_add_env_cleanup_hook(
+                self.inner(),
+                init_func,
+                arg
+            ))?;
+
+        Ok(())
+    
+    }
+    
 
 }
 
@@ -726,8 +789,8 @@ impl JsCallback  {
     }
 
     /// get value of callback info and verify type
-    pub fn get_value<T>(&mut self) -> Result<T,NjError>
-        where T: ExtractFromJs 
+    pub fn get_value<'a,T>(&'a mut self) -> Result<T,NjError>
+        where T: ExtractFromJs<'a> 
     {
         trace!("trying extract value out of {} args", self.args.len());
 
@@ -766,24 +829,24 @@ impl JsCallback  {
 }
 
 
-pub trait ExtractFromJs: Sized {
+pub trait ExtractFromJs<'a>: Sized {
 
     fn label() -> &'static str {
         std::any::type_name::<Self>()
     }
 
     /// extract from js callback
-    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError>;
+    fn extract(js_cb: &'a mut JsCallback) -> Result<Self,NjError>;
 }
 
-impl<T: ?Sized> ExtractFromJs for T where T: JSValue {
+impl<'a,T: ?Sized> ExtractFromJs<'a> for T where T: JSValue<'a> {
 
     fn label() -> &'static str {
         T::label()
     }
 
 
-    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
+    fn extract(js_cb: &'a mut JsCallback) -> Result<Self,NjError> {
 
         if let Some(n_value) = js_cb.remove_napi() {
             T::convert_to_rust(js_cb.env(), n_value)
@@ -794,13 +857,13 @@ impl<T: ?Sized> ExtractFromJs for T where T: JSValue {
 }
 
 /// for optional argument
-impl<T: Sized> ExtractFromJs for Option<T> where T: JSValue {
+impl<'a,T: Sized> ExtractFromJs<'a> for Option<T> where T: JSValue<'a> {
 
     fn label() -> &'static str {
         T::label()
     }
 
-    fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
+    fn extract(js_cb: &'a mut JsCallback) -> Result<Self,NjError> {
 
         if let Some(n_value) = js_cb.remove_napi() {
             Ok(Some(T::convert_to_rust(js_cb.env(), n_value)?))
@@ -810,7 +873,7 @@ impl<T: Sized> ExtractFromJs for Option<T> where T: JSValue {
     }
 }
 
-impl ExtractFromJs for JsEnv {
+impl ExtractFromJs<'_> for JsEnv {
 
     fn extract(js_cb: &mut JsCallback) -> Result<Self,NjError> {
         Ok(*js_cb.env())
@@ -886,7 +949,7 @@ unsafe impl Send for JsCallbackFunction{}
 unsafe impl Sync for JsCallbackFunction{}
 
 
-impl JSValue for JsCallbackFunction {
+impl JSValue<'_> for JsCallbackFunction {
 
     fn label() -> &'static str {
        "callback"
@@ -1012,13 +1075,13 @@ impl JsObject {
     }
 
     /// convert to equivalent rust object
-    pub fn as_value<T>(&self) -> Result<T,NjError>  where T: JSValue {
+    pub fn as_value<'a,T>(&'a self) -> Result<T,NjError>  where T: JSValue<'a> {
         self.env.convert_to_rust(self.napi_value)
     }
 }
 
 
-impl JSValue for JsObject {
+impl JSValue<'_> for JsObject {
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 

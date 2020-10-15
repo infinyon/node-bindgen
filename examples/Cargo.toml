@@ -13,7 +13,8 @@ members = [
     "stream",
     "buffer",
     "array",
-    "electron"
+    "electron",
+    "cleanup"
 ]
 
 #[patch.crates-io]

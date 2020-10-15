@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.0] - 2020-10-14-2000
+- Support for Passing Buffer to Rust
+- Support for Env cleanup
 
 # [2.1.0] - 2020-05-15
 

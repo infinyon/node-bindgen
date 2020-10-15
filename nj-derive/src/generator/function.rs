@@ -225,7 +225,7 @@ mod arg_extraction {
                 }
             }
             FunctionArgType::Path(ty) => rust_value(ty.expansion(), arg_index),
-            FunctionArgType::Ref(ty) => rust_ref(ty.type_name(), arg_index),
+            FunctionArgType::Ref(ty) => rust_value(ty.expansion(), arg_index),
             /*
             FunctionArgType::JSCallback(_ty) =>  {
                 let rust_value = rust_arg_var(arg_index);
@@ -494,16 +494,6 @@ mod closure {
 }
 
 
-
-/// generate expression to convert napi_value as rust ref
-fn rust_ref(type_name: &Ident, index: usize) -> TokenStream {
-           
-    let rust_value = rust_arg_var(index);
-    quote! {
-        let #rust_value = js_cb.get_ref::<#type_name>(&mut arg_index)?;
-    }
-   
-}
 
 // generate expression to convert napi value to rust value from callback
 fn rust_value(type_name: TokenStream, index: usize) -> TokenStream {

@@ -97,17 +97,18 @@ pub trait IntoJs {
 
 
 
-/// Try to convert napi value to Rust value
-pub trait JSValue: Sized {
+/// Convert napi value to Rust value
+/// 
+pub trait JSValue<'a>: Sized {
 
     fn label() -> &'static str {
         std::any::type_name::<Self>()
     }
 
-    fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError>;
+    fn convert_to_rust(env: &'a JsEnv,js_value: napi_value) -> Result<Self,NjError>;
 }
 
-impl JSValue for f64 {
+impl JSValue<'_> for f64 {
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
@@ -123,7 +124,7 @@ impl JSValue for f64 {
     }
 }
 
-impl JSValue for i32 {
+impl JSValue<'_> for i32 {
     
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
@@ -140,7 +141,7 @@ impl JSValue for i32 {
     }
 }
 
-impl JSValue for u32 {
+impl JSValue<'_> for u32 {
     
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
@@ -158,7 +159,7 @@ impl JSValue for u32 {
 }
 
 
-impl JSValue for i64 {
+impl JSValue<'_> for i64 {
     
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
@@ -175,7 +176,7 @@ impl JSValue for i64 {
     }
 }
 
-impl JSValue for bool {
+impl JSValue<'_> for bool {
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
@@ -193,7 +194,7 @@ impl JSValue for bool {
 
 
 
-impl  JSValue for String {
+impl  JSValue<'_> for String {
 
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
@@ -217,9 +218,9 @@ impl  JSValue for String {
 }
 
 
-impl <T>JSValue for Vec<T> where T: JSValue  {
+impl <'a,T>JSValue<'a> for Vec<T> where T: JSValue<'a>  {
 
-    fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
+    fn convert_to_rust(env: &'a JsEnv,js_value: napi_value) -> Result<Self,NjError> {
     
         if !env.is_array(js_value)? {
             return Err(NjError::Other("not array".to_owned()));
