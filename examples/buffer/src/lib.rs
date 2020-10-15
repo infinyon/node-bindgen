@@ -78,9 +78,10 @@ fn test2(b: i32) -> Result<Record,NjError> {
 
 
 #[node_bindgen]
-fn test3(data: &[u8]) -> Result<i32,NjError> {
+fn test3(data: &[u8]) -> Result<String,NjError> {
 
-    Ok(data.len() as i32)
+    let message = String::from(data.to_vec());
+    Ok(format!("reply {}"),message)
 }
 
 
