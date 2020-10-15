@@ -46,7 +46,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        rust: [nightly, stable]
+        rust: [stable]
         node: [ '12', '14' ]
 
     steps:

@@ -80,8 +80,8 @@ fn test2(b: i32) -> Result<Record,NjError> {
 #[node_bindgen]
 fn test3(data: &[u8]) -> Result<String,NjError> {
 
-    let message = String::from(data.to_vec());
-    Ok(format!("reply {}"),message)
+    let message = String::from_utf8(data.to_vec())?;
+    Ok(format!("reply {}",message))
 }
 
 

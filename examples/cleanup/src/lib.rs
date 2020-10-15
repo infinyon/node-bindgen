@@ -7,7 +7,7 @@ use node_bindgen::core::NjError;
 /// initialize env hook up
 #[node_bindgen]
 fn init(env: JsEnv) -> Result<(), NjError> {
-    env.add_env_clean_up_hook(Some(my_cleanup), ptr::null_mut())?;
+    unsafe { env.add_env_clean_up_hook(Some(my_cleanup), ptr::null_mut())?};
     println!("init");
     Ok(())
 }

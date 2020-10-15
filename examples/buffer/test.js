@@ -17,4 +17,4 @@ assert.strictEqual(record.comment, "array buffer is cool!");
 assert.deepStrictEqual(JSON.parse(Buffer.from(record.buffer)), { a: 'b', b: 10 });
 
 
-assert.strictEqual(addon.test3(Buffer.from("hello")),5);
+assert.strictEqual(addon.test3(Buffer.from("hello")),"reply hello");
