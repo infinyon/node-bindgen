@@ -18,7 +18,7 @@ use crate::sys::napi_has_property;
 use crate::sys::napi_ref;
 use crate::sys::napi_deferred;
 use crate::sys::napi_threadsafe_function_call_js;
-use crate::sys::napi_get_buffer_info;
+
 
 use crate::napi_call_result;
 use crate::napi_call_assert;
@@ -700,7 +700,7 @@ impl JsEnv {
     /// get buffer info
     pub fn get_buffer_info(&self,napi_value: napi_value) -> Result<&[u8],NjError> {
         use std::slice;
-      
+        use crate::sys::napi_get_buffer_info;
 
         let mut len: size_t  = 0;
         let mut data = ptr::null_mut();
@@ -726,13 +726,22 @@ impl JsEnv {
     }
 
     
-    pub fn env_clean_up()  {
-        /*
-        napi_add_env_cleanup_hook(napi_env env,
-            void (*fun)(void* arg),
-            void* arg);
-        */
+    pub fn add_env_clean_up_hook(
+        &self,
+        init_func: Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
+        arg: *mut ::std::os::raw::c_void
+    )  -> Result<(), NjError> {
+        use crate::sys::napi_add_env_cleanup_hook;
 
+        napi_call_result!(
+            napi_add_env_cleanup_hook(
+                self.inner(),
+                init_func,
+                arg
+            ))?;
+
+        Ok(())
+    
     }
     
 
