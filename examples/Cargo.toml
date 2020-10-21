@@ -14,7 +14,8 @@ members = [
     "buffer",
     "array",
     "electron",
-    "cleanup"
+    "cleanup",
+    "bigint",
 ]
 
 #[patch.crates-io]

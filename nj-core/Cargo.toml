@@ -21,3 +21,4 @@ futures-lite = "1.7.0"
 nj-sys = { version = "1.0.0", path = "../nj-sys" }
 fluvio-future = { version = "0.1.0", default-features=false, features=["task","subscriber"]}
 pin-utils = "0.1.0"
+num-bigint = "0.3.0"
