@@ -7,3 +7,6 @@ description = "low level binding to Node N-API"
 repository = "https://github.com/infinyon/node-bindgen"
 readme = "README.md"
 license = "Apache-2.0"
+
+[build-dependencies]
+bindgen = "=0.52.0"
