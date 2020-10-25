@@ -11,7 +11,7 @@ pub use num_bigint::*;
 
 impl<'a> JSValue<'a> for BigInt {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
-        println!("Converting JS BigInt to Rust!");
+        trace!("Converting JS BigInt to Rust!");
 
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_bigint)?;
         let mut word_count: usize = 0;
