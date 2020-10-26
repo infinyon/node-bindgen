@@ -154,6 +154,18 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn create_bigint_uint64(&self, value: u64) -> Result<napi_value,NjError> {
+        let mut result = ptr::null_mut();
+        napi_call_result!(
+            crate::sys::napi_create_bigint_uint64(
+                self.0,
+                value,
+                &mut result
+            )
+        )?;
+        Ok(result)
+    }
+
     pub fn create_object(&self) -> Result<napi_value,NjError>  {
 
         let mut result = ptr::null_mut();
@@ -723,6 +735,27 @@ impl JsEnv {
 
         Ok(array)
 
+    }
+
+    /// Detach ArrayBuffer
+    pub fn detach_arraybuffer(&self, napi_value: napi_value) -> Result<(),NjError> {
+        napi_call_result!(
+            crate::sys::napi_detach_arraybuffer(self.inner(), napi_value)
+        )?;
+        Ok(())
+    }
+
+    /// Is this ArrayBuffer Detached?
+    pub fn is_detached_arraybuffer(&self, napi_value: napi_value) -> Result<bool,NjError> {
+        let mut is_detached = false;
+        napi_call_result!(
+            crate::sys::napi_is_detached_arraybuffer(
+                self.inner(),
+                napi_value,
+                &mut is_detached,
+                )
+        )?;
+        Ok(is_detached)
     }
 
     #[allow(unused_unsafe)]
