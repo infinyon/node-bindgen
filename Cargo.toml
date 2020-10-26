@@ -15,12 +15,12 @@ node = ["nj-sys","nj-core","nj-derive"]
 build = ["nj-build"]
 
 [dependencies]
-nj-sys = { path = "nj-sys", version = "1.0.0", optional = true }
+nj-sys = { path = "nj-sys", version = "1.1.0", optional = true }
 nj-core = { path = "nj-core", version = "3.0.0", optional = true  }
 nj-build = { path = "nj-build", version = "0.2.1", optional = true }
 nj-derive = { path = "nj-derive", version = "2.1.0", optional = true}
 
-[workspace] 
+[workspace]
 members = [
     "nj-build",
     "nj-cli",
