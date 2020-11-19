@@ -114,29 +114,12 @@ pub fn generate_rust_invocation(ctx: &FnGeneratorCtx,cb_args: &mut CbArgs) -> To
     // if this is async, wrap with JsFuture
     let rust_invoke_ft_wrapper = if ctx.is_async() {
 
-        
-        if ctx.has_default_output() {
-
-            // since this doesn't have any output, we don't need return promise, we just
-            // spawn async and return null ptr
-            quote! {
-
-                node_bindgen::core::future::spawn(async move {
-                    #rust_invoke.await;
-                });
-
-                Ok(std::ptr::null_mut())
-            }
-
-        } else {
-
-            let async_name = format!("{}_ft", ctx.fn_name());
-            let async_lit = LitStr::new(&async_name, Span::call_site());
-            quote! {
-                (node_bindgen::core::JsPromiseFuture::new(
-                    #rust_invoke,#async_lit
-                )).try_to_js(&js_env)
-            }
+        let async_name = format!("{}_ft", ctx.fn_name());
+        let async_lit = LitStr::new(&async_name, Span::call_site());
+        quote! {
+            (node_bindgen::core::JsPromiseFuture::new(
+                #rust_invoke, #async_lit
+            )).try_to_js(&js_env)
         }
         
 
