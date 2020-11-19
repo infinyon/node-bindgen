@@ -5,7 +5,7 @@ use syn::FnArg;
 use syn::Signature;
 use syn::Receiver;
 use syn::LitStr;
-use syn::ReturnType;
+// use syn::ReturnType;
 use quote::quote;
 use proc_macro2::TokenStream;
 
@@ -53,10 +53,11 @@ impl <'a>FnGeneratorCtx<'a> {
         self.sig.asyncness.is_some()
     }
 
-    /// check whether this function return ()
-    pub fn has_default_output(&self) -> bool {
-        matches!(self.sig.output, ReturnType::Default)
-    }
+    // /// check whether this function return ()
+    // pub fn has_default_output(&self) -> bool {
+    //     matches!(self.sig.output, ReturnType::Default)
+    // }
+
 
     
 
