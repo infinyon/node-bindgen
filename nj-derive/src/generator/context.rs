@@ -5,7 +5,6 @@ use syn::FnArg;
 use syn::Signature;
 use syn::Receiver;
 use syn::LitStr;
-// use syn::ReturnType;
 use quote::quote;
 use proc_macro2::TokenStream;
 
@@ -52,14 +51,6 @@ impl <'a>FnGeneratorCtx<'a> {
     pub fn is_async(&self) -> bool {
         self.sig.asyncness.is_some()
     }
-
-    // /// check whether this function return ()
-    // pub fn has_default_output(&self) -> bool {
-    //     matches!(self.sig.output, ReturnType::Default)
-    // }
-
-
-    
 
     pub fn napi_fn_id(&self) -> Ident {
         ident(&format!("napi_{}", self.fn_name()))
