@@ -34,3 +34,28 @@ async fn just_sleep(seconds: i32) -> () {
     sleep(Duration::from_secs(seconds as u64)).await;
     println!("finished sleeping");
 }
+
+#[derive(Debug)]
+struct NativeStore {
+    val: String,
+}
+
+#[node_bindgen]
+impl NativeStore {
+    #[node_bindgen(constructor)]
+    fn new() -> Self {
+        Self { val: String::from("unknown") }
+    }
+
+    #[node_bindgen]
+    async fn get(&self) -> String {
+        sleep(std::time::Duration::from_micros(1)).await;
+        self.val.clone()
+    }
+
+    #[node_bindgen]
+    async fn put(&mut self, value: String) {
+        sleep(std::time::Duration::from_millis(500)).await;
+        self.val = value;
+    }
+}

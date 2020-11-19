@@ -28,3 +28,10 @@ async () => {
 (async () => {
   await addon.justSleep(3);
 })();
+
+(async () => {
+  const store = new addon.NativeStore();
+  await store.put("hello world");
+  const val = await store.get();
+  assert.strictEqual(val, "hello world")
+})();
