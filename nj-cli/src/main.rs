@@ -82,7 +82,7 @@ fn init(opt: InitOpt) {
         .stdout(Stdio::inherit())
         .spawn()
         .expect("Failed to execute command");
-    
+
     build_command.wait()
         .expect("failed to wait on child");
 
@@ -97,7 +97,7 @@ fn init(opt: InitOpt) {
                 .args(&["fmt", &manifest_path])
                 .spawn()
                 .expect("Failed to execute command");
-            
+
             fmt.wait()
                 .expect("Failed to execute command");
         };
@@ -119,9 +119,30 @@ fn build(opt: BuildOpt) {
         .spawn()
         .expect("Failed to execute command");
 
-    build_command.wait()
+    let status = build_command.wait()
         .expect("failed to wait on child");
-
+    match status.code() {
+        Some(code) if code != 0 => {
+            std::process::exit(code);
+        }
+        None => {
+            //https://doc.rust-lang.org/std/process/struct.ExitStatus.html#method.code
+            #[cfg(unix)]
+            {
+                use std::os::unix::process::ExitStatusExt;
+                if let Some(signal) = status.signal() {
+                    std::process::exit(signal);
+                } else {
+                    std::process::exit(1);
+                }
+            }
+            #[cfg(not(unix))]
+            {
+                std::process::exit(1);
+            }
+        }
+        Some(_) => {}
+    }
     let target = if opt.release {
         "release"
     } else {
@@ -132,7 +153,7 @@ fn build(opt: BuildOpt) {
 
 }
 
-/// copy library to target directory 
+/// copy library to target directory
 fn copy_lib(out: String,target_type: &str) {
 
     let manifest_path = manifest_path();
@@ -198,7 +219,7 @@ fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
     }else{
         panic!("Unsupported operating system.");
     }.replace("-","_");
-    
+
     target.join(target).join(build_type).join(file_name)
 }
 
