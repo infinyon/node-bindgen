@@ -44,7 +44,7 @@
 - __Async:__ Support Async Rust.  Async codes are translated into Node.js promises.
 - __Class:__ Rust struct can be accessed using Node.js classes.
 - __Stream:__ Implement Node.js stream using Rust
-- __N-API:__ Use Node.js N-API, which means you don't have to recompile your module. 
+- __N-API:__ Use Node.js N-API, which means you don't have to recompile your module.
 
 # Compatibility with Node.js version
 
@@ -59,7 +59,7 @@ Following OS are supported:
 
 # Why node-bindgen?
 
-Writing native node-js requires lots of boilerplate code.  Node-bindgen generates external "C" glue code from rust code, including native module registration.  node-bindgen make it writing node-js module easy and fun.  
+Writing native node-js requires lots of boilerplate code.  Node-bindgen generates external "C" glue code from rust code, including native module registration.  node-bindgen make it writing node-js module easy and fun.
 
 
 # Getting started
@@ -76,18 +76,18 @@ This is one time step.
 
 ## Configuring Cargo.toml
 
-Add two dependencies to your projects' ```Cargo.toml```.  
+Add two dependencies to your projects' ```Cargo.toml```.
 
 Add ```node-bindgen``` as a regular dependency (as below):
 ```
 [dependencies]
-node-bindgen = { version = "3.0.0" }
+node-bindgen = { version = "4.0" }
 ```
 
 Then add ```node-bindgen```'s procedure macro to your build-dependencies as below:
 ```
 [build-dependencies]
-node-bindgen = { version = "3.0.0", features = ["build"] }
+node-bindgen = { version = "4.0", features = ["build"] }
 ```
 
 Then update crate type to ```cdylib``` to generate node.js compatible native module:
@@ -116,7 +116,7 @@ use node_bindgen::derive::node_bindgen;
 
 /// add two integer
 #[node_bindgen]
-fn sum(first: i32, second: i32) -> i32 {        
+fn sum(first: i32, second: i32) -> i32 {
     first + second
 }
 
@@ -141,7 +141,7 @@ nj-cli build --release
 
 While developing your native module, you may want to watch for file changes and run a command when a change occurs, for example `cargo check` or `cargo build`.
 
-For this, we can use `nj-cli watch`. 
+For this, we can use `nj-cli watch`.
 
 `nj-cli watch` installs <small>[if it does not exist]</small> and passes arguments to [`cargo watch`](https://crates.io/crates/cargo-watch). By default, `nj-cli watch` will run `cargo check` against your `./src` files.
 
@@ -161,7 +161,7 @@ Type ".help" for more information.
 undefined
 > addon.sum(2,3)
 5
-> 
+>
 ```
 
 
@@ -171,8 +171,8 @@ undefined
 
 ```rust
 #[node_bindgen(name="multiply")]
-fn mul(first: i32,second: i32) -> i32 {        
-    first * second 
+fn mul(first: i32,second: i32) -> i32 {
+    first * second
 }
 ```
 
@@ -183,7 +183,7 @@ Rust function mul is re-mapped as ```multiply```
 Argument can be skipped if it is marked as optional
 ```rust
 #[node_bindgen]
-fn sum(first: i32, second: Option<i32>) -> i32 {        
+fn sum(first: i32, second: Option<i32>) -> i32 {
     first + second.unwrap_or(0)
 }
 ```
@@ -293,7 +293,7 @@ There are more features in the examples folder.
 ## Windows + Electron Support
 When using node-bindgen with electron on Windows, `nj-build` must
 compile a C++ file, `win_delay_load_hook.cc`, and therefore it is required that the development
-environment has a valid C/C++ compiler. 
+environment has a valid C/C++ compiler.
 
 > If your machine does not have a valid C/C++ compiler, install [Microsoft VSCode](https://code.visualstudio.com/docs/cpp/config-mingw).
 
