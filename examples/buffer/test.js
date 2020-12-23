@@ -18,3 +18,4 @@ assert.deepStrictEqual(JSON.parse(Buffer.from(record.buffer)), { a: 'b', b: 10 }
 
 
 assert.strictEqual(addon.test3(Buffer.from("hello")),"reply hello");
+assert.strictEqual(addon.test4(Buffer.from("hello"),Buffer.from("world")),"hello world");

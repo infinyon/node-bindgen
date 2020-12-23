@@ -590,6 +590,7 @@ impl JsEnv {
         Ok(array)
     }
 
+    
     /// Detach ArrayBuffer
     pub fn detach_arraybuffer(&self, napi_value: napi_value) -> Result<(), NjError> {
         napi_call_result!(crate::sys::napi_detach_arraybuffer(
@@ -673,12 +674,13 @@ impl JsCallback {
         T::extract(self)
     }
 
-    /// get napi value by index
-    pub fn get_value_at<'a,T>(&'a self,i: usize ) -> Result<T,NjError>
-        where T: JSValue<'a>
+    
+    /// convert value to rust 
+    pub fn get_value_at<'a,T>(&'a self,index: usize ) -> Result<T,NjError>
+        where T: ExtractArgFromJs<'a>
     {
-        trace!("trying extract value at: {}",i);
-        T::convert_to_rust(self.env(), self.args[i])
+        trace!("trying extract value at: {}",index);
+        T::convert_arg_at(self,index)
     }
 
     /// create thread safe function
@@ -707,6 +709,8 @@ impl JsCallback {
     }
 }
 
+
+/// #[deprecated(since = "4.1.0","No longer used"]
 pub trait ExtractFromJs<'a>: Sized {
     fn label() -> &'static str {
         std::any::type_name::<Self>()
@@ -759,6 +763,62 @@ impl ExtractFromJs<'_> for JsEnv {
         Ok(*js_cb.env())
     }
 }
+
+
+
+pub trait ExtractArgFromJs<'a>: Sized {
+
+    fn label() -> &'static str {
+        std::any::type_name::<Self>()
+    }
+
+    /// convert js callback argument at index
+    fn convert_arg_at(js_cb: &'a JsCallback,index: usize) -> Result<Self,NjError>;
+}
+
+impl<'a,T: ?Sized> ExtractArgFromJs<'a> for T where T: JSValue<'a> {
+
+    fn label() -> &'static str {
+        T::label()
+    }
+
+
+    fn convert_arg_at(js_cb: &'a JsCallback,index: usize) -> Result<Self,NjError> {
+
+        if index < js_cb.args.len() {
+            T::convert_to_rust(js_cb.env(), js_cb.args[index])
+        } else {
+            Err(NjError::Other(format!("expected argument of type: {} at: {}",Self::label(),index)))
+        }
+    }
+}
+
+impl<'a,T: Sized> ExtractArgFromJs<'a> for Option<T> where T: JSValue<'a> {
+
+    fn label() -> &'static str {
+        T::label()
+    }
+
+    fn convert_arg_at(js_cb: &'a JsCallback,index: usize) -> Result<Self,NjError> {
+
+        
+        if index < js_cb.args.len() {
+            Ok(Some(T::convert_to_rust(js_cb.env(), js_cb.args[index])?))
+        } else {
+            Ok(None)
+        }
+
+    }
+}
+
+impl ExtractArgFromJs<'_> for JsEnv {
+
+    fn convert_arg_at(js_cb: &JsCallback,_index: usize) -> Result<Self,NjError> {
+        Ok(*js_cb.env())
+    }
+}
+
+
 
 pub struct JsExports {
     inner: napi_value,

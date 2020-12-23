@@ -7,7 +7,7 @@ addon.hello(2,function(msg){
 });
 
 assert.throws( () => addon.hello(2),{
-  message: 'expected argument of type: callback'
+  message: 'expected argument of type: callback at: 1'
 }); 
 
 addon.example(function(val){

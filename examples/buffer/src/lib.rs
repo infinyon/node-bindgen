@@ -87,35 +87,12 @@ fn test3(data: &[u8]) -> Result<String,NjError> {
 
 
 #[node_bindgen]
-fn test4(data: &[u8], foo: &[u8]) -> Result<String,NjError> {
+fn test4(first: &[u8], second: &[u8]) -> Result<String,NjError> {
 
-    let message = String::from_utf8(data.to_vec())?;
-    let f = String::from_utf8(foo.to_vec())?;
+    let message1 = String::from_utf8(first.to_vec())?;
+    let message2 = String::from_utf8(second.to_vec())?;
 
-    Ok(format!("reply {} {}",message, f))
+    Ok(format!("{} {}",message1,message2))
 }
 
 
-/*
-extern "C" fn napi_test4(
-    env: node_bindgen::sys::napi_env,
-    cb_info: node_bindgen::sys::napi_callback_info,
-) -> node_bindgen::sys::napi_value {
-    use node_bindgen::core::TryIntoJs;
-    use node_bindgen::core::IntoJs;
-    use node_bindgen::core::val::JsCallbackFunction;
-    fn test4(data: &[u8], foo: &[u8]) -> Result<String, NjError> {
-        let message = String::from_utf8(data.to_vec())?;
-        let f = String::from_utf8(foo.to_vec())?;
-        Ok(format!("reply {} {}",message, f))
-    }
-    let js_env = node_bindgen::core::val::JsEnv::new(env);
-    let result: Result<node_bindgen::sys::napi_value, node_bindgen::core::NjError> = (move || {
-        let js_cb = js_env.get_cb_info(cb_info, 2)?;
-        let rust_value_0 = js_cb.get_value_at::<&[u8]>(0)?;
-        let rust_value_1 = js_cb.get_value_at::<&[u8]>(1)?;
-        test4(rust_value_0, rust_value_1).try_to_js(&js_env)
-    })();
-    result.to_js(&js_env)
-}
-*/

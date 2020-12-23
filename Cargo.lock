@@ -1020,7 +1020,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "2.1.1"
+version = "2.2.0"
 dependencies = [
  "Inflector",
  "flv-future-aio",

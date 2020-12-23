@@ -10,8 +10,8 @@ assert.throws( () => addon.hello("hello"),{
 });
 
 assert.throws(() => addon.hello(),{
-    message: 'expected argument of type: i32'
-});
+    message: 'expected argument of type: i32 at: 0'
+});       
 
 assert.strictEqual(addon.sum(1,2),3);
 
