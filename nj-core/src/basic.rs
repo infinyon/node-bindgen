@@ -664,14 +664,21 @@ impl JsCallback {
         self.args.remove(0)
     }
 
-    /// get value of callback info and verify type
-    pub fn get_value<'a, T>(&'a mut self) -> Result<T, NjError>
-    where
-        T: ExtractFromJs<'a>,
+    /// get next napi value left
+    pub fn get_value<'a,T>(&'a mut self) -> Result<T,NjError>
+        where T: ExtractFromJs<'a> 
     {
         trace!("trying extract value out of {} args", self.args.len());
 
         T::extract(self)
+    }
+
+    /// get napi value by index
+    pub fn get_value_at<'a,T>(&'a self,i: usize ) -> Result<T,NjError>
+        where T: JSValue<'a>
+    {
+        trace!("trying extract value at: {}",i);
+        T::convert_to_rust(self.env(), self.args[i])
     }
 
     /// create thread safe function

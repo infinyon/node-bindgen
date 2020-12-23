@@ -19,7 +19,7 @@ enum MyParam {
     Json(Json)
 }
 
-impl JSValue for MyParam {
+impl JSValue<'_> for MyParam {
 
     fn convert_to_rust(env: &JsEnv,n_value: napi_value) -> Result<Self,NjError> {
 
