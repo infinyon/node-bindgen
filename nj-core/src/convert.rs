@@ -1,4 +1,5 @@
 use libc::size_t;
+use std::ptr;
 
 use crate::sys::napi_value;
 use crate::val::JsEnv;
@@ -10,14 +11,14 @@ use crate::napi_call_result;
 /// convert to JS object
 pub trait TryIntoJs {
 
-    fn try_to_js(self,js_env: &JsEnv) -> Result<napi_value,NjError> ;    
-    
+    fn try_to_js(self,js_env: &JsEnv) -> Result<napi_value,NjError> ;
+
 }
 
 impl TryIntoJs for bool {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
         js_env.create_boolean(self)
-    }   
+    }
 }
 
 impl TryIntoJs for f64 {
@@ -81,7 +82,7 @@ impl TryIntoJs for napi_value {
 
 impl <T>TryIntoJs for Vec<T> where T: TryIntoJs {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value,NjError> {
-        
+
         let array = js_env.create_array_with_len(self.len())?;
         for (i,element) in self.into_iter().enumerate() {
             let js_element = element.try_to_js(js_env)?;
@@ -89,7 +90,7 @@ impl <T>TryIntoJs for Vec<T> where T: TryIntoJs {
         }
 
         Ok(array)
-    }   
+    }
 }
 
 
@@ -103,7 +104,7 @@ pub trait IntoJs {
 
 
 /// Convert napi value to Rust value
-/// 
+///
 pub trait JSValue<'a>: Sized {
 
     fn label() -> &'static str {
@@ -130,7 +131,7 @@ impl JSValue<'_> for f64 {
 }
 
 impl JSValue<'_> for i32 {
-    
+
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
@@ -147,7 +148,7 @@ impl JSValue<'_> for i32 {
 }
 
 impl JSValue<'_> for u32 {
-    
+
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
@@ -165,7 +166,7 @@ impl JSValue<'_> for u32 {
 
 
 impl JSValue<'_> for i64 {
-    
+
 
     fn convert_to_rust(env: &JsEnv,js_value: napi_value) -> Result<Self,NjError> {
 
@@ -208,14 +209,23 @@ impl  JSValue<'_> for String {
 
         use crate::sys::napi_get_value_string_utf8;
 
-        let mut chars: [u8; 1024] = [0;1024];
-        let mut size: size_t = 0;
+        let mut string_size: size_t = 0;
 
         napi_call_result!(
-            napi_get_value_string_utf8(env.inner(),js_value,chars.as_mut_ptr() as *mut i8,1024,&mut size)
+            napi_get_value_string_utf8(env.inner(),js_value,ptr::null_mut(),0,&mut string_size)
         )?;
 
-        let my_chars: Vec<u8> = chars[0..size].into();
+        string_size += 1;
+
+        let chars_vec: Vec<u8> = vec![0; string_size];
+        let mut chars: Box<[u8]> = chars_vec.into_boxed_slice();
+        let mut read_size: size_t = 0;
+
+        napi_call_result!(
+            napi_get_value_string_utf8(env.inner(),js_value,chars.as_mut_ptr() as *mut i8,string_size,&mut read_size)
+        )?;
+
+        let my_chars: Vec<u8> = chars[0..read_size].into();
 
         String::from_utf8(my_chars).map_err(|err| err.into())
     }
@@ -226,12 +236,12 @@ impl  JSValue<'_> for String {
 impl <'a,T>JSValue<'a> for Vec<T> where T: JSValue<'a>  {
 
     fn convert_to_rust(env: &'a JsEnv,js_value: napi_value) -> Result<Self,NjError> {
-    
+
         if !env.is_array(js_value)? {
             return Err(NjError::Other("not array".to_owned()));
         }
-        
-    
+
+
         use crate::sys::napi_get_array_length;
 
         let mut length: u32 = 0;
