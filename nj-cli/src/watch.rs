@@ -16,7 +16,9 @@ pub fn check_cargo_watch() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         println!("installing cargo watch... this might take a minute.");
         // Cargo watch is not installed, attempt to install;
-        Command::new("cargo").args(&["install", "cargo-watch"]).output()?;
+        Command::new("cargo")
+            .args(&["install", "cargo-watch"])
+            .output()?;
         // Re-run check
         println!("checking cargo watch installation...");
         Ok(check_cargo_watch()?)
@@ -28,7 +30,7 @@ pub fn run(opt: WatchOpt) {
         // Use cargo watch to monintor files
         let mut args = vec!["watch".to_string()];
 
-        // Pass in extra 
+        // Pass in extra
         args.extend(opt.extras);
 
         // Start watching files;
@@ -37,9 +39,8 @@ pub fn run(opt: WatchOpt) {
             .stdout(Stdio::inherit())
             .spawn()
             .expect("Failed to execute command");
-        
+
         // Wait on the child process;
-        watch.wait()
-            .expect("failed to wait on child");
+        watch.wait().expect("failed to wait on child");
     }
 }

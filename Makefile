@@ -1,3 +1,5 @@
+RUSTV=stable
+
 install_windows_on_mac:
 	rustup target add x86_64-pc-windows-gnu
 	brew install mingw-w64
@@ -18,3 +20,24 @@ test-derive:
 
 test-try:
 	cd nj-derive; RUST_LOG=debug cargo test derive_try -- --nocapture
+
+
+#
+#  Various Lint tools
+#
+
+install-fmt:
+	rustup component add rustfmt --toolchain $(RUSTV)
+
+check-fmt:
+	cargo +$(RUSTV) fmt -- --check
+
+check_version:
+	make check_version -C k8-util/helm
+
+install-clippy:
+	rustup component add clippy --toolchain $(RUSTV)
+
+check-clippy:	install-clippy
+	cargo +$(RUSTV) clippy --all-targets  -- -D warnings
+	cd src/client; cargo +$(RUSTV) clippy --all-targets  -- -D warnings

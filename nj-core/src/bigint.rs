@@ -70,12 +70,15 @@ impl TryIntoJs for BigInt {
         use std::cmp::min;
 
         // bytes can be non-multiples of 8.
-        for i in 0..(bytes.len()/8 + 1) {
-            let mut slice : [u8; 8] = [0;8];
+        for i in 0..(bytes.len() / 8 + 1) {
+            let mut slice: [u8; 8] = [0; 8];
 
             // https://stackoverflow.com/a/29784723 seems to be the least bad way to convert a Vec
             // slice into an array :/
-            for (place, element) in slice.iter_mut().zip(bytes[i*8..min((i+1)*8, bytes.len())].iter()) {
+            for (place, element) in slice
+                .iter_mut()
+                .zip(bytes[i * 8..min((i + 1) * 8, bytes.len())].iter())
+            {
                 *place = *element;
             }
             words.push(u64::from_le_bytes(slice));

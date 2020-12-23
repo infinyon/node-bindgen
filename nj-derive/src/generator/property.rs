@@ -4,11 +4,8 @@ use proc_macro2::TokenStream;
 use crate::util::ident;
 use super::FnGeneratorCtx;
 
-
 /// generate code to register this function property to global property
 pub fn generate_property_code(ctx: &FnGeneratorCtx) -> TokenStream {
-
-
     if ctx.is_method() {
         return quote! {};
     }
@@ -16,7 +13,7 @@ pub fn generate_property_code(ctx: &FnGeneratorCtx) -> TokenStream {
     let ident_n_api_fn = ctx.napi_fn_id();
     let ident_register_fn = ident(&format!("register_{}", ident_n_api_fn));
     let property_name_literal = ctx.property_name();
-  
+
     quote! {
         #[node_bindgen::core::ctor]
         fn #ident_register_fn() {

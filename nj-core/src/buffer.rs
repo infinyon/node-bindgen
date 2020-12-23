@@ -69,14 +69,14 @@ impl Debug for ArrayBuffer {
     }
 }
 
-
-
-impl <'a>JSValue<'a> for &'a [u8] {
-    fn convert_to_rust(env: &'a JsEnv,js_value: napi_value) -> Result<Self,NjError> {
-        
+impl<'a> JSValue<'a> for &'a [u8] {
+    fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         // check if this is really buffer
         if !env.is_buffer(js_value)? {
-            return Err(NjError::InvalidType("Buffer".to_owned(),env.value_type_string(js_value)?.to_owned()))
+            return Err(NjError::InvalidType(
+                "Buffer".to_owned(),
+                env.value_type_string(js_value)?.to_owned(),
+            ));
         }
 
         let buffer = env.get_buffer_info(js_value)?;

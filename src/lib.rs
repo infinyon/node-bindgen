@@ -1,5 +1,3 @@
-
-
 #[cfg(feature = "node")]
 pub mod core {
     pub use nj_core::*;
@@ -19,4 +17,3 @@ pub mod derive {
 pub mod build {
     pub use nj_build::*;
 }
-

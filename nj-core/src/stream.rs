@@ -10,26 +10,22 @@ use pin_utils::unsafe_unpinned;
 
 use fluvio_future::task::spawn;
 
-
 use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
 use crate::TryIntoJs;
 
-
 pub trait NjStream: Stream {
-
-    fn js_then<F>(self, fut: F) -> JsThen<Self,F>
-        where F: FnMut(Self::Item),
-            Self: Sized
+    fn js_then<F>(self, fut: F) -> JsThen<Self, F>
+    where
+        F: FnMut(Self::Item),
+        Self: Sized,
     {
-
-        JsThen::new(self,fut)
+        JsThen::new(self, fut)
     }
 }
 
 impl<T: ?Sized> NjStream for T where T: Stream {}
-
 
 pub struct JsThen<St, F> {
     stream: St,
@@ -38,10 +34,10 @@ pub struct JsThen<St, F> {
 
 impl<St: Unpin, F> Unpin for JsThen<St, F> {}
 
-
 impl<St, F> JsThen<St, F>
-    where St: Stream,
-          F: FnMut(St::Item)
+where
+    St: Stream,
+    F: FnMut(St::Item),
 {
     unsafe_pinned!(stream: St);
     unsafe_unpinned!(f: F);
@@ -51,30 +47,23 @@ impl<St, F> JsThen<St, F>
     }
 }
 
-
 impl<St, F> TryIntoJs for JsThen<St, F>
-    where St: Stream + Send + 'static,
-          F: FnMut(St::Item) + Send + 'static,
-          St::Item: Debug
+where
+    St: Stream + Send + 'static,
+    F: FnMut(St::Item) + Send + 'static,
+    St::Item: Debug,
 {
-
-
-    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value,NjError> {
-
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
         let mut stream = Box::pin(self.stream);
         let mut cb = self.f;
 
         spawn(async move {
             while let Some(item) = stream.next().await {
-                debug!("got item: {:#?}, invoking Js callback",item);
+                debug!("got item: {:#?}, invoking Js callback", item);
                 cb(item);
             }
-           
         });
 
         Ok(ptr::null_mut())
-        
     }
 }
-
-

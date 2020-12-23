@@ -7,7 +7,7 @@ pub struct Config {
     package: ConfigPackage,
     lib: Option<ConfigLib>,
     dependencies: Option<Dependencies>,
-    build_dependencies: Option<Dependencies>
+    build_dependencies: Option<Dependencies>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -21,44 +21,44 @@ pub struct ConfigPackage {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ConfigLib {
     #[serde(rename = "crate-type")]
-    crate_type: Vec<String>
+    crate_type: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Dependencies {
     #[serde(rename = "node-bindgen")]
-    node_bindgen: Option<Dependency>
+    node_bindgen: Option<Dependency>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Dependency {
     version: String,
-    features: Vec<String>
+    features: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
 pub struct ProjectFiles {
-    dir: PathBuf
+    dir: PathBuf,
 }
 
 impl ProjectFiles {
     pub fn new(dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
-        Ok(Self { 
-            dir 
-        }
-        .add_build_rs()?
-        .add_lib_rs()?
-        .add_cargo_toml()?)
+        Ok(Self { dir }
+            .add_build_rs()?
+            .add_lib_rs()?
+            .add_cargo_toml()?)
     }
 
     fn add_build_rs(self) -> Result<Self, Box<dyn std::error::Error>> {
         let mut build_rs = self.dir.clone();
         build_rs.push("build.rs");
-        
+
         let mut file = File::create(&build_rs)?;
-        file.write_all(b"fn main() { 
+        file.write_all(
+            b"fn main() { 
             node_bindgen::build::configure(); 
-        }")?;
+        }",
+        )?;
 
         Ok(self)
     }
@@ -108,21 +108,21 @@ impl ProjectFiles {
         let version = "2.1.1".to_string();
 
         config.lib = Some(ConfigLib {
-            crate_type: vec!["cdylib".to_string()]
+            crate_type: vec!["cdylib".to_string()],
         });
-        
+
         config.dependencies = Some(Dependencies {
             node_bindgen: Some(Dependency {
                 version: version.clone(),
-                features: vec![]
-            })
+                features: vec![],
+            }),
         });
-        
+
         config.build_dependencies = Some(Dependencies {
             node_bindgen: Some(Dependency {
                 version,
-                features: vec!["build".to_string()]
-            })
+                features: vec!["build".to_string()],
+            }),
         });
 
         // Remove the old cargo toml file;
@@ -133,5 +133,4 @@ impl ProjectFiles {
 
         Ok(self)
     }
-
 }

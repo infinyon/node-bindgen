@@ -12,11 +12,10 @@ pub fn arg_ident(index: usize) -> syn::Ident {
     ident(&format!("arg{}", index))
 }
 
-
 pub fn ident(ident: &str) -> syn::Ident {
-    syn::Ident::new(ident,Span::call_site())
+    syn::Ident::new(ident, Span::call_site())
 }
 
 pub fn lit_str(ident: &str) -> LitStr {
-    LitStr::new(ident,Span::call_site())
+    LitStr::new(ident, Span::call_site())
 }

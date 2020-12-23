@@ -10,21 +10,20 @@ use crate::sys::napi_env;
 /// Wrapper for thread safe function that are safe to send and sync across thread
 pub struct ThreadSafeFunction {
     env: JsEnv,
-    tf: napi_threadsafe_function
+    tf: napi_threadsafe_function,
 }
 
-unsafe impl Sync for ThreadSafeFunction{}
-unsafe impl Send for ThreadSafeFunction{}
-
+unsafe impl Sync for ThreadSafeFunction {}
+unsafe impl Send for ThreadSafeFunction {}
 
 impl ThreadSafeFunction {
-
-    pub fn new<E>(env: E,tf: napi_threadsafe_function) -> Self 
-        where E: Into<JsEnv>
+    pub fn new<E>(env: E, tf: napi_threadsafe_function) -> Self
+    where
+        E: Into<JsEnv>,
     {
         Self {
             env: env.into(),
-            tf
+            tf,
         }
     }
 
@@ -36,33 +35,25 @@ impl ThreadSafeFunction {
         self.env.inner()
     }
 
-    pub fn call(&self, data: Option<*mut ::std::os::raw::c_void>) -> Result<(),NjError> {
-        
+    pub fn call(&self, data: Option<*mut ::std::os::raw::c_void>) -> Result<(), NjError> {
         let data_ptr = match data {
             Some(ptr) => ptr,
-            None => ptr::null_mut()
+            None => ptr::null_mut(),
         };
         debug!("calling thread safe");
-        crate::napi_call_result!(
-            crate::sys::napi_call_threadsafe_function(
-                self.tf,
-                data_ptr,
-                crate::sys::napi_threadsafe_function_call_mode_napi_tsfn_blocking
-            )
-        )
-        
+        crate::napi_call_result!(crate::sys::napi_call_threadsafe_function(
+            self.tf,
+            data_ptr,
+            crate::sys::napi_threadsafe_function_call_mode_napi_tsfn_blocking
+        ))
     }
 }
 
 impl Drop for ThreadSafeFunction {
-
     fn drop(&mut self) {
-        
-        crate::napi_call_assert!(
-            crate::sys::napi_release_threadsafe_function(
-                self.tf,
-                crate::sys::napi_threadsafe_function_release_mode_napi_tsfn_release
-            )
-        );        
+        crate::napi_call_assert!(crate::sys::napi_release_threadsafe_function(
+            self.tf,
+            crate::sys::napi_threadsafe_function_release_mode_napi_tsfn_release
+        ));
     }
 }
