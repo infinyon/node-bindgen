@@ -570,17 +570,26 @@ impl JsEnv {
         use std::slice;
         use crate::sys::napi_get_buffer_info;
 
+        let mut js_ref = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_create_reference(
+            self.0,
+            napi_value,
+            1,
+            &mut js_ref
+        ))?;
+
+        let mut val_ref = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_get_reference_value(
+            self.0,
+            js_ref,
+            &mut val_ref
+        ))?;
+
         let mut len: size_t = 0;
         let mut data = ptr::null_mut();
-
-        //  napi_status napi_get_buffer_info(napi_env env,
-        //      napi_value value,
-        //      void** data,
-        //      size_t* length)
-
         napi_call_result!(napi_get_buffer_info(
             self.inner(),
-            napi_value,
+            val_ref,
             &mut data,
             &mut len
         ))?;
