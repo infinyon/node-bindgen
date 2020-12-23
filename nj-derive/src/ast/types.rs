@@ -31,17 +31,17 @@ impl<'a> MyTypePath<'a> {
 }
 
 #[derive(Debug)]
-pub struct MyReferenceType<'a>{
+pub struct MyReferenceType<'a> {
     ident: &'a Ident,
-    inner: &'a TypeReference
+    inner: &'a TypeReference,
 }
 
 impl<'a> MyReferenceType<'a> {
     pub fn from(ty: &'a TypeReference) -> Result<Self> {
         //println!("tye: {:#?}", ty);
-        Ok(Self{
+        Ok(Self {
             ident: get_type_name(ty.elem.as_ref())?,
-            inner: ty
+            inner: ty,
         })
     }
 

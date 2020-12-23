@@ -4,7 +4,6 @@ mod watch;
 use watch::{WatchOpt};
 use structopt::StructOpt;
 
-
 use std::process::Command;
 use std::process::Stdio;
 use std::path::Path;
@@ -16,24 +15,23 @@ use cargo_metadata::Package;
 use cargo_metadata::Metadata;
 use cargo_metadata::Target;
 
-
-#[derive(Debug,StructOpt)]
+#[derive(Debug, StructOpt)]
 #[structopt(
     about = "Nj Command Line Interface",
     author = "Fluvio",
-    name = "node-bindgen cli")]
+    name = "node-bindgen cli"
+)]
 enum Opt {
     #[structopt(name = "build")]
     Build(BuildOpt),
     #[structopt(name = "init")]
     Init(InitOpt),
     #[structopt(name = "watch")]
-    Watch(WatchOpt)
+    Watch(WatchOpt),
 }
 
-#[derive(Debug,StructOpt)]
+#[derive(Debug, StructOpt)]
 struct BuildOpt {
-
     #[structopt(short = "o", long = "out", default_value = "dist")]
     output: String,
 
@@ -48,21 +46,13 @@ struct InitOpt {
     extras: Vec<String>,
 }
 
-
 fn main() {
-
     let opt = Opt::from_args();
 
     match opt {
-        Opt::Build(opt) => {
-            build(opt)
-        },
-        Opt::Init(opt) => {
-            init(opt)
-        },
-        Opt::Watch(opt) => {
-            watch::run(opt)
-        }
+        Opt::Build(opt) => build(opt),
+        Opt::Init(opt) => init(opt),
+        Opt::Watch(opt) => watch::run(opt),
     }
 }
 
@@ -83,8 +73,7 @@ fn init(opt: InitOpt) {
         .spawn()
         .expect("Failed to execute command");
 
-    build_command.wait()
-        .expect("failed to wait on child");
+    build_command.wait().expect("failed to wait on child");
 
     if let Ok(mut dir) = std::env::current_dir() {
         dir.push(path);
@@ -98,15 +87,13 @@ fn init(opt: InitOpt) {
                 .spawn()
                 .expect("Failed to execute command");
 
-            fmt.wait()
-                .expect("Failed to execute command");
+            fmt.wait().expect("Failed to execute command");
         };
     }
 }
 
 // kick off build
 fn build(opt: BuildOpt) {
-
     let mut args = vec!["build".to_string()];
     if opt.release {
         args.push("--release".to_string());
@@ -119,8 +106,7 @@ fn build(opt: BuildOpt) {
         .spawn()
         .expect("Failed to execute command");
 
-    let status = build_command.wait()
-        .expect("failed to wait on child");
+    let status = build_command.wait().expect("failed to wait on child");
     match status.code() {
         Some(code) if code != 0 => {
             std::process::exit(code);
@@ -143,26 +129,20 @@ fn build(opt: BuildOpt) {
         }
         Some(_) => {}
     }
-    let target = if opt.release {
-        "release"
-    } else {
-        "debug"
-    };
+    let target = if opt.release { "release" } else { "debug" };
 
-    copy_lib(opt.output,target);
-
+    copy_lib(opt.output, target);
 }
 
 /// copy library to target directory
-fn copy_lib(out: String,target_type: &str) {
-
+fn copy_lib(out: String, target_type: &str) {
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
-    if let Some(package) = find_current_package(&metadata,&manifest_path) {
+    if let Some(package) = find_current_package(&metadata, &manifest_path) {
         if let Some(target) = find_cdylib(&package) {
-            let lib_path = lib_path(&metadata.target_directory,target_type,&target.name);
+            let lib_path = lib_path(&metadata.target_directory, target_type, &target.name);
             let error_msg = format!("copy failed of {:?}", lib_path);
-            copy_cdylib(&lib_path,&out).expect(&error_msg);
+            copy_cdylib(&lib_path, &out).expect(&error_msg);
         } else {
             eprintln!("no cdylib target was founded");
         }
@@ -172,31 +152,26 @@ fn copy_lib(out: String,target_type: &str) {
 }
 
 fn find_cdylib(package: &Package) -> Option<&Target> {
-
     for target in &package.targets {
         if target.name == package.name {
-            return Some(target)
+            return Some(target);
         }
     }
     None
 }
 
-
-fn find_current_package<'a>(metadata: &'a Metadata,manifest_path: &Path) -> Option<&'a Package> {
-
+fn find_current_package<'a>(metadata: &'a Metadata, manifest_path: &Path) -> Option<&'a Package> {
     for package in &metadata.packages {
         //println!("package names target: {:#?}",package.name);
         if package.manifest_path == manifest_path {
-            return Some(package)
+            return Some(package);
         }
     }
 
     None
-
 }
 
 fn load_metadata(manifest_path: &Path) -> Metadata {
-
     MetadataCommand::new()
         .manifest_path(manifest_path)
         .features(CargoOpt::AllFeatures)
@@ -209,23 +184,23 @@ fn manifest_path() -> PathBuf {
     current_path.join("Cargo.toml")
 }
 
-fn lib_path(target: &Path,build_type: &str,target_name: &str) -> PathBuf {
+fn lib_path(target: &Path, build_type: &str, target_name: &str) -> PathBuf {
     let file_name = if cfg!(target_os = "windows") {
         format!("{}.dll", target_name)
-    }else if cfg!(target_os = "macos") {
+    } else if cfg!(target_os = "macos") {
         format!("lib{}.dylib", target_name)
-    }else if cfg!(target_os = "linux") {
+    } else if cfg!(target_os = "linux") {
         format!("lib{}.so", target_name)
-    }else{
+    } else {
         panic!("Unsupported operating system.");
-    }.replace("-","_");
+    }
+    .replace("-", "_");
 
     target.join(target).join(build_type).join(file_name)
 }
 
 // where we are outputting
 fn output_dir(output: &str) -> Result<PathBuf> {
-
     let current_path = std::env::current_dir().expect("can't get current directory");
     let output_dir = current_path.join(output);
     // ensure we have directory
@@ -234,12 +209,9 @@ fn output_dir(output: &str) -> Result<PathBuf> {
     Ok(output_dir)
 }
 
-fn copy_cdylib(lib_path: &Path,out: &str) -> Result<()> {
-
+fn copy_cdylib(lib_path: &Path, out: &str) -> Result<()> {
     let dir = output_dir(out)?;
     let output_path = dir.join("index.node");
-    std::fs::copy(lib_path,output_path)?;
+    std::fs::copy(lib_path, output_path)?;
     Ok(())
 }
-
-

@@ -16,19 +16,16 @@ use syn::Receiver;
 use super::MyTypePath;
 use super::MyReferenceType;
 
-
 /// Information about Function Arguments
-#[derive(Debug,Default)]
+#[derive(Debug, Default)]
 pub struct FunctionArgs<'a> {
     pub args: Vec<FunctionArg<'a>>,
     pub is_method: bool,
     receiver: Option<&'a Receiver>,
 }
 
-impl <'a>FunctionArgs<'a> {
-
+impl<'a> FunctionArgs<'a> {
     pub fn from_ast(sig: &'a Signature) -> Result<Self> {
-
         //println!("fn: {:#?}",input_fn);
         let generics = &sig.generics;
 
@@ -39,26 +36,16 @@ impl <'a>FunctionArgs<'a> {
         // extract arguments,
         let i = 0;
         for ref arg in &sig.inputs {
-
-           // println!("arg: {:#?}",arg);
+            // println!("arg: {:#?}",arg);
             match arg {
                 FnArg::Receiver(_) => {}
-                FnArg::Typed(arg_type) => {
-                 
-                    match &*arg_type.pat {
-                        Pat::Ident(identity) => {
-                         
-                            let arg = FunctionArg::new(
-                                i,
-                                &identity.ident,
-                                &*arg_type.ty,
-                                generics
-                            )?;
-                            args.push(arg);
-                        },
-                        _ => return Err(Error::new(arg_type.span(), "not supported type")),
+                FnArg::Typed(arg_type) => match &*arg_type.pat {
+                    Pat::Ident(identity) => {
+                        let arg = FunctionArg::new(i, &identity.ident, &*arg_type.ty, generics)?;
+                        args.push(arg);
                     }
-                }
+                    _ => return Err(Error::new(arg_type.span(), "not supported type")),
+                },
             }
         }
 
@@ -67,9 +54,7 @@ impl <'a>FunctionArgs<'a> {
             is_method,
             ..Default::default()
         })
-
     }
-    
 
     pub fn inner(&self) -> &Vec<FunctionArg> {
         &self.args
@@ -78,20 +63,14 @@ impl <'a>FunctionArgs<'a> {
     pub fn len(&self) -> usize {
         self.args.len()
     }
-
-
-
 }
-
 
 /// find receiver if any, this will be used to indicate if this is method
 fn has_receiver(sig: &Signature) -> bool {
-
-    sig.inputs.iter().any(|input| {
-        matches!(input, FnArg::Receiver(_rec))
-    })
+    sig.inputs
+        .iter()
+        .any(|input| matches!(input, FnArg::Receiver(_rec)))
 }
-
 
 #[derive(Debug)]
 pub struct FunctionArg<'a> {
@@ -99,26 +78,24 @@ pub struct FunctionArg<'a> {
     pub typ: FunctionArgType<'a>,
 }
 
-impl <'a> FunctionArg<'a>  {
-
+impl<'a> FunctionArg<'a> {
     /// given this, convert into normalized type signature
     fn new(arg_index: u32, ident: &'a Ident, ty: &'a Type, generics: &'a Generics) -> Result<Self> {
-
         match ty {
             Type::Path(path_type) => {
                 let my_type = MyTypePath::from(path_type)?;
 
                 // check whether type references in the generic indicates this is closure
-                if let Some(param) = find_generic(generics,my_type.ident()) {
-                    let closure = ClosureType::from(ident,param)?;
+                if let Some(param) = find_generic(generics, my_type.ident()) {
+                    let closure = ClosureType::from(ident, param)?;
                     Ok(Self {
                         arg_index,
-                        typ: FunctionArgType::Closure(closure)
+                        typ: FunctionArgType::Closure(closure),
                     })
                 } else {
                     Ok(Self {
                         arg_index,
-                        typ: FunctionArgType::Path(my_type)
+                        typ: FunctionArgType::Path(my_type),
                     })
                 }
             }
@@ -139,10 +116,10 @@ impl <'a> FunctionArg<'a>  {
                 */
                 Ok(Self {
                     arg_index,
-                    typ: FunctionArgType::Ref(my_type)
+                    typ: FunctionArgType::Ref(my_type),
                 })
             }
-            _ => Err(Error::new(ty.span(), "not supported type"))
+            _ => Err(Error::new(ty.span(), "not supported type")),
         }
     }
 
@@ -156,90 +133,86 @@ impl <'a> FunctionArg<'a>  {
     */
 }
 
-
 /// Categorize function argument
 #[derive(Debug)]
 pub enum FunctionArgType<'a> {
-    Path(MyTypePath<'a>),           // normal type
-    Ref(MyReferenceType<'a>),       // reference type
-    Closure(ClosureType<'a>),       // closure callback
-   // JsEnv(MyReferenceType<'a>),     // indicating that we want to receive JsEnv
+    Path(MyTypePath<'a>),     // normal type
+    Ref(MyReferenceType<'a>), // reference type
+    Closure(ClosureType<'a>), // closure callback
+                              // JsEnv(MyReferenceType<'a>),     // indicating that we want to receive JsEnv
 }
 
-
 /// find generic with match ident
-fn find_generic<'a,'b>(generics: &'a Generics, ident: Option<&'b Ident>) -> Option<&'a TypeParam> {
-
+fn find_generic<'a, 'b>(generics: &'a Generics, ident: Option<&'b Ident>) -> Option<&'a TypeParam> {
     if let Some(ident) = ident {
-        generics.type_params().find(|ty| *ty.ident.to_string() == *ident.to_string())
+        generics
+            .type_params()
+            .find(|ty| *ty.ident.to_string() == *ident.to_string())
     } else {
         None
     }
-
 }
-
 
 #[derive(Debug)]
 pub struct ClosureType<'a> {
     //pub ty: &'a ParenthesizedGenericArguments,
     pub inputs: Vec<MyTypePath<'a>>,
-    pub ident: &'a Ident
+    pub ident: &'a Ident,
 }
 
-impl <'a>ClosureType<'a> {
+impl<'a> ClosureType<'a> {
     // try to see if we can find closure, otherwise return none
-    pub fn from(ident: &'a Ident,param: &'a TypeParam) -> Result<Self> {
+    pub fn from(ident: &'a Ident, param: &'a TypeParam) -> Result<Self> {
         for ref bound in &param.bounds {
             match bound {
                 TypeParamBound::Trait(tt) => {
                     for ref segment in &tt.path.segments {
                         match segment.arguments {
-                            
-                            PathArguments::Parenthesized(ref path) => return Ok(Self {
-                                ident,
-                                inputs: find_inputs(path)?
-                            }),
-                            _ => return Err(Error::new(param.span(), "not supported closure type")),
+                            PathArguments::Parenthesized(ref path) => {
+                                return Ok(Self {
+                                    ident,
+                                    inputs: find_inputs(path)?,
+                                })
+                            }
+                            _ => {
+                                return Err(Error::new(param.span(), "not supported closure type"))
+                            }
                         }
                     }
+                    return Err(Error::new(param.span(), "not supported closure type"));
+                }
+                TypeParamBound::Lifetime(_) => {
                     return Err(Error::new(param.span(), "not supported closure type"))
                 }
-                TypeParamBound::Lifetime(_) => return Err(Error::new(param.span(), "not supported closure type")),
             }
         }
         Err(Error::new(param.span(), "not supported closure type"))
     }
 
-    
     // name of function is used by thread safe function to complete closure
     pub fn async_js_callback_identifier(&self) -> Ident {
-
         use proc_macro2::Span;
 
-        Ident::new(&format!("thread_safe_{}_complete",self.ident),Span::call_site())
+        Ident::new(
+            &format!("thread_safe_{}_complete", self.ident),
+            Span::call_site(),
+        )
     }
-    
-
 }
 
-
-fn find_inputs(ty: &ParenthesizedGenericArguments)  -> Result<Vec<MyTypePath>> {
-
+fn find_inputs(ty: &ParenthesizedGenericArguments) -> Result<Vec<MyTypePath>> {
     let mut types: Vec<MyTypePath> = vec![];
 
-    for path in &ty.inputs  {
+    for path in &ty.inputs {
         let my_type = match path {
-            Type::Path(ref path_type) =>  {
-                match MyTypePath::from(path_type) {
-                    Ok(m_type) => m_type,
-                    Err(err) => return Err(err)
-                }
+            Type::Path(ref path_type) => match MyTypePath::from(path_type) {
+                Ok(m_type) => m_type,
+                Err(err) => return Err(err),
             },
-            _ => return Err(Error::new(ty.span(), "not supported closure type"))
+            _ => return Err(Error::new(ty.span(), "not supported closure type")),
         };
         types.push(my_type);
     }
 
     Ok(types)
-
 }

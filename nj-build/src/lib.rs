@@ -11,19 +11,24 @@ pub fn configure() {
     use std::process::Command;
     use std::env::temp_dir;
 
-    let node_full_version = String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
-    
+    let node_full_version =
+        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
+
     let tmp_dir = temp_dir();
-    let temp_lib = tmp_dir.clone().join(format!("node-{}.lib", node_full_version.trim_end()));
+    let temp_lib = tmp_dir
+        .clone()
+        .join(format!("node-{}.lib", node_full_version.trim_end()));
 
     if !temp_lib.exists() {
-
         let lib_file_download_url = format!(
             "https://nodejs.org/dist/{}/win-x64/node.lib",
             node_full_version
         );
 
-        println!("downloading nodejs: {} to: {:#?}",lib_file_download_url,temp_lib);
+        println!(
+            "downloading nodejs: {} to: {:#?}",
+            lib_file_download_url, temp_lib
+        );
 
         let mut resp =
             reqwest::blocking::get(&lib_file_download_url).expect("Download node.lib file failed");
@@ -36,8 +41,7 @@ pub fn configure() {
         &temp_lib.file_stem().unwrap().to_str().unwrap()
     );
     println!("cargo:rustc-link-search={}", tmp_dir.to_str().unwrap());
-    
-    
+
     // Link `win_delay_load_hook.obj` for windows electron
     let node_runtime_env = "npm_config_runtime";
     println!("cargo:rerun-if-env-changed={}", node_runtime_env);

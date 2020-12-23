@@ -1,4 +1,3 @@
-
 use std::fmt;
 use std::string::FromUtf8Error;
 use std::ptr;
@@ -8,21 +7,19 @@ use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::IntoJs;
 
-
 #[derive(Debug)]
 pub enum NjError {
     NapiCall(NapiStatus),
-    InvalidArgCount(usize,usize),
-    InvalidArgIndex(usize,usize),
-    InvalidType(String,String),
+    InvalidArgCount(usize, usize),
+    InvalidArgIndex(usize, usize),
+    InvalidType(String, String),
     NoPlainConstructor,
     Utf8Error(FromUtf8Error),
-    Other(String)
+    Other(String),
 }
 
 // error are throw
 impl IntoJs for NjError {
-
     fn to_js(self, js_env: &JsEnv) -> napi_value {
         let msg = self.to_string();
         js_env.throw_type_error(&msg);
@@ -31,26 +28,21 @@ impl IntoJs for NjError {
 }
 
 impl NjError {
-
     /// convert to napi value
     pub fn as_js(&self, js_env: &JsEnv) -> napi_value {
-
         let msg = self.to_string();
         js_env.create_error(&msg).expect("error cannot be created")
     }
 }
 
-impl IntoJs for Result<napi_value,NjError> {
-    
+impl IntoJs for Result<napi_value, NjError> {
     fn to_js(self, js_env: &JsEnv) -> napi_value {
-        
         match self {
             Ok(napi_val) => napi_val,
-            Err(err) => err.to_js(js_env)
+            Err(err) => err.to_js(js_env),
         }
     }
 }
-
 
 impl From<FromUtf8Error> for NjError {
     fn from(error: FromUtf8Error) -> Self {
@@ -58,31 +50,37 @@ impl From<FromUtf8Error> for NjError {
     }
 }
 
-
 impl From<NapiStatus> for NjError {
     fn from(status: NapiStatus) -> Self {
         Self::NapiCall(status)
     }
 }
 
-
 impl fmt::Display for NjError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::NapiCall(status) => write!(f,"napi call failed {:#?}",status),
-            Self::InvalidType(expected,actual) => write!(f,"invalid type, expected: {}, actual: {}",expected,actual),
-            Self::Utf8Error(err) => write!(f,"ut8 error: {}",err),
-            Self::InvalidArgIndex(index,len) => write!(f,"attempt to access arg: {} out of len: {}",index,len),
-            Self::InvalidArgCount(actual_count,expected_count) => write!(f,"{} args expected but {} is present",expected_count,actual_count),
-            Self::NoPlainConstructor => write!(f,"Plain constructor not supported yet"),
-            Self::Other(msg) => write!(f,"{}",msg)
+            Self::NapiCall(status) => write!(f, "napi call failed {:#?}", status),
+            Self::InvalidType(expected, actual) => write!(
+                f,
+                "invalid type, expected: {}, actual: {}",
+                expected, actual
+            ),
+            Self::Utf8Error(err) => write!(f, "ut8 error: {}", err),
+            Self::InvalidArgIndex(index, len) => {
+                write!(f, "attempt to access arg: {} out of len: {}", index, len)
+            }
+            Self::InvalidArgCount(actual_count, expected_count) => write!(
+                f,
+                "{} args expected but {} is present",
+                expected_count, actual_count
+            ),
+            Self::NoPlainConstructor => write!(f, "Plain constructor not supported yet"),
+            Self::Other(msg) => write!(f, "{}", msg),
         }
     }
 }
 
-
-
-#[derive(Debug,PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum NapiStatus {
     Ok = crate::sys::napi_status_napi_ok as isize,
     InvalidArg = crate::sys::napi_status_napi_invalid_arg as isize,
@@ -104,17 +102,15 @@ pub enum NapiStatus {
     BigintExpected = crate::sys::napi_status_napi_bigint_expected as isize,
     DateExpected = crate::sys::napi_status_napi_date_expected as isize,
     ArraybufferExpected = crate::sys::napi_status_napi_arraybuffer_expected as isize,
-    DetachableArrayBufferExpected = crate::sys::napi_status_napi_detachable_arraybuffer_expected as isize
+    DetachableArrayBufferExpected =
+        crate::sys::napi_status_napi_detachable_arraybuffer_expected as isize,
 }
 
 impl From<napi_status> for NapiStatus {
-
     fn from(status: napi_status) -> Self {
-        
         match status {
-
             crate::sys::napi_status_napi_ok => Self::Ok,
-            crate::sys::napi_status_napi_invalid_arg  => Self::InvalidArg,
+            crate::sys::napi_status_napi_invalid_arg => Self::InvalidArg,
             crate::sys::napi_status_napi_object_expected => Self::ObjectExpected,
             crate::sys::napi_status_napi_string_expected => Self::StringExpected,
             crate::sys::napi_status_napi_name_expected => Self::NameExpected,
@@ -133,11 +129,10 @@ impl From<napi_status> for NapiStatus {
             crate::sys::napi_status_napi_bigint_expected => Self::BigintExpected,
             crate::sys::napi_status_napi_date_expected => Self::DateExpected,
             crate::sys::napi_status_napi_arraybuffer_expected => Self::ArraybufferExpected,
-            crate::sys::napi_status_napi_detachable_arraybuffer_expected  => Self::DetachableArrayBufferExpected,
-            _ => panic!("cannot convert: {}",status)
-
+            crate::sys::napi_status_napi_detachable_arraybuffer_expected => {
+                Self::DetachableArrayBufferExpected
+            }
+            _ => panic!("cannot convert: {}", status),
         }
     }
-
-} 
-
+}

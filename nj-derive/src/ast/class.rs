@@ -16,14 +16,12 @@ use super::MyTypePath;
 
 pub struct Class<'a> {
     pub self_ty: MyTypePath<'a>,
-    pub methods: Vec<Method<'a>>
+    pub methods: Vec<Method<'a>>,
 }
 
-impl <'a> Class<'a> {
-
-    /// convert 
+impl<'a> Class<'a> {
+    /// convert
     pub fn from_ast(item: &'a ItemImpl) -> Result<Self> {
-
         use syn::Type;
 
         let mut methods = vec![];
@@ -38,17 +36,16 @@ impl <'a> Class<'a> {
         // find type path
         let self_ty = match &*item.self_ty {
             Type::Path(path_type) => MyTypePath::from(&path_type)?,
-            _ => return Err(Error::new(item.span(), "not supported receiver type"))
+            _ => return Err(Error::new(item.span(), "not supported receiver type")),
         };
 
-        Ok(Self{
-            methods,
-            self_ty
-        })
+        Ok(Self { methods, self_ty })
     }
 
     pub fn constructor(&'a self) -> Option<&'a Method> {
-        self.methods.iter().find(|method| method.attributes.is_constructor())
+        self.methods
+            .iter()
+            .find(|method| method.attributes.is_constructor())
     }
 
     pub fn my_type(&'a self) -> &MyTypePath<'a> {
@@ -59,28 +56,22 @@ impl <'a> Class<'a> {
 pub struct Method<'a> {
     pub method: &'a ImplItemMethod,
     pub attributes: FunctionAttributes,
-    pub args: FunctionArgs<'a>
+    pub args: FunctionArgs<'a>,
 }
 
-
-impl <'a>Method<'a> {
-
-    
+impl<'a> Method<'a> {
     /// extract js method, if it can't find marker attribute, return some
     pub fn from_ast(method: &'a ImplItemMethod) -> Result<Option<Self>> {
-
         if let Some(attr) = method.find_attr() {
-            
             let args = FunctionArgs::from_ast(&method.sig)?;
             Ok(Some(Self {
                 method,
                 args,
-                attributes: FunctionAttributes::from_method_attribute(attr)?
+                attributes: FunctionAttributes::from_method_attribute(attr)?,
             }))
-            
         } else {
             Ok(None)
-        }   
+        }
     }
 
     pub fn method_name(&self) -> &Ident {
@@ -89,14 +80,13 @@ impl <'a>Method<'a> {
 
     /// used for registering in the Napi
     pub fn property_name(&self) -> LitStr {
-
         if let Some(name) = self.attributes.name() {
             LitStr::new(name, Span::call_site())
         } else {
-            LitStr::new(&default_function_property_name(&self.method_name().to_string()),Span::call_site())
+            LitStr::new(
+                &default_function_property_name(&self.method_name().to_string()),
+                Span::call_site(),
+            )
         }
-    
     }
-
-
 }
