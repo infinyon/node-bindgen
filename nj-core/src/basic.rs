@@ -704,13 +704,15 @@ impl JsCallback {
         index: usize,
         call_js_cb: napi_threadsafe_function_call_js,
     ) -> Result<crate::ThreadSafeFunction, NjError> {
-
         if index < self.args.len() {
-            self.env.create_thread_safe_function(name, Some(self.args[index]), call_js_cb)
+            self.env
+                .create_thread_safe_function(name, Some(self.args[index]), call_js_cb)
         } else {
-            Err(NjError::Other(format!("expected js callback at: {}",index)))
+            Err(NjError::Other(format!(
+                "expected js callback at: {}",
+                index
+            )))
         }
-
     }
 
     pub fn unwrap_mut<T>(&self) -> Result<&'static mut T, NjError> {
