@@ -84,4 +84,3 @@ impl<'a> JSValue<'a> for &'a [u8] {
         Ok(buffer)
     }
 }
-

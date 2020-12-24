@@ -184,7 +184,6 @@ mod arg_extraction {
             }
             FunctionArgType::Path(ty) => rust_value(ty.expansion(), arg_index),
             FunctionArgType::Ref(ty) => rust_value(ty.expansion(), arg_index),
-            
         }
     }
 
@@ -434,12 +433,9 @@ mod closure {
     }
 }
 
-
-
 /// generate expression to convert napi value to rust value from callback
 /// ```let rust_value_0 = js_cb.get_value_at::<&[u8]>(0)?;```
 fn rust_value(type_name: TokenStream, index: usize) -> TokenStream {
-            
     let arg_index = LitInt::new(&index.to_string(), Span::call_site());
     let rust_value = rust_arg_var(index);
     quote! {
