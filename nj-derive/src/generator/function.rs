@@ -184,14 +184,6 @@ mod arg_extraction {
             }
             FunctionArgType::Path(ty) => rust_value(ty.expansion(), arg_index),
             FunctionArgType::Ref(ty) => rust_value(ty.expansion(), arg_index),
-            /*
-            FunctionArgType::JSCallback(_ty) =>  {
-                let rust_value = rust_arg_var(arg_index);
-                quote! {
-                    let #rust_value = &js_cb;
-                }
-            }
-            */
         }
     }
 
@@ -206,9 +198,9 @@ mod arg_extraction {
         let sf_identifier = LitStr::new(&format!("{}_sf", ctx.fn_name()), Span::call_site());
         let rust_var_name = rust_arg_var(index);
         let js_cb_completion = ty.async_js_callback_identifier();
-
+        let arg_index = LitInt::new(&index.to_string(), Span::call_site());
         quote! {
-            let #rust_var_name = js_cb.create_thread_safe_function(#sf_identifier,Some(#js_cb_completion))?;
+            let #rust_var_name = js_cb.create_thread_safe_function_at(#sf_identifier,#arg_index,Some(#js_cb_completion))?;
         }
     }
 }
@@ -441,11 +433,13 @@ mod closure {
     }
 }
 
-// generate expression to convert napi value to rust value from callback
+/// generate expression to convert napi value to rust value from callback
+/// ```let rust_value_0 = js_cb.get_value_at::<&[u8]>(0)?;```
 fn rust_value(type_name: TokenStream, index: usize) -> TokenStream {
+    let arg_index = LitInt::new(&index.to_string(), Span::call_site());
     let rust_value = rust_arg_var(index);
     quote! {
-        let #rust_value = js_cb.get_value::<#type_name>()?;
+        let #rust_value = js_cb.get_value_at::<#type_name>(#arg_index)?;
     }
 }
 
