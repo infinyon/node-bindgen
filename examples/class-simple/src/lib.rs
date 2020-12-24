@@ -1,15 +1,14 @@
 use node_bindgen::derive::node_bindgen;
 
-
 struct MyObject {
     val: f64,
-    val2: i64
+    val2: i64,
 }
 
 #[node_bindgen]
 impl MyObject {
     #[node_bindgen(constructor)]
-    fn new(val: f64,val2: i64) -> Self {
+    fn new(val: f64, val2: i64) -> Self {
         Self { val, val2 }
     }
 
@@ -72,4 +71,3 @@ impl MyObject {
         }
     }
 }
-

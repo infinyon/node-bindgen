@@ -833,6 +833,7 @@ name = "nj-example-async-cb"
 version = "0.1.0"
 dependencies = [
  "fluvio-future",
+ "log",
  "node-bindgen",
 ]
 
