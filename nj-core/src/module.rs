@@ -74,9 +74,9 @@ fn init_module() {
     static mut _module: napi_module = napi_module {
         nm_version: NAPI_VERSION as i32,
         nm_flags: 0,
-        nm_filename: c_str!("lib.rs").as_ptr() as *const i8,
+        nm_filename: c_str!("lib.rs").as_ptr() as *const ::std::os::raw::c_char,
         nm_register_func: Some(init_modules),
-        nm_modname: c_str!("rust_module").as_ptr() as *const i8,
+        nm_modname: c_str!("rust_module").as_ptr() as *const ::std::os::raw::c_char,
         nm_priv: ptr::null_mut(),
         reserved: [
             ptr::null_mut(),

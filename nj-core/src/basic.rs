@@ -81,7 +81,7 @@ impl JsEnv {
         let mut js_value = ptr::null_mut();
         napi_call_result!(napi_create_string_utf8(
             self.0,
-            r_string.as_ptr() as *const i8,
+            r_string.as_ptr() as *const ::std::os::raw::c_char,
             r_string.len(),
             &mut js_value
         ))?;
@@ -94,7 +94,7 @@ impl JsEnv {
         let mut js_value = ptr::null_mut();
         napi_call_result!(napi_create_string_utf8(
             self.0,
-            r_string.as_ptr() as *const i8,
+            r_string.as_ptr() as *const ::std::os::raw::c_char,
             r_string.len(),
             &mut js_value
         ))?;
@@ -294,7 +294,7 @@ impl JsEnv {
         );
         napi_call_result!(crate::sys::napi_define_class(
             self.0,
-            name.as_ptr() as *const i8,
+            name.as_ptr() as *const ::std::os::raw::c_char,
             name.len(),
             Some(constructor),
             ptr::null_mut(),
