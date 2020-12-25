@@ -206,7 +206,7 @@ impl JSValue<'_> for String {
         napi_call_result!(napi_get_value_string_utf8(
             env.inner(),
             js_value,
-            chars.as_mut_ptr() as *mut i8,
+            chars.as_mut_ptr() as *mut ::std::os::raw::c_char,
             string_size,
             &mut read_size
         ))?;
