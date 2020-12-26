@@ -37,4 +37,3 @@ install-clippy:
 
 check-clippy:	install-clippy
 	cargo +$(RUSTV) clippy --all-targets  -- -D warnings
-	cd src/client; cargo +$(RUSTV) clippy --all-targets  -- -D warnings

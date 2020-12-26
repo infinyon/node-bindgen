@@ -5,7 +5,7 @@ use log::trace;
 
 use crate::TryIntoJs;
 use crate::JSValue;
-use crate::sys::{ napi_value,napi_ref,napi_env};
+use crate::sys::{napi_value, napi_ref, napi_env};
 use crate::val::JsEnv;
 use crate::NjError;
 
@@ -69,8 +69,6 @@ impl TryIntoJs for ArrayBuffer {
     }
 }
 
-
-
 impl<'a> JSValue<'a> for &'a [u8] {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         // check if this is really buffer
@@ -87,38 +85,35 @@ impl<'a> JSValue<'a> for &'a [u8] {
     }
 }
 
-
 pub struct JSArrayBuffer {
     env: JsEnv,
     napi_ref: napi_ref,
-    buffer: &'static [u8]
+    buffer: &'static [u8],
 }
 
 impl JSValue<'_> for JSArrayBuffer {
-
     fn convert_to_rust(env: &JsEnv, napi_value: napi_value) -> Result<Self, NjError> {
         use std::mem::transmute;
 
-        let napi_ref = env.create_reference(napi_value.clone(),1)?;
+        let napi_ref = env.create_reference(napi_value, 1)?;
 
-        let buffer: &'static [u8] = unsafe  { 
-            transmute::<&[u8],&'static [u8]>(env.convert_to_rust(napi_value)?)
-        };
-        Ok(Self { 
-            env: env.clone(),
+        let buffer: &'static [u8] =
+            unsafe { transmute::<&[u8], &'static [u8]>(env.convert_to_rust(napi_value)?) };
+        Ok(Self {
+            env: *env,
             napi_ref,
-            buffer
+            buffer,
         })
     }
 }
 
-
 impl Drop for JSArrayBuffer {
     fn drop(&mut self) {
-        self.env.delete_reference(self.napi_ref).expect("reference can't be deleted to array buf");
+        self.env
+            .delete_reference(self.napi_ref)
+            .expect("reference can't be deleted to array buf");
     }
 }
-
 
 impl Deref for JSArrayBuffer {
     type Target = [u8];
@@ -127,6 +122,3 @@ impl Deref for JSArrayBuffer {
         &self.buffer
     }
 }
-
-
-
