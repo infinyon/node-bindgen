@@ -87,8 +87,8 @@ impl<'a> JSValue<'a> for &'a [u8] {
 
 /// Rust representation of Nodejs [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
 /// This is safe to pass around rest of Rust code since this manages Node.js GC lifecycle.
-/// JSArrayBuffer is deference as `&[u8]` 
-/// 
+/// JSArrayBuffer is deference as `&[u8]`
+///
 /// # Examples
 ///
 /// In this example, JS String is passed as array buffer.  Rust code convert to String and concate with prefix message.
@@ -96,14 +96,14 @@ impl<'a> JSValue<'a> for &'a [u8] {
 /// ```no_run
 /// use node_bindgen::derive::node_bindgen;
 /// use node_bindgen::core::buffer::JSArrayBuffer;
-/// 
+///
 /// #[node_bindgen]
 /// fn hello(data: JSArrayBuffer) -> Result<String, NjError> {
 ///   let message = String::from_utf8(data.to_vec())?;
 ///    Ok(format!("reply {}", message))
 /// }
 /// ```
-/// 
+///
 /// This can be invoked from Node.js
 /// ```text
 /// let addon = require('./your_module');
