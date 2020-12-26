@@ -1,17 +1,26 @@
 use std::ptr;
+use std::ops::Deref;
 
 use log::trace;
 
 use crate::TryIntoJs;
 use crate::JSValue;
-use crate::sys::napi_value;
-use crate::sys::napi_env;
+use crate::sys::{napi_value, napi_ref, napi_env};
 use crate::val::JsEnv;
 use crate::NjError;
 
 /// pass rust byte arry as Node.js ArrayBuffer
 pub struct ArrayBuffer {
     data: Vec<u8>,
+}
+
+use std::fmt;
+use std::fmt::Debug;
+
+impl Debug for ArrayBuffer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_fmt(format_args!("ArrayBuffer len: {}", self.data.len()))
+    }
 }
 
 impl ArrayBuffer {
@@ -60,15 +69,6 @@ impl TryIntoJs for ArrayBuffer {
     }
 }
 
-use std::fmt;
-use std::fmt::Debug;
-
-impl Debug for ArrayBuffer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_fmt(format_args!("ArrayBuffer len: {}", self.data.len()))
-    }
-}
-
 impl<'a> JSValue<'a> for &'a [u8] {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         // check if this is really buffer
@@ -82,5 +82,68 @@ impl<'a> JSValue<'a> for &'a [u8] {
         let buffer = env.get_buffer_info(js_value)?;
 
         Ok(buffer)
+    }
+}
+
+/// Rust representation of Nodejs [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+/// This is safe to pass around rest of Rust code since this manages Node.js GC lifecycle.
+/// JSArrayBuffer is deference as `&[u8]`
+///
+/// # Examples
+///
+/// In this example, JS String is passed as array buffer.  Rust code convert to String and concate with prefix message.
+///  
+/// ```no_run
+/// use node_bindgen::derive::node_bindgen;
+/// use node_bindgen::core::buffer::JSArrayBuffer;
+///
+/// #[node_bindgen]
+/// fn hello(data: JSArrayBuffer) -> Result<String, NjError> {
+///   let message = String::from_utf8(data.to_vec())?;
+///    Ok(format!("reply {}", message))
+/// }
+/// ```
+///
+/// This can be invoked from Node.js
+/// ```text
+/// let addon = require('./your_module');
+/// console.log(Buffer.from("hello"));
+/// ```
+pub struct JSArrayBuffer {
+    env: JsEnv,
+    napi_ref: napi_ref,
+    buffer: &'static [u8],
+}
+
+impl JSValue<'_> for JSArrayBuffer {
+    fn convert_to_rust(env: &JsEnv, napi_value: napi_value) -> Result<Self, NjError> {
+        use std::mem::transmute;
+
+        let napi_ref = env.create_reference(napi_value, 1)?;
+
+        // it is oky to transmute as static byte slice since we are managing slice
+        let buffer: &'static [u8] =
+            unsafe { transmute::<&[u8], &'static [u8]>(env.convert_to_rust(napi_value)?) };
+        Ok(Self {
+            env: *env,
+            napi_ref,
+            buffer,
+        })
+    }
+}
+
+impl Drop for JSArrayBuffer {
+    fn drop(&mut self) {
+        self.env
+            .delete_reference(self.napi_ref)
+            .expect("reference can't be deleted to array buf");
+    }
+}
+
+impl Deref for JSArrayBuffer {
+    type Target = [u8];
+
+    fn deref(&self) -> &Self::Target {
+        &self.buffer
     }
 }

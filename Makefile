@@ -9,8 +9,10 @@ build-windows:
 	cargo build --target=x86_64-pc-windows-gnu
 
 
-test:	test-derive test-examples
-	
+test-all:	test-unit test-derive test-examples
+
+test-unit:
+	cargo test --lib --all-features
 
 test-examples:
 	make -C examples test	
@@ -37,4 +39,3 @@ install-clippy:
 
 check-clippy:	install-clippy
 	cargo +$(RUSTV) clippy --all-targets  -- -D warnings
-	cd src/client; cargo +$(RUSTV) clippy --all-targets  -- -D warnings

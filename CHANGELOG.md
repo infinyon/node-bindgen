@@ -5,7 +5,6 @@
 ## [4.1.0] - 2020-12-23
 
 # Improvements
-
 - Support for Dynamic Stream ([#110](https://github.com/infinyon/node-bindgen/pull/110))
 - Enforce Cargo fmt in CI ([#113](https://github.com/infinyon/node-bindgen/pull/113))
 
