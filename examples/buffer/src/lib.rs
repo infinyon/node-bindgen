@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 use node_bindgen::derive::node_bindgen;
-use node_bindgen::core::buffer::ArrayBuffer;
+use node_bindgen::core::buffer::{ArrayBuffer, JSArrayBuffer};
 use node_bindgen::core::NjError;
 
 #[derive(Serialize)]
@@ -65,13 +65,13 @@ fn test2(b: i32) -> Result<Record, NjError> {
 }
 
 #[node_bindgen]
-fn test3(data: &[u8]) -> Result<String, NjError> {
+fn test3(data: JSArrayBuffer) -> Result<String, NjError> {
     let message = String::from_utf8(data.to_vec())?;
     Ok(format!("reply {}", message))
 }
 
 #[node_bindgen]
-fn test4(first: &[u8], second: &[u8]) -> Result<String, NjError> {
+fn test4(first: JSArrayBuffer, second: JSArrayBuffer) -> Result<String, NjError> {
     let message1 = String::from_utf8(first.to_vec())?;
     let message2 = String::from_utf8(second.to_vec())?;
 
