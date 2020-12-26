@@ -85,6 +85,30 @@ impl<'a> JSValue<'a> for &'a [u8] {
     }
 }
 
+/// Rust representation of Nodejs [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+/// This is safe to pass around rest of Rust code since this manages Node.js GC lifecycle.
+/// JSArrayBuffer is deference as `&[u8]` 
+/// 
+/// # Examples
+///
+/// In this example, JS String is passed as array buffer.  Rust code convert to String and concate with prefix message.
+///  
+/// ```no_run
+/// use node_bindgen::derive::node_bindgen;
+/// use node_bindgen::core::buffer::JSArrayBuffer;
+/// 
+/// #[node_bindgen]
+/// fn hello(data: JSArrayBuffer) -> Result<String, NjError> {
+///   let message = String::from_utf8(data.to_vec())?;
+///    Ok(format!("reply {}", message))
+/// }
+/// ```
+/// 
+/// This can be invoked from Node.js
+/// ```text
+/// let addon = require('./your_module');
+/// console.log(Buffer.from("hello"));
+/// ```
 pub struct JSArrayBuffer {
     env: JsEnv,
     napi_ref: napi_ref,
@@ -97,6 +121,7 @@ impl JSValue<'_> for JSArrayBuffer {
 
         let napi_ref = env.create_reference(napi_value, 1)?;
 
+        // it is oky to transmute as static byte slice since we are managing slice
         let buffer: &'static [u8] =
             unsafe { transmute::<&[u8], &'static [u8]>(env.convert_to_rust(napi_value)?) };
         Ok(Self {
