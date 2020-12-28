@@ -65,6 +65,18 @@ where
     }
 }
 
+impl<T> TryIntoJs for Option<T>
+where
+    T: TryIntoJs,
+{
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        match self {
+            Some(val) => val.try_to_js(&js_env),
+            None => js_env.get_null(),
+        }
+    }
+}
+
 impl TryIntoJs for napi_value {
     fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
         Ok(self)

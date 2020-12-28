@@ -11,7 +11,7 @@ assert.throws( () => addon.hello("hello"),{
 
 assert.throws(() => addon.hello(),{
     message: 'expected argument of type: i32 at: 0'
-});       
+});
 
 assert.strictEqual(addon.sum(1,2),3);
 
@@ -25,6 +25,9 @@ assert.strictEqual(addon.multiply(2,5),10);
 
 assert.strictEqual(addon.sum2(10),10);
 assert.strictEqual(addon.sum2(5,100),105);
+
+assert.strictEqual(addon.giveNull(true), null);
+assert.strictEqual(addon.giveNull(false), false);
 
 const stringShort = _generateForCustomCharacters(5);
 const stringMedium = _generateForCustomCharacters(100);
