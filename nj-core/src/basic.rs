@@ -564,6 +564,11 @@ impl JsEnv {
 
         Ok(result)
     }
+    pub fn get_null(&self) -> Result<napi_value, NjError> {
+        let mut result = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_get_null(self.0, &mut result))?;
+        Ok(result)
+    }
 
     /// get buffer info
     pub fn get_buffer_info(&self, napi_value: napi_value) -> Result<&[u8], NjError> {

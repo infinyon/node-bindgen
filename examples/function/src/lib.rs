@@ -44,3 +44,12 @@ fn string(first: String, second_arg: Option<String>) -> String {
         first
     }
 }
+
+#[node_bindgen]
+fn give_null(null: bool) -> Option<bool> {
+    if null {
+        None
+    } else {
+        Some(null)
+    }
+}
