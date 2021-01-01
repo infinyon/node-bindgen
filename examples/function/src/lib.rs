@@ -53,3 +53,8 @@ fn give_null(null: bool) -> Option<bool> {
         Some(null)
     }
 }
+
+#[node_bindgen]
+fn give_str(s: &str) -> String {
+    s.to_string()
+}
