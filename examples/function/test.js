@@ -44,6 +44,10 @@ for(const string1 in strings) {
     }
 }
 
+// str test
+assert.strictEqual(addon.giveStr(Buffer.from("THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG")), "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG");
+assert.strictEqual(addon.giveStr(Buffer.from("this is a tést 中 of utf-8")), "this is a tést 中 of utf-8");
+
 console.log("function tests succeed");
 
 /*

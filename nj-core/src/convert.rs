@@ -229,6 +229,28 @@ impl JSValue<'_> for String {
     }
 }
 
+impl<'a> JSValue<'a> for &'a str {
+    fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+        use crate::sys::napi_get_buffer_info;
+
+        let mut len: size_t = 0;
+        let mut data = ptr::null_mut();
+
+        napi_call_result!(napi_get_buffer_info(
+            env.inner(),
+            js_value,
+            &mut data,
+            &mut len
+        ))?;
+
+        unsafe {
+            let i8slice = std::slice::from_raw_parts(data as *mut ::std::os::raw::c_char, len);
+            let u8slice = &*(i8slice as *const _ as *const [u8]);
+            std::str::from_utf8(u8slice).map_err(|err| err.into())
+        }
+    }
+}
+
 impl<'a, T> JSValue<'a> for Vec<T>
 where
     T: JSValue<'a>,
