@@ -1,6 +1,6 @@
 [package]
 name = "node-bindgen"
-version = "4.1.1"
+version = "4.2.0"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 edition = "2018"
 description = "easy way to write nodejs module using rust"
