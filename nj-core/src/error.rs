@@ -16,7 +16,7 @@ pub enum NjError {
     InvalidType(String, String),
     NoPlainConstructor,
     Utf8Error(FromUtf8Error),
-    Utf8Error2(Utf8Error),
+    Utf8ErrorSlice(Utf8Error),
     Other(String),
 }
 
@@ -54,7 +54,7 @@ impl From<FromUtf8Error> for NjError {
 
 impl From<Utf8Error> for NjError {
     fn from(error: Utf8Error) -> Self {
-        Self::Utf8Error2(error)
+        Self::Utf8ErrorSlice(error)
     }
 }
 
@@ -74,7 +74,7 @@ impl fmt::Display for NjError {
                 expected, actual
             ),
             Self::Utf8Error(err) => write!(f, "ut8 error: {}", err),
-            Self::Utf8Error2(err) => write!(f, "ut8 error: {}", err),
+            Self::Utf8ErrorSlice(err) => write!(f, "ut8 error: {}", err),
             Self::InvalidArgIndex(index, len) => {
                 write!(f, "attempt to access arg: {} out of len: {}", index, len)
             }
