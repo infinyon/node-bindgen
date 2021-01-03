@@ -21,4 +21,4 @@ Inflector = "0.11.4"
 [dev-dependencies]
 trybuild = { git = "https://github.com/sehz/trybuild", branch = "check_option" }
 node-bindgen = { path = ".." }
-flv-future-aio = { version = "2.0.0" }
+fluvio-future = { version = "0.1.13", features = ["timer"] }

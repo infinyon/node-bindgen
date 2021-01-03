@@ -17,6 +17,3 @@ members = [
     "cleanup",
     "bigint",
 ]
-
-#[patch.crates-io]
-#flv-future-aio = { path = "../../flv-future/src/future-aio"}
