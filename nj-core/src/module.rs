@@ -71,7 +71,7 @@ fn init_module() {
     use crate::sys::napi_module;
     use crate::sys::napi_module_register;
 
-    static mut _module: napi_module = napi_module {
+    static mut _MODULE: napi_module = napi_module {
         nm_version: NAPI_VERSION as i32,
         nm_flags: 0,
         nm_filename: c_str!("lib.rs").as_ptr() as *const ::std::os::raw::c_char,
@@ -88,6 +88,6 @@ fn init_module() {
 
     crate::init_logger();
     unsafe {
-        napi_module_register(&mut _module);
+        napi_module_register(&mut _MODULE);
     }
 }
