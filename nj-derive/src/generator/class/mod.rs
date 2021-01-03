@@ -32,7 +32,17 @@ fn generate_class_helper(class: Class) -> TokenStream {
     use arg::generate_class_arg;
 
     let constructor_method = class.constructor();
-    let type_name = class.self_ty.expansion();
+    let type_name = class.self_ty.ident().unwrap();
+    let lifetime = class.self_ty.lifetime();
+    let impl_for_block = if let Some(lifetime) = lifetime {
+        quote! {
+            #type_name<#lifetime>
+        }
+    } else {
+        quote! {
+            #type_name
+        }
+    };
 
     let helper_module_name = ident(&format!("{}_helper", type_name).to_lowercase());
 
@@ -55,7 +65,7 @@ fn generate_class_helper(class: Class) -> TokenStream {
 
             static mut CLASS_CONSTRUCTOR: node_bindgen::sys::napi_ref = ptr::null_mut();
 
-            impl node_bindgen::core::JSClass for #type_name {
+            impl node_bindgen::core::JSClass for #impl_for_block {
                 const CLASS_NAME: &'static str = #class_type_lit;
 
 

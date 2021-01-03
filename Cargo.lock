@@ -1020,7 +1020,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "3.0.0"
+version = "3.0.1"
 dependencies = [
  "Inflector",
  "flv-future-aio",
@@ -1037,7 +1037,7 @@ version = "3.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "4.1.1"
+version = "4.2.1"
 dependencies = [
  "nj-build",
  "nj-core",

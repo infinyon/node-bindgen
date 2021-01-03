@@ -15,13 +15,10 @@ test-unit:
 	cargo test --lib --all-features
 
 test-examples:
-	make -C examples test	
+	make -C examples test
 
 test-derive:
-	cd nj-derive; RUST_LOG=debug cargo test derive_ui -- --nocapture
-
-test-try:
-	cd nj-derive; RUST_LOG=debug cargo test derive_try -- --nocapture
+	cd nj-derive; RUST_LOG=debug cargo test -- --nocapture
 
 
 #
