@@ -21,6 +21,12 @@ impl<'a> MyTypePath<'a> {
     pub fn ident(&self) -> Option<&Ident> {
         self.0.name_identifier()
     }
+    pub fn lifetime(&self) -> Option<TokenStream> {
+        let ty = self.0.lifetime()?;
+        Some(quote! {
+            #ty
+        })
+    }
 
     pub fn expansion(&self) -> TokenStream {
         let ty = self.0;

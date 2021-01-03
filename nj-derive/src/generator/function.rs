@@ -133,10 +133,11 @@ pub fn generate_rust_invocation(ctx: &FnGeneratorCtx, cb_args: &mut CbArgs) -> T
 }
 
 /// generate rust value from js cb context
-///
-///     let js_cb = js_env.get_cb_info(cb_info, 2)?;
-///     let rust_value_0 = js_cb.get_value::<i32>(0)?;
-///     let rust_value_1 = js_cb.get_value::<i32>(1)?;
+/// ```ignore
+/// let js_cb = js_env.get_cb_info(cb_info, 2)?;
+/// let rust_value_0 = js_cb.get_value::<i32>(0)?;
+/// let rust_value_1 = js_cb.get_value::<i32>(1)?;
+/// ```
 mod arg_extraction {
 
     use super::*;
@@ -238,13 +239,15 @@ mod closure {
 
     /// for closure, we need create wrapper closure that translates inner closure
     /// for example, if we have following rust closure
-    ///
-    ///     fn rust_fn<F: Fn(i32)>(cb: F)        
+    /// ```ignore
+    /// fn rust_fn<F: Fn(i32)>(cb: F)
+    /// ```
     ///
     /// we need to invoke in the bindgen code as below
-    ///         let js_cb = js_env.get_cb_info(cb_info,1)?;
-    ///         let rust_value_0 = js_cb.get_value::<JsCallbackFunction>(0)?;
-    ///   
+    /// ```ignore
+    /// let js_cb = js_env.get_cb_info(cb_info,1)?;
+    /// let rust_value_0 = js_cb.get_value::<JsCallbackFunction>(0)?;
+    ///
     ///     rust_fn( move |cb_arg0: i32| {
     ///         let result = (|| {
     ///             let args = vec![cb_arg0];
@@ -252,7 +255,8 @@ mod closure {
     ///         })();
     ///         result.to_js(&js_env)
     ///     }).try_to_js(&js_env)
-    ///                 
+    /// ```
+    ///
     pub fn generate_closure_invocation(
         closure: &ClosureType,
         arg_index: usize,
@@ -434,7 +438,9 @@ mod closure {
 }
 
 /// generate expression to convert napi value to rust value from callback
-/// ```let rust_value_0 = js_cb.get_value_at::<&[u8]>(0)?;```
+/// ```ignore
+/// let rust_value_0 = js_cb.get_value_at::<&[u8]>(0)?;
+/// ```
 fn rust_value(type_name: TokenStream, index: usize) -> TokenStream {
     let arg_index = LitInt::new(&index.to_string(), Span::call_site());
     let rust_value = rust_arg_var(index);

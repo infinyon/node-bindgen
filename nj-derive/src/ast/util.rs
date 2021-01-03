@@ -3,6 +3,9 @@ use syn::Ident;
 use syn::TypePath;
 use syn::ImplItemMethod;
 use syn::Attribute;
+use syn::PathArguments;
+use syn::Lifetime;
+use syn::GenericArgument;
 
 /// traits for function item
 pub trait FunctionItem {
@@ -17,6 +20,7 @@ impl FunctionItem for ItemFn {
 
 pub trait TypePathUtil {
     fn name_identifier(&self) -> Option<&Ident>;
+    fn lifetime(&self) -> Option<&Lifetime>;
 }
 
 impl TypePathUtil for TypePath {
@@ -27,6 +31,21 @@ impl TypePathUtil for TypePath {
             .iter()
             .find(|_| true)
             .map(|segment| &segment.ident)
+    }
+    /// find lifetime name.
+    fn lifetime(&self) -> Option<&Lifetime> {
+        let first = self.path.segments.first()?;
+        let lifetime_arg = if let PathArguments::AngleBracketed(arguments) = &first.arguments {
+            arguments.args.first()?
+        } else {
+            return None;
+        };
+        let lifetime = if let GenericArgument::Lifetime(lifetime) = lifetime_arg {
+            lifetime
+        } else {
+            return None;
+        };
+        Some(lifetime)
     }
 }
 

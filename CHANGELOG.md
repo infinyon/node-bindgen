@@ -1,6 +1,14 @@
 # Changelog
 
 ## Unreleased
+### Improvements
+### Fixed
+
+## [4.2.1] - 2020-12-29
+### Improvements
+- Implement `JSValue` for `&str` ([#126](https://github.com/infinyon/node-bindgen/pull/126))
+- Add lifetime support for procedural macro ([#127](https://github.com/infinyon/node-bindgen/pull/127))
+### Fixed
 
 ## [4.1.1] - 2020-12-29
 

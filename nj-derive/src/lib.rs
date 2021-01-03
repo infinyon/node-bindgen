@@ -10,23 +10,26 @@ use proc_macro::TokenStream;
 /// This turns regular rust function into N-API compatible native module
 ///
 /// For example; given rust following here
-///
-///      fn sum(first: i32, second: i32) -> i32 {
-///           return first+second
-///      }
+/// ```ignore
+/// fn sum(first: i32, second: i32) -> i32 {
+///      return first+second
+/// }
+/// ```
 ///
 /// into N-API module
-///     #[no_mangle]
-///     pub extern "C" fn n_sum(env: napi_env, cb_info: napi_callback_info) -> napi_value {
-///         fn sum(first: i32, second: i32) -> i32 {
-///           return first+second
-///         }
-///         let js_env = JsEnv::new(env);
-///         let js_cb = result_to_napi!(js_env.get_cb_info(cb_info, 2),&js_env);
-///         let first = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
-///         let second = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
-///         sum(msg).to_js(&js_env)
+/// ```ignore
+/// #[no_mangle]
+/// pub extern "C" fn n_sum(env: napi_env, cb_info: napi_callback_info) -> napi_value {
+///     fn sum(first: i32, second: i32) -> i32 {
+///       return first+second
 ///     }
+///     let js_env = JsEnv::new(env);
+///     let js_cb = result_to_napi!(js_env.get_cb_info(cb_info, 2),&js_env);
+///     let first = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
+///     let second = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
+///     sum(msg).to_js(&js_env)
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn node_bindgen(args: TokenStream, item: TokenStream) -> TokenStream {
     use syn::AttributeArgs;
