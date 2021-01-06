@@ -4,11 +4,14 @@
 ### Improvements
 ### Fixed
 
+## [4.2.2] - TBD
+### Fixed
+- Fix lifetime in `JSValue` for `&str`.
+
 ## [4.2.1] - 2020-12-29
 ### Improvements
 - Implement `JSValue` for `&str` ([#126](https://github.com/infinyon/node-bindgen/pull/126))
 - Add lifetime support for procedural macro ([#127](https://github.com/infinyon/node-bindgen/pull/127))
-### Fixed
 
 ## [4.1.1] - 2020-12-29
 
@@ -38,7 +41,6 @@
 
 [rust-bigint]: https://crates.io/crates/num-bigint
 [js-bigint]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
-
 
 ### Fixed
 - Fixed race condition for promise ([#102](https://github.com/infinyon/node-bindgen/pull/102))
