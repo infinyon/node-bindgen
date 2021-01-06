@@ -230,7 +230,7 @@ impl JSValue<'_> for String {
 }
 
 impl<'a> JSValue<'a> for &'a str {
-    fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+    fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         use crate::sys::napi_get_buffer_info;
 
         let mut len: size_t = 0;
