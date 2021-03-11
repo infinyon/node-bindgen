@@ -100,7 +100,7 @@ where
 
 /// convert to js including error
 pub trait IntoJs {
-    fn to_js(self, js_env: &JsEnv) -> napi_value;
+    fn into_js(self, js_env: &JsEnv) -> napi_value;
 }
 
 /// Convert napi value to Rust value
