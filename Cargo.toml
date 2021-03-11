@@ -16,7 +16,7 @@ build = ["nj-build"]
 
 [dependencies]
 nj-sys = { path = "nj-sys", version = "3.0.0", optional = true }
-nj-core = { path = "nj-core", version = "4.2.0", optional = true  }
+nj-core = { path = "nj-core", version = "4.1.2", optional = true  }
 nj-build = { path = "nj-build", version = "0.2.2", optional = true }
 nj-derive = { path = "nj-derive", version = "3.1.0", optional = true}
 

@@ -115,6 +115,14 @@ pub struct JSArrayBuffer {
     buffer: &'static [u8],
 }
 
+unsafe impl Send for JSArrayBuffer {}
+
+impl JSArrayBuffer {
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.buffer
+    }
+}
+
 impl JSValue<'_> for JSArrayBuffer {
     fn convert_to_rust(env: &JsEnv, napi_value: napi_value) -> Result<Self, NjError> {
         use std::mem::transmute;
