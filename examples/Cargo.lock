@@ -825,7 +825,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "4.1.3"
+version = "4.1.2"
 dependencies = [
  "async-trait",
  "ctor",
@@ -841,7 +841,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "3.0.2"
+version = "3.0.1"
 dependencies = [
  "Inflector",
  "proc-macro2",
