@@ -142,7 +142,7 @@ pub trait JSWorker: Sized + Send + 'static {
             worker.create_promise(&js_env)
         })();
 
-        result.into_js(&js_env)
+        result.to_js(&js_env)
     }
 
     /// create promise and schedule work

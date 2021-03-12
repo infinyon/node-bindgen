@@ -137,7 +137,7 @@ impl FunctionAttributes {
             }
         }
 
-        Ok(Self::from(attrs))
+        Self::from(attrs)
     }
 
     /// validate and parse attributes for individual features
@@ -145,7 +145,7 @@ impl FunctionAttributes {
     /// note that there are attribute parsing phases for class
     /// first phase is as part of Impl structure, this is where class level attribute validation can be done
     /// second phase is individual functions where we don't know if function is method or not
-    fn from(attrs: Vec<FunctionAttribute>) -> Self {
+    fn from(attrs: Vec<FunctionAttribute>) -> Result<Self> {
         let mut constructor = None;
         let mut multi_threaded = None;
         let mut getter = None;
@@ -166,13 +166,13 @@ impl FunctionAttributes {
             }
         }
 
-        Self {
+        Ok(Self {
             constructor,
             multi_threaded,
             getter,
             setter,
             name,
-        }
+        })
     }
 
     pub fn from_method_attribute(attribute: &Attribute) -> Result<Self> {
@@ -197,7 +197,7 @@ impl FunctionAttributes {
                     }
                 }
 
-                Ok(Self::from(attrs))
+                Self::from(attrs)
             }
         }
     }
