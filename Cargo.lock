@@ -1690,7 +1690,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 [[package]]
 name = "trybuild"
 version = "1.0.26"
-source = "git+https://github.com/sehz/trybuild?branch=check_option#af10c619356e14a649d7ff36454365389b2ec868"
+source = "git+https://github.com/infinyon/trybuild?branch=check_option#af10c619356e14a649d7ff36454365389b2ec868"
 dependencies = [
  "glob",
  "lazy_static",
