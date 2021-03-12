@@ -22,7 +22,7 @@ pub enum NjError {
 
 // error are throw
 impl IntoJs for NjError {
-    fn to_js(self, js_env: &JsEnv) -> napi_value {
+    fn into_js(self, js_env: &JsEnv) -> napi_value {
         let msg = self.to_string();
         js_env.throw_type_error(&msg);
         ptr::null_mut()
@@ -38,10 +38,10 @@ impl NjError {
 }
 
 impl IntoJs for Result<napi_value, NjError> {
-    fn to_js(self, js_env: &JsEnv) -> napi_value {
+    fn into_js(self, js_env: &JsEnv) -> napi_value {
         match self {
             Ok(napi_val) => napi_val,
-            Err(err) => err.to_js(js_env),
+            Err(err) => err.into_js(js_env),
         }
     }
 }
