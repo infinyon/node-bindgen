@@ -137,7 +137,7 @@ pub trait JSClass: Sized {
             }
         })();
 
-        result.to_js(&js_env)
+        result.into_js(&js_env)
     }
 
     /*
