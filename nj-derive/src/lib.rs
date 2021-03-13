@@ -27,7 +27,7 @@ use proc_macro::TokenStream;
 ///     let js_cb = result_to_napi!(js_env.get_cb_info(cb_info, 2),&js_env);
 ///     let first = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
 ///     let second = result_to_napi!(js_cb.get_value::<i32>(0),&js_env);
-///     sum(msg).to_js(&js_env)
+///     sum(msg).into_js(&js_env)
 /// }
 /// ```
 #[proc_macro_attribute]

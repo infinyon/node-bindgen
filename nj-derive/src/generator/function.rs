@@ -76,7 +76,7 @@ pub fn generate_function(input_fn: ItemFn, attributes: FunctionAttributes) -> To
 ///             let rust_value_1 = js_cb.get_value::<i32>(1)?;
 ///             sum(rust_value_0, rust_value_1).try_to_js(&js_env)
 ///         })();
-///     result.to_js(&js_env)
+///     result.into_js(&js_env)
 ///
 /// Code generation does
 ///   - compute number of parameters from input signatures
@@ -128,7 +128,7 @@ pub fn generate_rust_invocation(ctx: &FnGeneratorCtx, cb_args: &mut CbArgs) -> T
         })();
 
 
-        result.to_js(&js_env)
+        result.into_js(&js_env)
     }
 }
 
@@ -253,7 +253,7 @@ mod closure {
     ///             let args = vec![cb_arg0];
     ///             rust_value_0.call(args)
     ///         })();
-    ///         result.to_js(&js_env)
+    ///         result.into_js(&js_env)
     ///     }).try_to_js(&js_env)
     /// ```
     ///
@@ -322,7 +322,7 @@ mod closure {
                 #closure_var.call(args)
             })();
 
-            result.to_js(&js_env);
+            result.into_js(&js_env);
 
         }
     }
