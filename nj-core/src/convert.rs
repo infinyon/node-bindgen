@@ -276,3 +276,52 @@ where
         Ok(elements)
     }
 }
+
+macro_rules! replace_tt {
+    ($__t:tt $sub:tt) => {$sub}
+}
+macro_rules! count_tts {
+    ($($__tts:tt)*) => {0u32 $(+ replace_tt!($__tts 1u32))*}
+}
+
+macro_rules! impl_js_value_for_tuple {
+    ($($t:ident),+ $(,)?) => {
+        impl<'a $(, $t)+ > crate::JSValue<'a> for ($($t,)+)
+        where
+            $($t: JSValue<'a> + Send,)+
+        {
+            fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+                use crate::sys::napi_get_array_length;
+                if !env.is_array(js_value)? {
+                    return Err(NjError::Other("Tuples must come from JS arrays".to_owned()));
+                }
+
+                let mut length: u32 = 0;
+                napi_call_result!(napi_get_array_length(env.inner(), js_value, &mut length))?;
+                let required_length = count_tts!($($t )+);
+                if length != required_length {
+                    return Err(NjError::Other(format!("{n}Tuple must have exactly length {n}", n = required_length)));
+                }
+
+                let i = 0;
+                $(
+                    let i = i + 1;
+                    let js_element = env.get_element(js_value, i)?;
+                    #[allow(non_snake_case)]
+                    let $t = $t::convert_to_rust(env, js_element)?;
+                )+
+
+                Ok(( $($t,)+ ))
+            }
+        }
+    }
+}
+
+impl_js_value_for_tuple!(A);
+impl_js_value_for_tuple!(A, B);
+impl_js_value_for_tuple!(A, B, C);
+impl_js_value_for_tuple!(A, B, C, D);
+impl_js_value_for_tuple!(A, B, C, D, E);
+impl_js_value_for_tuple!(A, B, C, D, E, F);
+impl_js_value_for_tuple!(A, B, C, D, E, F, G);
+impl_js_value_for_tuple!(A, B, C, D, E, F, G, H);
