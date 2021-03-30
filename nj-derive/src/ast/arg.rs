@@ -15,6 +15,7 @@ use syn::Receiver;
 
 use super::MyTypePath;
 use super::MyReferenceType;
+use super::MyTupleType;
 
 /// Information about Function Arguments
 #[derive(Debug, Default)]
@@ -101,22 +102,17 @@ impl<'a> FunctionArg<'a> {
             }
             Type::Reference(ref_type) => {
                 let my_type = MyReferenceType::from(ref_type)?;
-                /*
-                if my_type.is_callback() {
-                    Ok(Self {
-                        arg_index,
-                        typ: FunctionArgType::JSCallback(my_type)
-                    })
-                } else {
-                    Ok(Self {
-                        arg_index,
-                        typ: FunctionArgType::Ref(my_type)
-                    })
-                }
-                */
                 Ok(Self {
                     arg_index,
                     typ: FunctionArgType::Ref(my_type),
+                })
+            }
+            Type::Tuple(tuple) => {
+                let types: Vec<_> = tuple.elems.iter().collect();
+                let tuple = MyTupleType::from(types);
+                Ok(Self {
+                    arg_index,
+                    typ: FunctionArgType::Tuple(tuple),
                 })
             }
             _ => Err(Error::new(ty.span(), "not supported type")),
@@ -138,6 +134,7 @@ impl<'a> FunctionArg<'a> {
 pub enum FunctionArgType<'a> {
     Path(MyTypePath<'a>),     // normal type
     Ref(MyReferenceType<'a>), // reference type
+    Tuple(MyTupleType<'a>),
     Closure(ClosureType<'a>), // closure callback
                               // JsEnv(MyReferenceType<'a>),     // indicating that we want to receive JsEnv
 }

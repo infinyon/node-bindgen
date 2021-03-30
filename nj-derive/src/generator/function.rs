@@ -185,6 +185,7 @@ mod arg_extraction {
             }
             FunctionArgType::Path(ty) => rust_value(ty.expansion(), arg_index),
             FunctionArgType::Ref(ty) => rust_value(ty.expansion(), arg_index),
+            FunctionArgType::Tuple(ty) => rust_value(ty.expansion(), arg_index),
         }
     }
 

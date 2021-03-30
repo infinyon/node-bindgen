@@ -257,7 +257,7 @@ where
 {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         if !env.is_array(js_value)? {
-            return Err(NjError::Other("not array".to_owned()));
+            return Err(NjError::Other("Provided value was not an array as expected".to_owned()));
         }
 
         use crate::sys::napi_get_array_length;

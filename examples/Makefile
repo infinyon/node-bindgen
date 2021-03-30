@@ -12,6 +12,7 @@ clean:
 	make -C param clean
 	make -C electron clean
 	make -C bigint clean
+	make -C tuple clean
 	make -C cleanup clean
 
 
@@ -60,6 +61,9 @@ test-electron:
 
 test-bigint:
 	make -C bigint test
+
+test-tuple:
+	make -C tuple test
 
 test-cleanup:
 	make -C cleanup test

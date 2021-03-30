@@ -62,6 +62,12 @@ fn generate_args(args: &FunctionArgs) -> TokenStream {
                         #name: #inner
                     }
                 }
+                FunctionArgType::Tuple(ty) => {
+                    let inner = ty.expansion();
+                    quote! {
+                        #name: #inner
+                    }
+                }
                 FunctionArgType::Closure(_) => {
                     quote! { compile_error!("closure can't be used in constructor ")}
                 }
