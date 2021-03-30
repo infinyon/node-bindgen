@@ -81,3 +81,23 @@ fn get_type_name(ty: &Type) -> Result<&Ident> {
         _ => Err(Error::new(ty.span(), "no other type reference found")),
     }
 }
+
+#[derive(Debug)]
+pub struct MyTupleType<'a> {
+    types: Vec<&'a Type>,
+}
+
+impl<'a> From<Vec<&'a Type>> for MyTupleType<'a> {
+    fn from(types: Vec<&'a Type>) -> Self {
+        Self { types }
+    }
+}
+
+impl MyTupleType<'_> {
+    pub fn expansion(&self) -> TokenStream {
+        let types = &self.types;
+        quote! {
+            ( #( #types ),* )
+        }
+    }
+}

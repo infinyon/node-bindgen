@@ -24,7 +24,7 @@ pub enum FunctionAttribute {
     Setter(Ident),
     Constructor(Ident),
     Name(LitStr),
-    MT(Ident),
+    Mt(Ident),
 }
 
 impl FunctionAttribute {
@@ -61,7 +61,7 @@ impl FunctionAttribute {
         } else if ident == "setter" {
             Ok(Self::Setter(ident))
         } else if ident == "mt" {
-            Ok(Self::MT(ident))
+            Ok(Self::Mt(ident))
         } else {
             Err(Error::new(ident.span(), "unrecognized attribute name"))
         }
@@ -72,7 +72,7 @@ impl FunctionAttribute {
     }
 
     fn is_multi_threaded(&self) -> bool {
-        matches!(self, Self::MT(_))
+        matches!(self, Self::Mt(_))
     }
 
     /// get function name, if this is not name, return none

@@ -35,4 +35,7 @@ install-clippy:
 	rustup component add clippy --toolchain $(RUSTV)
 
 check-clippy:	install-clippy
-	cargo +$(RUSTV) clippy --all-targets  -- -D warnings
+	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+		-D warnings \
+		-A clippy::upper_case_acronyms \
+		-A clippy::needless-question-mark

@@ -16,4 +16,5 @@ members = [
     "electron",
     "cleanup",
     "bigint",
+    "tuples",
 ]
