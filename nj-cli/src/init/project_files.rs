@@ -43,10 +43,12 @@ pub struct ProjectFiles {
 
 impl ProjectFiles {
     pub fn new(dir: PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
-        Ok(Self { dir }
+        let project_files = Self { dir }
             .add_build_rs()?
             .add_lib_rs()?
-            .add_cargo_toml()?)
+            .add_cargo_toml()?;
+
+        Ok(project_files)
     }
 
     fn add_build_rs(self) -> Result<Self, Box<dyn std::error::Error>> {
