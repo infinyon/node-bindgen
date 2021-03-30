@@ -802,7 +802,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "4.2.0"
+version = "4.2.1"
 dependencies = [
  "async-trait",
  "ctor",
@@ -818,7 +818,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "3.1.0"
+version = "3.1.1"
 dependencies = [
  "Inflector",
  "fluvio-future",
