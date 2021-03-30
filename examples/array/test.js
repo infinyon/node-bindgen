@@ -15,5 +15,5 @@ assert.equal(count,10);
 assert.equal(addon.sumArray([1,2,3]),6,"sum should be 6");
 
 assert.throws( () => addon.sumArray({ x: 2}),{
-    message: 'not array'
+    message: 'Provided value was not an array as expected'
 });
