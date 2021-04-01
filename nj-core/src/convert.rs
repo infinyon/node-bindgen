@@ -279,85 +279,84 @@ where
     }
 }
 
-macro_rules! replace_tt {
-    ($__t:tt $sub:tt) => {
-        $sub
-    };
-}
-macro_rules! count_tts {
-    ($($__tts:tt)*) => {0u32 $(+ replace_tt!($__tts 1u32))*}
-}
-
 macro_rules! impl_js_value_for_tuple {
-    ( $( $n:tt $t:ident ),+ $(,)? ) => {
-        impl<'a $(, $t)+ > crate::JSValue<'a> for ($($t,)+)
-        where
-            $($t: JSValue<'a> + Send,)+
-        {
-            fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
-                use crate::sys::napi_get_array_length;
-                if !env.is_array(js_value)? {
-                    return Err(NjError::Other("Tuples must come from JS arrays".to_owned()));
+    ( $( $len:expr => ( $( $n:tt $t:ident ),+ $(,)? ))+ ) => {
+        $(
+            impl<'a $(, $t)+ > crate::JSValue<'a> for ($($t,)+)
+            where
+                $($t: JSValue<'a> + Send,)+
+            {
+                fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+                    use crate::sys::napi_get_array_length;
+                    if !env.is_array(js_value)? {
+                        return Err(NjError::Other("Tuples must come from JS arrays".to_owned()));
+                    }
+
+                    let mut length: u32 = 0;
+                    napi_call_result!(napi_get_array_length(env.inner(), js_value, &mut length))?;
+                    let required_length = $len;
+                    if length != required_length {
+                        return Err(NjError::Other(format!("{n}Tuple must have exactly length {n}", n = required_length)));
+                    }
+
+                    $(
+                        let js_element = env.get_element(js_value, $n)?;
+                        #[allow(non_snake_case)]
+                        let $t = $t::convert_to_rust(env, js_element)?;
+                    )+
+
+                    Ok(( $($t,)+ ))
                 }
-
-                let mut length: u32 = 0;
-                napi_call_result!(napi_get_array_length(env.inner(), js_value, &mut length))?;
-                let required_length = count_tts!($($t )+);
-                if length != required_length {
-                    return Err(NjError::Other(format!("{n}Tuple must have exactly length {n}", n = required_length)));
-                }
-
-                $(
-                    let js_element = env.get_element(js_value, $n)?;
-                    #[allow(non_snake_case)]
-                    let $t = $t::convert_to_rust(env, js_element)?;
-                )+
-
-                Ok(( $($t,)+ ))
             }
-        }
+        )+
     }
 }
 
-impl_js_value_for_tuple!(0 T0);
-impl_js_value_for_tuple!(0 T0, 1 T1);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7);
-impl_js_value_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7, 8 T8);
+impl_js_value_for_tuple! {
+    1 => (0 T0)
+    2 => (0 T0, 1 T1)
+    3 => (0 T0, 1 T1, 2 T2)
+    4 => (0 T0, 1 T1, 2 T2, 3 T3)
+    5 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4)
+    6 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5)
+    7 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6)
+    8 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7)
+    9 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7, 8 T8)
+}
 
 macro_rules! impl_try_into_js_for_tuple {
-    ( $( $n:tt $t:tt ),+ $(,)? ) => {
-        impl<$( $t ),+> crate::TryIntoJs for ( $( $t, )+ )
-            where $( $t: TryIntoJs + Send, )+
-        {
-            fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
-                let length = count_tts!( $($t )+ ) as usize;
-                let array = js_env.create_array_with_len(length)?;
+    ( $( $len:expr => ( $( $n:tt $t:tt ),+ $(,)? ))+ ) => {
+        $(
+            impl<$( $t ),+> crate::TryIntoJs for ( $( $t, )+ )
+                where $( $t: TryIntoJs + Send, )+
+            {
+                fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+                    let length: usize = $len;
+                    let array = js_env.create_array_with_len(length)?;
 
-                #[allow(non_snake_case)]
-                let ( $($t, )+ ) = self;
+                    #[allow(non_snake_case)]
+                    let ( $($t, )+ ) = self;
 
-                $(
-                    let js_element = $t.try_to_js(js_env)?;
-                    js_env.set_element(array, js_element, $n)?;
-                )+
+                    $(
+                        let js_element = $t.try_to_js(js_env)?;
+                        js_env.set_element(array, js_element, $n)?;
+                    )+
 
-                Ok(array)
+                    Ok(array)
+                }
             }
-        }
+        )+
     }
 }
 
-impl_try_into_js_for_tuple!(0 T0);
-impl_try_into_js_for_tuple!(0 T0, 1 T1);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7);
-impl_try_into_js_for_tuple!(0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7, 8 T8);
+impl_try_into_js_for_tuple! {
+    1 => (0 T0)
+    2 => (0 T0, 1 T1)
+    3 => (0 T0, 1 T1, 2 T2)
+    4 => (0 T0, 1 T1, 2 T2, 3 T3)
+    5 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4)
+    6 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5)
+    7 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6)
+    8 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7)
+    9 => (0 T0, 1 T1, 2 T2, 3 T3, 4 T4, 5 T5, 6 T6, 7 T7, 8 T8)
+}
