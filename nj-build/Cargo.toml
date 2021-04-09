@@ -1,6 +1,6 @@
 [package]
 name = "nj-build"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "build configuration for node-bindgen"
@@ -8,5 +8,5 @@ repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
 
 [target.'cfg(windows)'.dependencies]
-reqwest = { version = "0.11", features = ["native-tls", "blocking"] }
+http_req = "0.7.2"
 cc = "1.0.58"
