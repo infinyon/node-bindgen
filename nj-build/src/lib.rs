@@ -7,7 +7,7 @@ pub fn configure() {
     // On Windows, we need to download the dynamic library from the nodejs.org website first
     use std::env::var;
     use std::fs::File;
-    use std::io::copy;
+    use http_req::request;
     use std::process::Command;
     use std::env::temp_dir;
 
@@ -30,10 +30,9 @@ pub fn configure() {
             lib_file_download_url, temp_lib
         );
 
-        let mut resp =
-            reqwest::blocking::get(&lib_file_download_url).expect("Download node.lib file failed");
         let mut node_lib_file = File::create(&temp_lib).unwrap();
-        copy(&mut resp, &mut node_lib_file).expect("Save node.lib file failed");
+        request::get(&lib_file_download_url, &mut node_lib_file)
+            .expect("Download node.lib file failed");
     }
 
     println!(
