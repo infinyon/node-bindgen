@@ -38,6 +38,7 @@ pub fn node_bindgen(args: TokenStream, item: TokenStream) -> TokenStream {
     use ast::NodeItem;
     use generator::generate_function;
     use generator::generate_class;
+    use generator::generate_datatype;
 
     let attribute_args = syn::parse_macro_input!(args as AttributeArgs);
 
@@ -51,10 +52,11 @@ pub fn node_bindgen(args: TokenStream, item: TokenStream) -> TokenStream {
     let out_express = match parsed_item {
         NodeItem::Function(fn_item) => generate_function(fn_item, attribute),
         NodeItem::Impl(impl_item) => generate_class(impl_item),
+        NodeItem::Derive(struct_item) => generate_datatype(struct_item),
     };
 
     // used for debugging, if error occurs println do not work so should uncomment express
-    //println!("{}",out_express);
+    println!("{}", out_express);
     //let out_express = quote::quote! {};
 
     out_express.into()
