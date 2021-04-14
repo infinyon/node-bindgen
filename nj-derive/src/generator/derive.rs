@@ -9,5 +9,6 @@ pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
 
     quote! {
         // We are in a datatype gen
+        #input_struct
     }
 }
