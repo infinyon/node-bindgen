@@ -6,7 +6,7 @@ struct Something {
 }
 
 #[node_bindgen]
-pub(crate) struct Something {
+pub(crate) struct SomethingElse {
     pub field: usize
 }
 
