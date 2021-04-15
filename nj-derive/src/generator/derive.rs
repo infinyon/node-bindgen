@@ -14,6 +14,11 @@ use syn::Ident;
 use syn::Error;
 use syn::spanned::Spanned;
 use syn::GenericParam;
+use syn::TypeParam;
+use syn::LifetimeDef;
+use syn::ConstParam;
+use syn::WhereClause;
+use syn::punctuated::Punctuated;
 
 use crate::ast::MyTypePath;
 use crate::ast::MyReferenceType;
@@ -25,21 +30,57 @@ pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
             println!("We got struct: {:?}", parsed_struct);
 
             let try_into_js = generate_try_into_js(&parsed_struct);
-            quote! {
+            let result = quote! {
                 // We are in a datatype gen
                 #input_struct
 
                 #try_into_js
-            }
+            };
+            println!("Got {}", result.to_string());
+            result
         }
     }
+}
+
+fn drop_generic_bounds<'a>(generics: &Vec<Generic<'a>>) -> Vec<Generic<'a>> {
+    generics.clone()
+        .into_iter()
+        .cloned()
+        .map(|generic| {
+            match generic {
+                GenericParam::Type(type_param) => {
+                    GenericParam::Type(TypeParam {
+                        colon_token: None,
+                        bounds: Punctuated::new(),
+                        ..type_param
+                    })
+                },
+                GenericParam::Lifetime(lifetime_param) => {
+                    GenericParam::Lifetime(LifetimeDef {
+                        colon_token: None,
+                        bounds: Punctuated::new(),
+                        ..lifetime_param
+                    })
+                },
+                GenericParam::Const(const_param) => {
+                    GenericParam::Const(ConstParam {
+                        eq_token: None,
+                        default: None,
+                        ..const_param
+                    })
+                }
+            }  
+        })
+        .collect()
 }
 
 fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
     match parsed_struct {
         Struct::Named { name, fields, generics } => {
+            let generics_no_bounds = drop_generic_bounds(&generics);
+
             quote! {
-                impl TryIntoJs for #name {
+                impl <#(#generics),*> node_bindgen::core::TryIntoJs for #name<#(#generics_no_bounds),*> {
                     fn try_to_js(self, js: &node_bindgen::core::val::JsEnv) ->
                         Result<node_bindgen::core::sys::napi_value, 
                                node_bindgen::core::NjError> 
@@ -58,12 +99,12 @@ pub enum Struct<'a> {
     Named {
         name: &'a Ident,
         fields: Vec<Field<'a>>,
-        generics: Vec<&'a GenericParam>
+        generics: Vec<Generic<'a>>
     },
     Unnamed {
         name: &'a Ident,
         fields: Vec<FieldType<'a>>,
-        generics: Vec<&'a GenericParam>
+        generics: Vec<Generic<'a>>
     },
     Unit {
         name: &'a Ident
@@ -80,6 +121,12 @@ pub struct Field<'a> {
 pub enum FieldType<'a> {
     Path(MyTypePath<'a>),
     Ref(MyReferenceType<'a>),
+}
+
+#[derive(Debug)]
+pub struct Generic<'a> {
+    params: &'a GenericParam,
+    where_clause: &'a Option<WhereClause>
 }
 
 impl<'a> FieldType<'a> {
@@ -105,9 +152,13 @@ impl<'a> Struct<'a> {
                 for automatic conversion to JavaScript representation")),
         }?;
 
-        let generics = input.generics.params
+        let generic_params = input.generics.params
             .iter()
             .collect();
+        let generics = Generic {
+            params: generic_params,
+            where_clause: &input.generics.where_clause
+        };
 
         match &struct_data.fields {
             Fields::Named(named_fields) => {

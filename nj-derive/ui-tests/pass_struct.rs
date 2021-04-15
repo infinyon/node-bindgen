@@ -1,6 +1,4 @@
 use node_bindgen::derive::node_bindgen;
-use node_bindgen::core::TryIntoJs;
-use std::fmt::Debug;
 
 #[node_bindgen]
 struct Something {
@@ -24,13 +22,13 @@ struct Lifetime<'a> {
 
 #[node_bindgen]
 struct BoundGeneric<T>
-    where T: Sync + Debug
+    where T: Sync + std::fmt::Debug
 {
     pub field: T
 }
 
 #[node_bindgen]
-struct BoundAndLifetimes<'a, T: Sync + Debug> {
+struct BoundAndLifetimes<'a, T: Sync + std::fmt::Debug> {
     pub field: &'a T
 }
 
