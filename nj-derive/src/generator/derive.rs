@@ -1,4 +1,4 @@
-use quote::quote;
+use quote::{quote, format_ident};
 use proc_macro2::TokenStream;
 use proc_macro2::Span;
 
@@ -86,20 +86,56 @@ fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
                 }
             };
 
+            let output_obj = format_ident!("output_obj");
+            let js_env     = format_ident!("js_env");
+            let field_conversions = generate_field_conversions(
+                &output_obj,
+                &js_env,
+                fields);
+
             quote! {
                 impl <#(#generic_params),*> node_bindgen::core::TryIntoJs for 
                         #name<#(#generics_no_bounds),*> #where_clause {
-                    fn try_to_js(self, js: &node_bindgen::core::val::JsEnv) ->
+                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
                         Result<node_bindgen::core::sys::napi_value, 
                                node_bindgen::core::NjError> 
                     {
-                        unimplemented!()
+                        use node_bindgen::core::{
+                            TryIntoJs,
+                            val::{
+                                JsEnv,
+                                JsObject
+                            }
+                        };
+
+                        let mut #output_obj = JsObject::new(#js_env.clone(),
+                            #js_env.create_object()?);
+
+                        #(#field_conversions)*
+                        
+                        #output_obj.try_to_js(#js_env)
                     }
                 }
             }
         },
         _ => unimplemented!()
     }
+}
+
+fn generate_field_conversions<'a>(output_obj: &Ident, 
+                                  js_env: &Ident,
+                                  fields: &'a Vec<Field<'a>>) -> Vec<TokenStream> {
+    fields.iter()
+        .map(|Field { name, ty: _ }| {
+            let field_name = format!("{}", name);
+
+            quote! {
+                #output_obj.set_property(
+                    #field_name, 
+                    self.#name.clone().try_to_js(#js_env)?)?;
+            }
+        })
+        .collect()
 }
 
 #[derive(Debug)]

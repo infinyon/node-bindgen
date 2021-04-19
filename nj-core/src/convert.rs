@@ -34,9 +34,16 @@ impl TryIntoJs for i32 {
         js_env.create_int32(self)
     }
 }
+
 impl TryIntoJs for u64 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         js_env.create_bigint_uint64(self)
+    }
+}
+
+impl TryIntoJs for usize {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_bigint_uint64(self as u64)
     }
 }
 
