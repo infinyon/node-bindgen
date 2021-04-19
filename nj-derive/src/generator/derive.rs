@@ -1,28 +1,15 @@
 use quote::{quote, format_ident};
 use proc_macro2::TokenStream;
-use proc_macro2::Span;
-
 use syn::DeriveInput;
-use syn::Result;
-use syn::Data;
-use syn::DataStruct;
-use syn::Fields;
-use syn::FieldsNamed;
-use syn::FieldsUnnamed;
-use syn::Type;
 use syn::Ident;
 use syn::Index;
-use syn::Error;
 use syn::spanned::Spanned;
 use syn::GenericParam;
 use syn::TypeParam;
 use syn::LifetimeDef;
 use syn::ConstParam;
-use syn::WhereClause;
 use syn::punctuated::Punctuated;
 
-use crate::ast::MyTypePath;
-use crate::ast::MyReferenceType;
 use crate::ast::MyStruct;
 use crate::ast::MyField;
 use crate::ast::MyFieldType;
