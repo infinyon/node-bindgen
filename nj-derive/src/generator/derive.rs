@@ -42,10 +42,10 @@ pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
     }
 }
 
-fn drop_generic_bounds<'a>(generics: &Vec<Generic<'a>>) -> Vec<Generic<'a>> {
-    generics.clone()
+fn drop_generic_bounds(params: &Vec<GenericParam>) -> Vec<GenericParam> {
+    params
+        .clone()
         .into_iter()
-        .cloned()
         .map(|generic| {
             match generic {
                 GenericParam::Type(type_param) => {
@@ -69,7 +69,7 @@ fn drop_generic_bounds<'a>(generics: &Vec<Generic<'a>>) -> Vec<Generic<'a>> {
                         ..const_param
                     })
                 }
-            }  
+            }
         })
         .collect()
 }
@@ -77,10 +77,18 @@ fn drop_generic_bounds<'a>(generics: &Vec<Generic<'a>>) -> Vec<Generic<'a>> {
 fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
     match parsed_struct {
         Struct::Named { name, fields, generics } => {
-            let generics_no_bounds = drop_generic_bounds(&generics);
+            let generic_params     = &generics.params;
+            let generics_no_bounds = drop_generic_bounds(&generics.params);
+            let where_clause       = match generics.where_clause {
+                None => quote! {},
+                Some(where_clause) => quote! {
+                    #where_clause
+                }
+            };
 
             quote! {
-                impl <#(#generics),*> node_bindgen::core::TryIntoJs for #name<#(#generics_no_bounds),*> {
+                impl <#(#generic_params),*> node_bindgen::core::TryIntoJs for 
+                        #name<#(#generics_no_bounds),*> #where_clause {
                     fn try_to_js(self, js: &node_bindgen::core::val::JsEnv) ->
                         Result<node_bindgen::core::sys::napi_value, 
                                node_bindgen::core::NjError> 
@@ -99,12 +107,12 @@ pub enum Struct<'a> {
     Named {
         name: &'a Ident,
         fields: Vec<Field<'a>>,
-        generics: Vec<Generic<'a>>
+        generics: Generics<'a>
     },
     Unnamed {
         name: &'a Ident,
         fields: Vec<FieldType<'a>>,
-        generics: Vec<Generic<'a>>
+        generics: Generics<'a>
     },
     Unit {
         name: &'a Ident
@@ -124,8 +132,8 @@ pub enum FieldType<'a> {
 }
 
 #[derive(Debug)]
-pub struct Generic<'a> {
-    params: &'a GenericParam,
+pub struct Generics<'a> {
+    params: Vec<GenericParam>,
     where_clause: &'a Option<WhereClause>
 }
 
@@ -153,9 +161,10 @@ impl<'a> Struct<'a> {
         }?;
 
         let generic_params = input.generics.params
-            .iter()
+            .clone()
+            .into_iter()
             .collect();
-        let generics = Generic {
+        let generics = Generics {
             params: generic_params,
             where_clause: &input.generics.where_clause
         };
