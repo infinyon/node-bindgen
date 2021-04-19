@@ -3,7 +3,6 @@ use proc_macro2::TokenStream;
 use syn::DeriveInput;
 use syn::Ident;
 use syn::Index;
-use syn::spanned::Spanned;
 use syn::GenericParam;
 use syn::TypeParam;
 use syn::LifetimeDef;
@@ -115,9 +114,9 @@ fn generate_try_into_js(parsed_struct: &MyStruct) -> TokenStream {
     }
 }
 
-fn drop_generic_bounds(params: &Vec<GenericParam>) -> Vec<GenericParam> {
+fn drop_generic_bounds(params: &[GenericParam]) -> Vec<GenericParam> {
     params
-        .clone()
+        .to_owned()
         .into_iter()
         .map(|generic| match generic {
             GenericParam::Type(type_param) => GenericParam::Type(TypeParam {
@@ -158,7 +157,7 @@ fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a MyGenerics<'a>) ->
 fn generate_named_field_conversions<'a>(
     output_obj: &Ident,
     js_env: &Ident,
-    fields: &'a Vec<MyField<'a>>,
+    fields: &'a [MyField<'a>],
 ) -> Vec<TokenStream> {
     fields
         .iter()
@@ -177,7 +176,7 @@ fn generate_named_field_conversions<'a>(
 fn generate_unnamed_field_conversions<'a>(
     output_array: &Ident,
     js_env: &Ident,
-    fields: &'a Vec<MyFieldType<'a>>,
+    fields: &'a [MyFieldType<'a>],
 ) -> Vec<TokenStream> {
     fields
         .iter()
