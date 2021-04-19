@@ -47,38 +47,6 @@ pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
     }
 }
 
-fn drop_generic_bounds(params: &Vec<GenericParam>) -> Vec<GenericParam> {
-    params
-        .clone()
-        .into_iter()
-        .map(|generic| {
-            match generic {
-                GenericParam::Type(type_param) => {
-                    GenericParam::Type(TypeParam {
-                        colon_token: None,
-                        bounds: Punctuated::new(),
-                        ..type_param
-                    })
-                },
-                GenericParam::Lifetime(lifetime_param) => {
-                    GenericParam::Lifetime(LifetimeDef {
-                        colon_token: None,
-                        bounds: Punctuated::new(),
-                        ..lifetime_param
-                    })
-                },
-                GenericParam::Const(const_param) => {
-                    GenericParam::Const(ConstParam {
-                        eq_token: None,
-                        default: None,
-                        ..const_param
-                    })
-                }
-            }
-        })
-        .collect()
-}
-
 fn generate_try_into_js(parsed_struct: &MyStruct) -> TokenStream {
     match parsed_struct {
         MyStruct::Named { name, fields, generics } => {
@@ -158,6 +126,38 @@ fn generate_try_into_js(parsed_struct: &MyStruct) -> TokenStream {
             }
         }
     }
+}
+
+fn drop_generic_bounds(params: &Vec<GenericParam>) -> Vec<GenericParam> {
+    params
+        .clone()
+        .into_iter()
+        .map(|generic| {
+            match generic {
+                GenericParam::Type(type_param) => {
+                    GenericParam::Type(TypeParam {
+                        colon_token: None,
+                        bounds: Punctuated::new(),
+                        ..type_param
+                    })
+                },
+                GenericParam::Lifetime(lifetime_param) => {
+                    GenericParam::Lifetime(LifetimeDef {
+                        colon_token: None,
+                        bounds: Punctuated::new(),
+                        ..lifetime_param
+                    })
+                },
+                GenericParam::Const(const_param) => {
+                    GenericParam::Const(ConstParam {
+                        eq_token: None,
+                        default: None,
+                        ..const_param
+                    })
+                }
+            }
+        })
+        .collect()
 }
 
 fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a MyGenerics<'a>) -> TokenStream
