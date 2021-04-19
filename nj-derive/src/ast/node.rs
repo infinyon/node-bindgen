@@ -8,7 +8,7 @@ use syn::DeriveInput;
 pub enum NodeItem {
     Function(ItemFn),
     Impl(ItemImpl),
-    Derive(DeriveInput)
+    Derive(DeriveInput),
 }
 
 impl Parse for NodeItem {
