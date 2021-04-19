@@ -10,6 +10,8 @@ use syn::LifetimeDef;
 use syn::ConstParam;
 use syn::punctuated::Punctuated;
 
+use inflector::Inflector;
+
 use crate::ast::MyStruct;
 use crate::ast::MyField;
 use crate::ast::MyFieldType;
@@ -19,17 +21,12 @@ pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
     match MyStruct::from_ast(&input_struct) {
         Err(err) => err.to_compile_error(),
         Ok(parsed_struct) => {
-            println!("We got struct: {:?}", parsed_struct);
-
             let try_into_js = generate_try_into_js(&parsed_struct);
-            let result = quote! {
-                // We are in a datatype gen
+            quote! {
                 #input_struct
 
                 #try_into_js
-            };
-            println!("Got {}", result.to_string());
-            result
+            }
         }
     }
 }
@@ -166,7 +163,7 @@ fn generate_named_field_conversions<'a>(
     fields
         .iter()
         .map(|MyField { name, ty: _ }| {
-            let field_name = format!("{}", name);
+            let field_name = format!("{}", name).to_camel_case();
 
             quote! {
                 #output_obj.set_property(
