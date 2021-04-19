@@ -121,22 +121,22 @@ pub enum MyStruct<'a> {
     Named {
         name: &'a Ident,
         fields: Vec<MyField<'a>>,
-        generics: MyGenerics<'a>
+        generics: MyGenerics<'a>,
     },
     Unnamed {
         name: &'a Ident,
         fields: Vec<MyFieldType<'a>>,
-        generics: MyGenerics<'a>
+        generics: MyGenerics<'a>,
     },
     Unit {
-        name: &'a Ident
-    }
+        name: &'a Ident,
+    },
 }
 
 #[derive(Debug)]
 pub struct MyField<'a> {
     pub name: &'a Ident,
-    pub ty: MyFieldType<'a>
+    pub ty: MyFieldType<'a>,
 }
 
 #[derive(Debug)]
@@ -148,18 +148,19 @@ pub enum MyFieldType<'a> {
 #[derive(Debug)]
 pub struct MyGenerics<'a> {
     pub params: Vec<GenericParam>,
-    pub where_clause: &'a Option<WhereClause>
+    pub where_clause: &'a Option<WhereClause>,
 }
 
 impl<'a> MyFieldType<'a> {
     pub fn from(ty: &'a Type) -> Result<Self> {
         match ty {
-            Type::Path(type_path) => Ok(MyFieldType::Path(
-                MyTypePath::from(type_path)?)),
-            Type::Reference(reference) => Ok(MyFieldType::Ref(
-                MyReferenceType::from(reference)?)),
-            _ => Err(Error::new(ty.span(), "Only type paths and references \
-                    are supported as field types")),
+            Type::Path(type_path) => Ok(MyFieldType::Path(MyTypePath::from(type_path)?)),
+            Type::Reference(reference) => Ok(MyFieldType::Ref(MyReferenceType::from(reference)?)),
+            _ => Err(Error::new(
+                ty.span(),
+                "Only type paths and references \
+                    are supported as field types",
+            )),
         }
     }
 }
@@ -168,32 +169,32 @@ impl<'a> MyStruct<'a> {
     pub fn from_ast(input: &'a DeriveInput) -> Result<MyStruct> {
         let struct_data = match &input.data {
             Data::Struct(inner_struct) => Ok(inner_struct),
-            Data::Enum(_) => Err(Error::new(input.span(), "Enums are not supported \
-                for automatic conversion to JavaScript representation")),
-            Data::Union(_) => Err(Error::new(input.span(), "Unions are not supported \
-                for automatic conversion to JavaScript representation")),
+            Data::Enum(_) => Err(Error::new(
+                input.span(),
+                "Enums are not supported \
+                for automatic conversion to JavaScript representation",
+            )),
+            Data::Union(_) => Err(Error::new(
+                input.span(),
+                "Unions are not supported \
+                for automatic conversion to JavaScript representation",
+            )),
         }?;
 
-        let generic_params = input.generics.params
-            .clone()
-            .into_iter()
-            .collect();
+        let generic_params = input.generics.params.clone().into_iter().collect();
         let generics = MyGenerics {
             params: generic_params,
-            where_clause: &input.generics.where_clause
+            where_clause: &input.generics.where_clause,
         };
 
         match &struct_data.fields {
             Fields::Named(named_fields) => {
-                let fields = named_fields.named
+                let fields = named_fields
+                    .named
                     .iter()
                     .filter_map(|field| field.ident.as_ref().map(|ident| (ident, &field.ty)))
                     .map(|(ident, ty)| {
-                        MyFieldType::from(&ty)
-                            .map(|ty| MyField {
-                                name: &ident,
-                                ty
-                            })
+                        MyFieldType::from(&ty).map(|ty| MyField { name: &ident, ty })
                     })
                     .collect::<Result<Vec<MyField<'a>>>>()?;
 
@@ -202,9 +203,10 @@ impl<'a> MyStruct<'a> {
                     fields,
                     generics,
                 })
-            },
+            }
             Fields::Unnamed(unnamed_fields) => {
-                let fields = unnamed_fields.unnamed
+                let fields = unnamed_fields
+                    .unnamed
                     .iter()
                     .map(|field| MyFieldType::from(&field.ty))
                     .collect::<Result<Vec<MyFieldType<'a>>>>()?;
@@ -214,8 +216,8 @@ impl<'a> MyStruct<'a> {
                     fields,
                     generics,
                 })
-            },
-            Fields::Unit => Ok(MyStruct::Unit { name: &input.ident })
+            }
+            Fields::Unit => Ok(MyStruct::Unit { name: &input.ident }),
         }
     }
 }
