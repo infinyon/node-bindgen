@@ -23,9 +23,13 @@ use syn::punctuated::Punctuated;
 
 use crate::ast::MyTypePath;
 use crate::ast::MyReferenceType;
+use crate::ast::MyStruct;
+use crate::ast::MyField;
+use crate::ast::MyFieldType;
+use crate::ast::MyGenerics;
 
 pub fn generate_datatype(input_struct: DeriveInput) -> TokenStream {
-    match Struct::from_ast(&input_struct) {
+    match MyStruct::from_ast(&input_struct) {
         Err(err) => err.to_compile_error(),
         Ok(parsed_struct) => {
             println!("We got struct: {:?}", parsed_struct);
@@ -75,9 +79,9 @@ fn drop_generic_bounds(params: &Vec<GenericParam>) -> Vec<GenericParam> {
         .collect()
 }
 
-fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
+fn generate_try_into_js(parsed_struct: &MyStruct) -> TokenStream {
     match parsed_struct {
-        Struct::Named { name, fields, generics } => {
+        MyStruct::Named { name, fields, generics } => {
             let impl_signature = generate_impl_signature(name, generics);
             let output_obj     = format_ident!("output_obj");
             let js_env         = format_ident!("js_env");
@@ -108,7 +112,7 @@ fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
                 }
             }
         },
-        Struct::Unnamed { name, fields, generics } => {
+        MyStruct::Unnamed { name, fields, generics } => {
             let impl_signature = generate_impl_signature(name, generics);
             let fields_count   = fields.len();
             let output_arr     = format_ident!("output_arr");
@@ -137,7 +141,7 @@ fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
                 }
             }
         },
-        Struct::Unit { name } => {
+        MyStruct::Unit { name } => {
             quote! {
                 impl node_bindgen::core::TryIntoJs for #name {
                     fn try_to_js(self, js_env: &node_bindgen::core::val::JsEnv) ->
@@ -156,7 +160,7 @@ fn generate_try_into_js(parsed_struct: &Struct) -> TokenStream {
     }
 }
 
-fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a Generics<'a>) -> TokenStream
+fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a MyGenerics<'a>) -> TokenStream
 {
     let generic_params     = &generics.params;
     let generics_no_bounds = drop_generic_bounds(&generics.params);
@@ -173,11 +177,12 @@ fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a Generics<'a>) -> T
     }
 }
 
-fn generate_named_field_conversions<'a>(output_obj: &Ident, 
+fn generate_named_field_conversions<'a>(
+                                  output_obj: &Ident, 
                                   js_env: &Ident,
-                                  fields: &'a Vec<Field<'a>>) -> Vec<TokenStream> {
+                                  fields: &'a Vec<MyField<'a>>) -> Vec<TokenStream> {
     fields.iter()
-        .map(|Field { name, ty: _ }| {
+        .map(|MyField { name, ty: _ }| {
             let field_name = format!("{}", name);
 
             quote! {
@@ -192,7 +197,7 @@ fn generate_named_field_conversions<'a>(output_obj: &Ident,
 fn generate_unnamed_field_conversions<'a>(
                                   output_array: &Ident, 
                                   js_env: &Ident,
-                                  fields: &'a Vec<FieldType<'a>>) -> Vec<TokenStream> {
+                                  fields: &'a Vec<MyFieldType<'a>>) -> Vec<TokenStream> {
     fields.iter()
         .enumerate()
         .map(|(field_idx, _)| {
@@ -209,108 +214,4 @@ fn generate_unnamed_field_conversions<'a>(
             }
         })
         .collect()
-}
-
-#[derive(Debug)]
-pub enum Struct<'a> {
-    Named {
-        name: &'a Ident,
-        fields: Vec<Field<'a>>,
-        generics: Generics<'a>
-    },
-    Unnamed {
-        name: &'a Ident,
-        fields: Vec<FieldType<'a>>,
-        generics: Generics<'a>
-    },
-    Unit {
-        name: &'a Ident
-    }
-}
-
-#[derive(Debug)]
-pub struct Field<'a> {
-    name: &'a Ident,
-    ty: FieldType<'a>
-}
-
-#[derive(Debug)]
-pub enum FieldType<'a> {
-    Path(MyTypePath<'a>),
-    Ref(MyReferenceType<'a>),
-}
-
-#[derive(Debug)]
-pub struct Generics<'a> {
-    params: Vec<GenericParam>,
-    where_clause: &'a Option<WhereClause>
-}
-
-impl<'a> FieldType<'a> {
-    pub fn from(ty: &'a Type) -> Result<Self> {
-        match ty {
-            Type::Path(type_path) => Ok(FieldType::Path(
-                MyTypePath::from(type_path)?)),
-            Type::Reference(reference) => Ok(FieldType::Ref(
-                MyReferenceType::from(reference)?)),
-            _ => Err(Error::new(ty.span(), "Only type paths and references \
-                    are supported as field types")),
-        }
-    }
-}
-
-impl<'a> Struct<'a> {
-    pub fn from_ast(input: &'a DeriveInput) -> Result<Struct> {
-        let struct_data = match &input.data {
-            Data::Struct(inner_struct) => Ok(inner_struct),
-            Data::Enum(_) => Err(Error::new(input.span(), "Enums are not supported \
-                for automatic conversion to JavaScript representation")),
-            Data::Union(_) => Err(Error::new(input.span(), "Unions are not supported \
-                for automatic conversion to JavaScript representation")),
-        }?;
-
-        let generic_params = input.generics.params
-            .clone()
-            .into_iter()
-            .collect();
-        let generics = Generics {
-            params: generic_params,
-            where_clause: &input.generics.where_clause
-        };
-
-        match &struct_data.fields {
-            Fields::Named(named_fields) => {
-                let fields = named_fields.named
-                    .iter()
-                    .filter_map(|field| field.ident.as_ref().map(|ident| (ident, &field.ty)))
-                    .map(|(ident, ty)| {
-                        FieldType::from(&ty)
-                            .map(|ty| Field {
-                                name: &ident,
-                                ty
-                            })
-                    })
-                    .collect::<Result<Vec<Field<'a>>>>()?;
-
-                Ok(Struct::Named {
-                    name: &input.ident,
-                    fields,
-                    generics,
-                })
-            },
-            Fields::Unnamed(unnamed_fields) => {
-                let fields = unnamed_fields.unnamed
-                    .iter()
-                    .map(|field| FieldType::from(&field.ty))
-                    .collect::<Result<Vec<FieldType<'a>>>>()?;
-
-                Ok(Struct::Unnamed {
-                    name: &input.ident,
-                    fields,
-                    generics,
-                })
-            },
-            Fields::Unit => Ok(Struct::Unit { name: &input.ident })
-        }
-    }
 }
