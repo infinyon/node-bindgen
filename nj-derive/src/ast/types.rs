@@ -5,22 +5,13 @@ use syn::TypeReference;
 use syn::Error;
 use syn::Result;
 use syn::spanned::Spanned;
-use quote::quote;
-use proc_macro2::TokenStream;
-
 use syn::DeriveInput;
 use syn::Data;
-use syn::DataStruct;
 use syn::Fields;
-use syn::FieldsNamed;
-use syn::FieldsUnnamed;
-use syn::Index;
 use syn::GenericParam;
-use syn::TypeParam;
-use syn::LifetimeDef;
-use syn::ConstParam;
 use syn::WhereClause;
-use syn::punctuated::Punctuated;
+use quote::quote;
+use proc_macro2::TokenStream;
 
 use crate::ast::TypePathUtil;
 
