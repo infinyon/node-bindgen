@@ -34,5 +34,11 @@ struct Simple {
     pub a_float : f64
 }
 
+#[node_bindgen]
+struct Unnamed(String, f64);
+
+#[node_bindgen]
+struct UnitStruct;
+
 fn main() {
 }
