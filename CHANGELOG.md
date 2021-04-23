@@ -2,9 +2,18 @@
 
 ## Unreleased
 ### Improvements
-### Fixed
+- Add support for passing tuples between Node and Rust ([#142](https://github.com/infinyon/node-bindgen/pull/142))
+- Bump electron from 9.3.1 to 9.4.0 in /examples/electron ([#135](https://github.com/infinyon/node-bindgen/pull/135))
+- Update JSArrayBuffer to be usable in `env.convert_to_rust` ([#136](https://github.com/infinyon/node-bindgen/pull/136))
 
-## [4.2.2] - TBD
+## [4.3.0] - 2021-03-13
+### Improvements
+- update trybuild to point to infinyon repo
+- update dependencies
+- Bump dependency on nj-core to 4.1.3
+- Rename `to_js` to `into_js` in `pub trait IntoJs`
+
+## [4.2.2] - 2021-01-06
 ### Fixed
 - Fix lifetime in `JSValue` for `&str`.
 
