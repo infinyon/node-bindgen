@@ -18,7 +18,6 @@ struct Outer {
 }
 
 #[node_bindgen]
-#[derive(Clone)]
 struct Inner(String);
 
 struct CustomJson {

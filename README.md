@@ -276,7 +276,9 @@ assert.deepEqual(addon.my_json(), {
 });
 ```
 
-Note that the fields must implement both `Clone` and `node_bindgen::core::TryIntoJs` themselves.
+Note that the fields must implement 
+`node_bindgen::core::TryIntoJs` themselves.
+Any references must also implement `Clone`.
 Field names will be converted to camelCase.
 
 ## JavaScript class

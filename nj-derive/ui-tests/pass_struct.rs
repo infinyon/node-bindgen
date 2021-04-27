@@ -17,7 +17,7 @@ struct Lifetime<'a> {
 
 #[node_bindgen]
 struct BoundGeneric<T>
-    where T: Sync + std::fmt::Debug + node_bindgen::core::TryIntoJs + Clone
+    where T: Sync + std::fmt::Debug + node_bindgen::core::TryIntoJs
 {
     pub field: T
 }
