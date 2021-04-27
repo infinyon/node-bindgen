@@ -161,13 +161,20 @@ fn generate_named_field_conversions<'a>(
 ) -> Vec<TokenStream> {
     fields
         .iter()
-        .map(|MyField { name, ty: _ }| {
+        .map(|MyField { name, ty }| {
             let field_name = format!("{}", name).to_camel_case();
+
+            // References needs to be cloned for try_to_js
+            // to take their ownership. Values can be passed as is
+            let field_access = match ty {
+                MyFieldType::Path(_) => quote! { self.#name },
+                MyFieldType::Ref(_) => quote! {self.#name.clone()},
+            };
 
             quote! {
                 #output_obj.set_property(
                     #field_name,
-                    self.#name.clone().try_to_js(#js_env)?)?;
+                    #field_access.try_to_js(#js_env)?)?;
             }
         })
         .collect()
@@ -181,16 +188,21 @@ fn generate_unnamed_field_conversions<'a>(
     fields
         .iter()
         .enumerate()
-        .map(|(field_idx, _)| {
+        .map(|(field_idx, ty)| {
             let index = Index {
                 index: field_idx as u32,
                 span: output_array.span(),
             };
 
+            let field_access = match ty {
+                MyFieldType::Path(_) => quote! { self.#index },
+                MyFieldType::Ref(_) => quote! {self.#index.clone()},
+            };
+
             quote! {
                 #js_env.set_element(
                     #output_array,
-                    self.#index.clone().try_to_js(#js_env)?,
+                    #field_access.try_to_js(#js_env)?,
                     #index)?;
             }
         })
