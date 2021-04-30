@@ -119,9 +119,6 @@ pub enum MyStruct<'a> {
         fields: Vec<MyFieldType<'a>>,
         generics: MyGenerics<'a>,
     },
-    Unit {
-        name: &'a Ident,
-    },
 }
 
 #[derive(Debug)]
