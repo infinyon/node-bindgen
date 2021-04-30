@@ -95,22 +95,6 @@ fn generate_try_into_js(parsed_struct: &MyStruct) -> TokenStream {
                 }
             }
         }
-        MyStruct::Unit { name } => {
-            quote! {
-                impl node_bindgen::core::TryIntoJs for #name {
-                    fn try_to_js(self, js_env: &node_bindgen::core::val::JsEnv) ->
-                        Result<node_bindgen::core::sys::napi_value,
-                               node_bindgen::core::NjError>
-                    {
-                        node_bindgen::core::val::JsObject::new(
-                            js_env.clone(),
-                            js_env.create_object()?
-                        )
-                        .try_to_js(js_env)
-                    }
-                }
-            }
-        }
     }
 }
 
