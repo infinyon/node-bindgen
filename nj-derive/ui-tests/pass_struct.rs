@@ -37,8 +37,5 @@ struct Simple {
 #[node_bindgen]
 struct Unnamed(String, f64);
 
-#[node_bindgen]
-struct UnitStruct;
-
 fn main() {
 }

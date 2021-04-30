@@ -208,7 +208,11 @@ impl<'a> MyStruct<'a> {
                     generics,
                 })
             }
-            Fields::Unit => Ok(MyStruct::Unit { name: &input.ident }),
+            Fields::Unit => Err(Error::new(
+                input.span(),
+                "Unit structs are not supported for automatic conversion yet. \
+                If you would like to see them supported, please reach out."
+            ))
         }
     }
 }
