@@ -6,6 +6,10 @@
 - Bump electron from 9.3.1 to 9.4.0 in /examples/electron ([#135](https://github.com/infinyon/node-bindgen/pull/135))
 - Update JSArrayBuffer to be usable in `env.convert_to_rust` ([#136](https://github.com/infinyon/node-bindgen/pull/136))
 
+## [4.4.0] - TBD
+### Improvements
+- Added support for automatic conversion of structs into the JS representation by decorating their definition with `#[node_bindgen]`
+
 ## [4.3.0] - 2021-03-13
 ### Improvements
 - update trybuild to point to infinyon repo
