@@ -72,7 +72,7 @@ Install nj-cli command line, which will be used to generate the native library.
 cargo install nj-cli
 ```
 
-This is one time step.
+This is a one time step.
 
 ## Configuring Cargo.toml
 
