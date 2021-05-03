@@ -39,7 +39,7 @@ impl<'a> Class<'a> {
             _ => return Err(Error::new(item.span(), "not supported receiver type")),
         };
 
-        Ok(Self { methods, self_ty })
+        Ok(Self { self_ty, methods })
     }
 
     pub fn constructor(&'a self) -> Option<&'a Method> {
