@@ -112,7 +112,7 @@ fn finish_worker<O>(ts_fn: ThreadSafeFunction, result: O, deferred: JsDeferred)
 where
     O: TryIntoJs,
 {
-    let boxed_worker = Box::new(WorkerResult { result, deferred });
+    let boxed_worker = Box::new(WorkerResult { deferred, result });
     let ptr = Box::into_raw(boxed_worker);
     if let Err(err) = ts_fn.call(Some(ptr as *mut core::ffi::c_void)) {
         error!("error finishing worker: {}", err);
