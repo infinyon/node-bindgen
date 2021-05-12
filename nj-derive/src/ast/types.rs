@@ -137,7 +137,8 @@ pub enum MyFieldType<'a> {
 #[derive(Debug)]
 pub enum MyFields<'a> {
     Named(Vec<MyNamedField<'a>>),
-    Unnamed(Vec<MyUnnamedField<'a>>)
+    Unnamed(Vec<MyUnnamedField<'a>>),
+    Unit
 }
 
 impl<'a> MyFields<'a> {
@@ -167,11 +168,7 @@ impl<'a> MyFields<'a> {
 
                 Ok(MyFields::Unnamed(fields))
             }
-            Fields::Unit => Err(Error::new(
-                input.span(),
-                "Unit structs/enum variants are not supported for automatic conversion yet. \
-                If you would like to see them supported, please reach out.",
-            )),
+            Fields::Unit => Ok(MyFields::Unit)
         }
     }
 }

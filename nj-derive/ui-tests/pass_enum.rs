@@ -5,7 +5,8 @@ enum TestEnum {
     Something(usize),
     Else {
         val: String
-    }
+    },
+    UnitVariant
 }
 
 fn main() {
