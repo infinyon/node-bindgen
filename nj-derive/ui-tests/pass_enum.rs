@@ -2,6 +2,11 @@ use node_bindgen::derive::node_bindgen;
 
 #[node_bindgen]
 enum TestEnum {
-    Something,
-    Else
+    Something(usize),
+    Else {
+        val: String
+    }
+}
+
+fn main() {
 }

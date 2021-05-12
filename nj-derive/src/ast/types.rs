@@ -6,9 +6,12 @@ use syn::Error;
 use syn::Result;
 use syn::spanned::Spanned;
 use syn::DeriveInput;
+use syn::Attribute;
+use syn::Expr;
 use syn::Data;
 use syn::DataEnum;
 use syn::DataStruct;
+use syn::Variant;
 use syn::Fields;
 use syn::GenericParam;
 use syn::WhereClause;
@@ -110,8 +113,8 @@ impl MyTupleType<'_> {
 }
 
 #[derive(Debug)]
-pub enum MyStruct<'a> {
-    fields: MyFields<'a>
+pub struct MyStruct<'a> {
+    pub fields: MyFields<'a>
 }
 
 #[derive(Debug)]
@@ -156,14 +159,17 @@ impl<'a> MyFields<'a> {
                 let fields = unnamed_fields
                     .unnamed
                     .iter()
-                    .map(|field| MyUnnamedField {ty: MyFieldType::from(&field.ty)})
-                    .collect::<Result<Vec<MyUnnamedField<'a>>>>()?;
+                    .map(|field| MyFieldType::from(&field.ty))
+                    .collect::<Result<Vec<MyFieldType<'a>>>>()?
+                    .into_iter()
+                    .map(|ty| MyUnnamedField { ty })
+                    .collect::<Vec<MyUnnamedField<'a>>>();
 
                 Ok(MyFields::Unnamed(fields))
             }
             Fields::Unit => Err(Error::new(
                 input.span(),
-                "Unit structs are not supported for automatic conversion yet. \
+                "Unit structs/enum variants are not supported for automatic conversion yet. \
                 If you would like to see them supported, please reach out.",
             )),
         }
@@ -178,7 +184,7 @@ pub struct MyGenerics<'a> {
 }
 
 impl<'a> MyFieldType<'a> {
-    pub fn from(ty: &'a Type) -> Result<Self> {
+    pub fn from(ty: &'a Type) -> Result<MyFieldType> {
         match ty {
             Type::Path(type_path) => Ok(MyFieldType::Path(MyTypePath::from(type_path)?)),
             Type::Reference(reference) => Ok(MyFieldType::Ref(MyReferenceType::from(reference)?)),
@@ -193,28 +199,26 @@ impl<'a> MyFieldType<'a> {
 
 #[derive(Debug)]
 pub struct MyEnum<'a> {
-    variants: Vec<MyVariant<'a>>
+    pub variants: Vec<MyVariant<'a>>
 }
 
 #[derive(Debug)]
 pub struct MyVariant<'a> {
-    attrs: &'a Vec<Attribute>,
-    name: &'a Ident,
-    fields: MyFields<'a>,
-    discriminant: Option<&'a Expr>
-}
-
-#[derive(Debug)]
-pub struct MyDeriveInput<'a> {
-    name: &'a Ident,
-    generics: MyGenerics<'a>,
-    payload: MyDerivePayload<'a>
+    pub name: &'a Ident,
+    pub fields: MyFields<'a>
 }
 
 #[derive(Debug)]
 pub enum MyDerivePayload<'a> {
     Struct(MyStruct<'a>),
     Enum(MyEnum<'a>)
+}
+
+#[derive(Debug)]
+pub struct MyDeriveInput<'a> {
+    pub name: &'a Ident,
+    pub generics: MyGenerics<'a>,
+    pub payload: MyDerivePayload<'a>
 }
 
 impl<'a> MyDeriveInput<'a> {
@@ -240,7 +244,7 @@ impl<'a> MyDeriveInput<'a> {
                 Ok(MyDeriveInput {
                     name,
                     generics,
-                    payload: MyDerivePayload::Struct(parsed_struct)
+                    payload: MyDerivePayload::Enum(parsed_enum)
                 })
             },
             Data::Union(_) => Err(Error::new(
@@ -248,21 +252,40 @@ impl<'a> MyDeriveInput<'a> {
                 "Unions are not supported \
                 for automatic conversion to JavaScript representation",
             )),
-        }?;
+        }
     }
 }
 
 impl<'a> MyEnum<'a> {
-    pub fn from_ast(struct_data: &'a DataEnum) -> Result<MyEnum> {
+    pub fn from_ast(enum_data: &'a DataEnum) -> Result<MyEnum> {
+        let variants = enum_data.variants.iter()
+            .map(|v| MyVariant::from_ast(v))
+            .collect::<Result<Vec<MyVariant>>>()?;
+
+
         Ok(MyEnum {
             variants
         })
     }
 }
 
+impl<'a> MyVariant<'a> {
+    pub fn from_ast(variant_data: &'a Variant) -> Result<MyVariant> {
+        let fields = MyFields::from_ast(&variant_data.fields)?;
+
+        Ok(MyVariant {
+            name: &variant_data.ident,
+            fields
+        })
+    }
+}
+
 impl<'a> MyStruct<'a> {
     pub fn from_ast(struct_data: &'a DataStruct) -> Result<MyStruct> {
-        match &struct_data.fields {
-        }
+        let fields = MyFields::from_ast(&struct_data.fields)?;
+
+        Ok(MyStruct {
+            fields
+        })
     }
 }
