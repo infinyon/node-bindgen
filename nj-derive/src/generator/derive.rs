@@ -51,11 +51,10 @@ fn generate_try_into_js(parsed_data: &MyDeriveInput) -> TokenStream {
 }
 
 fn generate_enum_try_into_js(enum_name: &Ident, impl_signature: &TokenStream, enum_data: &MyEnum) -> TokenStream {
-    let output_obj = format_ident!("output_obj");
     let js_env = format_ident!("js_env");
 
     let variant_conversions = enum_data.variants.iter()
-        .map(|v| generate_variant_conversion(enum_name, &js_env, &output_obj, v))
+        .map(|v| generate_variant_conversion(enum_name, &js_env, v))
         .collect::<Vec<TokenStream>>();
 
     quote! {
@@ -69,23 +68,19 @@ fn generate_enum_try_into_js(enum_name: &Ident, impl_signature: &TokenStream, en
                     val::JsObject
                 };
 
-                let mut #output_obj = JsObject::new(#js_env.clone(),
-                    #js_env.create_object()?);
-
                 match self {
                     #(#variant_conversions),*
-                };
-
-                #output_obj.try_to_js(#js_env)
+                }
             }
         }
     }
 }
 
-fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, output_obj: &Ident, variant: &MyVariant) -> TokenStream {
+fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, variant: &MyVariant) -> TokenStream {
     let variant_name           = variant.name;
     let variant_name_camelcase = format!("{}", variant.name).to_camel_case();
     let fields_scope           = quote! {};
+    let output_obj = format_ident!("output_obj");
 
     match &variant.fields {
         MyFields::Named(named_fields) => {
@@ -101,6 +96,9 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, output_obj: &I
 
             quote! {
                 #enum_name::#variant_name { #(#field_bindings),* } => {
+                    let mut #output_obj = JsObject::new(#js_env.clone(),
+                        #js_env.create_object()?);
+
                     let mut #variant_output_obj = JsObject::new(#js_env.clone(),
                         #js_env.create_object()?);
 
@@ -110,6 +108,8 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, output_obj: &I
                         #variant_name_camelcase,
                         #variant_output_obj.try_to_js(#js_env)?
                     )?;
+
+                    #output_obj.try_to_js(#js_env)
                 }
             }
         },
@@ -127,6 +127,9 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, output_obj: &I
 
             quote! {
                 #enum_name::#variant_name( #(#field_bindings),* ) => {
+                    let mut #output_obj = JsObject::new(#js_env.clone(),
+                        #js_env.create_object()?);
+
                     let #variant_output_arr = #js_env.create_array_with_len(#fields_count)?;
 
                     #(#field_conversions)*
@@ -135,6 +138,15 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, output_obj: &I
                         #variant_name_camelcase,
                         #variant_output_arr.try_to_js(#js_env)?
                     )?;
+
+                    #output_obj.try_to_js(#js_env)
+                }
+            }
+        },
+        MyFields::Unit => {
+            quote! {
+                #enum_name::#variant_name => {
+                    #js_env.create_string_utf8(#variant_name_camelcase)
                 }
             }
         }
@@ -201,6 +213,18 @@ fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStr
                         #(#field_conversions)*
 
                         Ok(#output_arr)
+                    }
+                }
+            }
+        }
+        MyFields::Unit => {
+            quote! {
+                #impl_signature {
+                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
+                        Result<node_bindgen::core::sys::napi_value,
+                            node_bindgen::core::NjError>
+                    {
+                        #js_env.get_null()
                     }
                 }
             }
