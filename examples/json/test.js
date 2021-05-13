@@ -13,6 +13,8 @@ assert.deepStrictEqual(addon.multilevelJson(), {
     val: ["hello"]
 }, "verify multilevel json");
 
+assert.strictEqual(addon.unitStruct(), null);
+
 assert.deepStrictEqual(addon.withMessage(), {
     withMessage: ["test", 321n]
 }, "simple unnamed enum variant");
