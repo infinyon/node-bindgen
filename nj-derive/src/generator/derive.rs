@@ -50,6 +50,85 @@ fn generate_try_into_js(parsed_data: &MyDeriveInput) -> TokenStream {
     }
 }
 
+fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStruct) -> TokenStream {
+    let js_env = format_ident!("js_env");
+    let fields_scope = quote! {
+        self.
+    };
+
+
+    match &struct_data.fields {
+        MyFields::Named(named_fields) => {
+            let output_obj = format_ident!("output_obj");
+            let field_conversions =
+                generate_named_field_conversions(&output_obj,
+                                                 &fields_scope,
+                                                 &js_env,
+                                                 &named_fields);
+
+            quote! {
+                #impl_signature {
+                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
+                        Result<node_bindgen::core::sys::napi_value,
+                            node_bindgen::core::NjError>
+                    {
+                        use node_bindgen::core::{
+                            TryIntoJs,
+                            val::JsObject
+                        };
+
+                        let mut #output_obj = JsObject::new(#js_env.clone(),
+                            #js_env.create_object()?);
+
+                        #(#field_conversions)*
+
+                        #output_obj.try_to_js(#js_env)
+                    }
+                }
+            }
+        },
+        MyFields::Unnamed(unnamed_fields) => {
+            let fields_count = unnamed_fields.len();
+            let output_arr = format_ident!("output_arr");
+            let field_conversions =
+                generate_unnamed_field_conversions(&output_arr,
+                                                   &js_env,
+                                                   &unnamed_fields);
+
+            quote! {
+                #impl_signature {
+                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
+                        Result<node_bindgen::core::sys::napi_value,
+                            node_bindgen::core::NjError>
+                    {
+                        use node_bindgen::core::{
+                            TryIntoJs
+                        };
+
+                        let #output_arr = #js_env.create_array_with_len(#fields_count)?;
+
+                        #(#field_conversions)*
+
+                        Ok(#output_arr)
+                    }
+                }
+            }
+        }
+        MyFields::Unit => {
+            quote! {
+                #impl_signature {
+                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
+                        Result<node_bindgen::core::sys::napi_value,
+                            node_bindgen::core::NjError>
+                    {
+                        #js_env.get_null()
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn generate_enum_try_into_js(enum_name: &Ident, impl_signature: &TokenStream, enum_data: &MyEnum) -> TokenStream {
     let js_env = format_ident!("js_env");
 
@@ -144,88 +223,11 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, variant: &MyVa
             }
         },
         MyFields::Unit => {
+            let variant_name_pascalcase = format!("{}", variant.name).to_pascal_case();
+
             quote! {
                 #enum_name::#variant_name => {
-                    #js_env.create_string_utf8(#variant_name_camelcase)
-                }
-            }
-        }
-    }
-}
-
-fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStruct) -> TokenStream {
-    let js_env = format_ident!("js_env");
-    let fields_scope = quote! {
-        self.
-    };
-
-
-    match &struct_data.fields {
-        MyFields::Named(named_fields) => {
-            let output_obj = format_ident!("output_obj");
-            let field_conversions =
-                generate_named_field_conversions(&output_obj,
-                                                 &fields_scope,
-                                                 &js_env,
-                                                 &named_fields);
-
-            quote! {
-                #impl_signature {
-                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
-                        Result<node_bindgen::core::sys::napi_value,
-                            node_bindgen::core::NjError>
-                    {
-                        use node_bindgen::core::{
-                            TryIntoJs,
-                            val::JsObject
-                        };
-
-                        let mut #output_obj = JsObject::new(#js_env.clone(),
-                            #js_env.create_object()?);
-
-                        #(#field_conversions)*
-
-                        #output_obj.try_to_js(#js_env)
-                    }
-                }
-            }
-        },
-        MyFields::Unnamed(unnamed_fields) => {
-            let fields_count = unnamed_fields.len();
-            let output_arr = format_ident!("output_arr");
-            let field_conversions =
-                generate_unnamed_field_conversions(&output_arr,
-                                                   &js_env,
-                                                   &unnamed_fields);
-
-            quote! {
-                #impl_signature {
-                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
-                        Result<node_bindgen::core::sys::napi_value,
-                            node_bindgen::core::NjError>
-                    {
-                        use node_bindgen::core::{
-                            TryIntoJs
-                        };
-
-                        let #output_arr = #js_env.create_array_with_len(#fields_count)?;
-
-                        #(#field_conversions)*
-
-                        Ok(#output_arr)
-                    }
-                }
-            }
-        }
-        MyFields::Unit => {
-            quote! {
-                #impl_signature {
-                    fn try_to_js(self, #js_env: &node_bindgen::core::val::JsEnv) ->
-                        Result<node_bindgen::core::sys::napi_value,
-                            node_bindgen::core::NjError>
-                    {
-                        #js_env.get_null()
-                    }
+                    #js_env.create_string_utf8(#variant_name_pascalcase)
                 }
             }
         }
@@ -272,6 +274,7 @@ fn generate_impl_signature<'a>(name: &'a Ident, generics: &'a MyGenerics<'a>) ->
     }
 }
 
+// Named fields, already bound to their field names
 fn generate_named_field_conversions<'a>(
     output_obj: &Ident,
     fields_scope: &TokenStream,
@@ -299,6 +302,7 @@ fn generate_named_field_conversions<'a>(
         .collect()
 }
 
+// Unnamed fields, stored in a tuple and accessed by index
 fn generate_unnamed_field_conversions<'a>(
     output_array: &Ident,
     js_env: &Ident,
@@ -328,6 +332,7 @@ fn generate_unnamed_field_conversions<'a>(
         .collect()
 }
 
+// Unnamed fields, bound ahead of time to named variables
 fn generate_bound_unnamed_field_conversions<'a>(
     output_array: &Ident,
     js_env: &Ident,

@@ -113,109 +113,16 @@ impl MyTupleType<'_> {
 }
 
 #[derive(Debug)]
-pub struct MyStruct<'a> {
-    pub fields: MyFields<'a>
-}
-
-#[derive(Debug)]
-pub struct MyNamedField<'a> {
+pub struct MyDeriveInput<'a> {
     pub name: &'a Ident,
-    pub ty: MyFieldType<'a>,
-}
-
-#[derive(Debug)]
-pub struct MyUnnamedField<'a> {
-    pub ty: MyFieldType<'a>
-}
-
-#[derive(Debug)]
-pub enum MyFieldType<'a> {
-    Path(MyTypePath<'a>),
-    Ref(MyReferenceType<'a>),
-}
-
-#[derive(Debug)]
-pub enum MyFields<'a> {
-    Named(Vec<MyNamedField<'a>>),
-    Unnamed(Vec<MyUnnamedField<'a>>),
-    Unit
-}
-
-impl<'a> MyFields<'a> {
-    pub fn from_ast(input: &'a Fields) -> Result<MyFields> {
-        match &input {
-            Fields::Named(named_fields) => {
-                let fields = named_fields
-                    .named
-                    .iter()
-                    .filter_map(|field| field.ident.as_ref().map(|ident| (ident, &field.ty)))
-                    .map(|(ident, ty)| {
-                        MyFieldType::from(&ty).map(|ty| MyNamedField { name: &ident, ty })
-                    })
-                    .collect::<Result<Vec<MyNamedField<'a>>>>()?;
-
-                Ok(MyFields::Named(fields))
-            }
-            Fields::Unnamed(unnamed_fields) => {
-                let fields = unnamed_fields
-                    .unnamed
-                    .iter()
-                    .map(|field| MyFieldType::from(&field.ty))
-                    .collect::<Result<Vec<MyFieldType<'a>>>>()?
-                    .into_iter()
-                    .map(|ty| MyUnnamedField { ty })
-                    .collect::<Vec<MyUnnamedField<'a>>>();
-
-                Ok(MyFields::Unnamed(fields))
-            }
-            Fields::Unit => Ok(MyFields::Unit)
-        }
-    }
-}
-
-
-#[derive(Debug)]
-pub struct MyGenerics<'a> {
-    pub params: Vec<GenericParam>,
-    pub where_clause: &'a Option<WhereClause>,
-}
-
-impl<'a> MyFieldType<'a> {
-    pub fn from(ty: &'a Type) -> Result<MyFieldType> {
-        match ty {
-            Type::Path(type_path) => Ok(MyFieldType::Path(MyTypePath::from(type_path)?)),
-            Type::Reference(reference) => Ok(MyFieldType::Ref(MyReferenceType::from(reference)?)),
-            _ => Err(Error::new(
-                ty.span(),
-                "Only type paths and references \
-                    are supported as field types",
-            )),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct MyEnum<'a> {
-    pub variants: Vec<MyVariant<'a>>
-}
-
-#[derive(Debug)]
-pub struct MyVariant<'a> {
-    pub name: &'a Ident,
-    pub fields: MyFields<'a>
+    pub generics: MyGenerics<'a>,
+    pub payload: MyDerivePayload<'a>
 }
 
 #[derive(Debug)]
 pub enum MyDerivePayload<'a> {
     Struct(MyStruct<'a>),
     Enum(MyEnum<'a>)
-}
-
-#[derive(Debug)]
-pub struct MyDeriveInput<'a> {
-    pub name: &'a Ident,
-    pub generics: MyGenerics<'a>,
-    pub payload: MyDerivePayload<'a>
 }
 
 impl<'a> MyDeriveInput<'a> {
@@ -253,6 +160,81 @@ impl<'a> MyDeriveInput<'a> {
     }
 }
 
+#[derive(Debug)]
+pub enum MyFields<'a> {
+    Named(Vec<MyNamedField<'a>>),
+    Unnamed(Vec<MyUnnamedField<'a>>),
+    Unit
+}
+
+#[derive(Debug)]
+pub struct MyNamedField<'a> {
+    pub name: &'a Ident,
+    pub ty: MyFieldType<'a>,
+}
+
+#[derive(Debug)]
+pub struct MyUnnamedField<'a> {
+    pub ty: MyFieldType<'a>
+}
+
+#[derive(Debug)]
+pub enum MyFieldType<'a> {
+    Path(MyTypePath<'a>),
+    Ref(MyReferenceType<'a>),
+}
+
+impl<'a> MyFields<'a> {
+    pub fn from_ast(input: &'a Fields) -> Result<MyFields> {
+        match &input {
+            Fields::Named(named_fields) => {
+                let fields = named_fields
+                    .named
+                    .iter()
+                    .filter_map(|field| field.ident.as_ref().map(|ident| (ident, &field.ty)))
+                    .map(|(ident, ty)| {
+                        MyFieldType::from(&ty).map(|ty| MyNamedField { name: &ident, ty })
+                    })
+                    .collect::<Result<Vec<MyNamedField<'a>>>>()?;
+
+                Ok(MyFields::Named(fields))
+            }
+            Fields::Unnamed(unnamed_fields) => {
+                let fields = unnamed_fields
+                    .unnamed
+                    .iter()
+                    .map(|field| MyFieldType::from(&field.ty))
+                    .collect::<Result<Vec<MyFieldType<'a>>>>()?
+                    .into_iter()
+                    .map(|ty| MyUnnamedField { ty })
+                    .collect::<Vec<MyUnnamedField<'a>>>();
+
+                Ok(MyFields::Unnamed(fields))
+            }
+            Fields::Unit => Ok(MyFields::Unit)
+        }
+    }
+}
+
+impl<'a> MyFieldType<'a> {
+    pub fn from(ty: &'a Type) -> Result<MyFieldType> {
+        match ty {
+            Type::Path(type_path) => Ok(MyFieldType::Path(MyTypePath::from(type_path)?)),
+            Type::Reference(reference) => Ok(MyFieldType::Ref(MyReferenceType::from(reference)?)),
+            _ => Err(Error::new(
+                ty.span(),
+                "Only type paths and references \
+                    are supported as field types",
+            )),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct MyEnum<'a> {
+    pub variants: Vec<MyVariant<'a>>
+}
+
 impl<'a> MyEnum<'a> {
     pub fn from_ast(enum_data: &'a DataEnum) -> Result<MyEnum> {
         let variants = enum_data.variants.iter()
@@ -266,6 +248,12 @@ impl<'a> MyEnum<'a> {
     }
 }
 
+#[derive(Debug)]
+pub struct MyVariant<'a> {
+    pub name: &'a Ident,
+    pub fields: MyFields<'a>
+}
+
 impl<'a> MyVariant<'a> {
     pub fn from_ast(variant_data: &'a Variant) -> Result<MyVariant> {
         let fields = MyFields::from_ast(&variant_data.fields)?;
@@ -277,6 +265,11 @@ impl<'a> MyVariant<'a> {
     }
 }
 
+#[derive(Debug)]
+pub struct MyStruct<'a> {
+    pub fields: MyFields<'a>
+}
+
 impl<'a> MyStruct<'a> {
     pub fn from_ast(struct_data: &'a DataStruct) -> Result<MyStruct> {
         let fields = MyFields::from_ast(&struct_data.fields)?;
@@ -285,4 +278,10 @@ impl<'a> MyStruct<'a> {
             fields
         })
     }
+}
+
+#[derive(Debug)]
+pub struct MyGenerics<'a> {
+    pub params: Vec<GenericParam>,
+    pub where_clause: &'a Option<WhereClause>,
 }
