@@ -21,6 +21,9 @@ struct Outer {
 struct Inner(String);
 
 #[node_bindgen]
+struct UnitStruct;
+
+#[node_bindgen]
 enum ErrorType {
     WithMessage(String, usize),
     WithFields {
@@ -65,6 +68,11 @@ fn multilevel_json() -> Outer {
     Outer {
         val: Inner("hello".to_owned())
     }
+}
+
+#[node_bindgen]
+fn unit_struct() -> UnitStruct {
+    UnitStruct
 }
 
 #[node_bindgen]
