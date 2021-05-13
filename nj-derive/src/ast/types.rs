@@ -6,8 +6,6 @@ use syn::Error;
 use syn::Result;
 use syn::spanned::Spanned;
 use syn::DeriveInput;
-use syn::Attribute;
-use syn::Expr;
 use syn::Data;
 use syn::DataEnum;
 use syn::DataStruct;
