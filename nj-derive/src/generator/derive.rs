@@ -36,35 +36,37 @@ pub fn generate_datatype(input_data: DeriveInput) -> TokenStream {
     }
 }
 
-
 fn generate_try_into_js(parsed_data: &MyDeriveInput) -> TokenStream {
     let impl_signature = generate_impl_signature(&parsed_data.name, &parsed_data.generics);
 
     match &parsed_data.payload {
         MyDerivePayload::Struct(struct_data) => {
             generate_struct_try_into_js(&impl_signature, &struct_data)
-        },
+        }
         MyDerivePayload::Enum(enum_data) => {
             generate_enum_try_into_js(&parsed_data.name, &impl_signature, &enum_data)
         }
     }
 }
 
-fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStruct) -> TokenStream {
+fn generate_struct_try_into_js(
+    impl_signature: &TokenStream,
+    struct_data: &MyStruct,
+) -> TokenStream {
     let js_env = format_ident!("js_env");
     let fields_scope = quote! {
         self.
     };
 
-
     match &struct_data.fields {
         MyFields::Named(named_fields) => {
             let output_obj = format_ident!("output_obj");
-            let field_conversions =
-                generate_named_field_conversions(&output_obj,
-                                                 &fields_scope,
-                                                 &js_env,
-                                                 &named_fields);
+            let field_conversions = generate_named_field_conversions(
+                &output_obj,
+                &fields_scope,
+                &js_env,
+                &named_fields,
+            );
 
             quote! {
                 #impl_signature {
@@ -86,14 +88,12 @@ fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStr
                     }
                 }
             }
-        },
+        }
         MyFields::Unnamed(unnamed_fields) => {
             let fields_count = unnamed_fields.len();
             let output_arr = format_ident!("output_arr");
             let field_conversions =
-                generate_unnamed_field_conversions(&output_arr,
-                                                   &js_env,
-                                                   &unnamed_fields);
+                generate_unnamed_field_conversions(&output_arr, &js_env, &unnamed_fields);
 
             quote! {
                 #impl_signature {
@@ -129,10 +129,16 @@ fn generate_struct_try_into_js(impl_signature: &TokenStream, struct_data: &MyStr
     }
 }
 
-fn generate_enum_try_into_js(enum_name: &Ident, impl_signature: &TokenStream, enum_data: &MyEnum) -> TokenStream {
+fn generate_enum_try_into_js(
+    enum_name: &Ident,
+    impl_signature: &TokenStream,
+    enum_data: &MyEnum,
+) -> TokenStream {
     let js_env = format_ident!("js_env");
 
-    let variant_conversions = enum_data.variants.iter()
+    let variant_conversions = enum_data
+        .variants
+        .iter()
         .map(|v| generate_variant_conversion(enum_name, &js_env, v))
         .collect::<Vec<TokenStream>>();
 
@@ -155,23 +161,30 @@ fn generate_enum_try_into_js(enum_name: &Ident, impl_signature: &TokenStream, en
     }
 }
 
-fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, variant: &MyVariant) -> TokenStream {
-    let variant_name           = variant.name;
+fn generate_variant_conversion(
+    enum_name: &Ident,
+    js_env: &Ident,
+    variant: &MyVariant,
+) -> TokenStream {
+    let variant_name = variant.name;
     let variant_name_camelcase = format!("{}", variant.name).to_camel_case();
-    let fields_scope           = quote! {};
+    let fields_scope = quote! {};
     let output_obj = format_ident!("output_obj");
 
     match &variant.fields {
         MyFields::Named(named_fields) => {
             let variant_output_obj = format_ident!("variant_output_obj");
-            let field_bindings = named_fields.iter()
+            let field_bindings = named_fields
+                .iter()
                 .map(|field| field.name)
                 .collect::<Vec<&Ident>>();
 
-            let field_conversions = generate_named_field_conversions(&variant_output_obj,
-                                                                     &fields_scope,
-                                                                     &js_env,
-                                                                     &named_fields);
+            let field_conversions = generate_named_field_conversions(
+                &variant_output_obj,
+                &fields_scope,
+                &js_env,
+                &named_fields,
+            );
 
             quote! {
                 #enum_name::#variant_name { #(#field_bindings),* } => {
@@ -191,18 +204,20 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, variant: &MyVa
                     #output_obj.try_to_js(#js_env)
                 }
             }
-        },
+        }
         MyFields::Unnamed(unnamed_fields) => {
             let variant_output_arr = format_ident!("variant_output_arr");
-            let fields_count       = unnamed_fields.len();
+            let fields_count = unnamed_fields.len();
             let field_bindings = (0..fields_count)
                 .into_iter()
                 .map(|field_idx| format_ident!("field_{}", field_idx))
                 .collect::<Vec<Ident>>();
 
-            let field_conversions = generate_bound_unnamed_field_conversions(&variant_output_arr,
-                                                                             &js_env,
-                                                                             &field_bindings);
+            let field_conversions = generate_bound_unnamed_field_conversions(
+                &variant_output_arr,
+                &js_env,
+                &field_bindings,
+            );
 
             quote! {
                 #enum_name::#variant_name( #(#field_bindings),* ) => {
@@ -221,7 +236,7 @@ fn generate_variant_conversion(enum_name: &Ident, js_env: &Ident, variant: &MyVa
                     #output_obj.try_to_js(#js_env)
                 }
             }
-        },
+        }
         MyFields::Unit => {
             let variant_name_pascalcase = format!("{}", variant.name).to_pascal_case();
 
@@ -336,7 +351,7 @@ fn generate_unnamed_field_conversions<'a>(
 fn generate_bound_unnamed_field_conversions<'a>(
     output_array: &Ident,
     js_env: &Ident,
-    field_bindings: &'a [Ident]
+    field_bindings: &'a [Ident],
 ) -> Vec<TokenStream> {
     field_bindings
         .iter()
