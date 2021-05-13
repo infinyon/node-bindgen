@@ -35,7 +35,7 @@ impl NjError {
     pub fn as_js(&self, js_env: &JsEnv) -> napi_value {
         match self {
             NjError::Native(err) => *err,
-            other => {
+            _ => {
                 let msg = self.to_string();
                 js_env.create_error(&msg).expect("error cannot be created")
             }
