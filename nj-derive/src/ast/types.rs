@@ -116,13 +116,13 @@ impl MyTupleType<'_> {
 pub struct MyDeriveInput<'a> {
     pub name: &'a Ident,
     pub generics: MyGenerics<'a>,
-    pub payload: MyDerivePayload<'a>
+    pub payload: MyDerivePayload<'a>,
 }
 
 #[derive(Debug)]
 pub enum MyDerivePayload<'a> {
     Struct(MyStruct<'a>),
-    Enum(MyEnum<'a>)
+    Enum(MyEnum<'a>),
 }
 
 impl<'a> MyDeriveInput<'a> {
@@ -140,17 +140,17 @@ impl<'a> MyDeriveInput<'a> {
                 Ok(MyDeriveInput {
                     name,
                     generics,
-                    payload: MyDerivePayload::Struct(parsed_struct)
+                    payload: MyDerivePayload::Struct(parsed_struct),
                 })
-            },
+            }
             Data::Enum(inner_enum) => {
                 let parsed_enum = MyEnum::from_ast(&inner_enum)?;
                 Ok(MyDeriveInput {
                     name,
                     generics,
-                    payload: MyDerivePayload::Enum(parsed_enum)
+                    payload: MyDerivePayload::Enum(parsed_enum),
                 })
-            },
+            }
             Data::Union(_) => Err(Error::new(
                 input.span(),
                 "Unions are not supported \
@@ -164,7 +164,7 @@ impl<'a> MyDeriveInput<'a> {
 pub enum MyFields<'a> {
     Named(Vec<MyNamedField<'a>>),
     Unnamed(Vec<MyUnnamedField<'a>>),
-    Unit
+    Unit,
 }
 
 #[derive(Debug)]
@@ -175,7 +175,7 @@ pub struct MyNamedField<'a> {
 
 #[derive(Debug)]
 pub struct MyUnnamedField<'a> {
-    pub ty: MyFieldType<'a>
+    pub ty: MyFieldType<'a>,
 }
 
 #[derive(Debug)]
@@ -211,7 +211,7 @@ impl<'a> MyFields<'a> {
 
                 Ok(MyFields::Unnamed(fields))
             }
-            Fields::Unit => Ok(MyFields::Unit)
+            Fields::Unit => Ok(MyFields::Unit),
         }
     }
 }
@@ -232,26 +232,25 @@ impl<'a> MyFieldType<'a> {
 
 #[derive(Debug)]
 pub struct MyEnum<'a> {
-    pub variants: Vec<MyVariant<'a>>
+    pub variants: Vec<MyVariant<'a>>,
 }
 
 impl<'a> MyEnum<'a> {
     pub fn from_ast(enum_data: &'a DataEnum) -> Result<MyEnum> {
-        let variants = enum_data.variants.iter()
+        let variants = enum_data
+            .variants
+            .iter()
             .map(|v| MyVariant::from_ast(v))
             .collect::<Result<Vec<MyVariant>>>()?;
 
-
-        Ok(MyEnum {
-            variants
-        })
+        Ok(MyEnum { variants })
     }
 }
 
 #[derive(Debug)]
 pub struct MyVariant<'a> {
     pub name: &'a Ident,
-    pub fields: MyFields<'a>
+    pub fields: MyFields<'a>,
 }
 
 impl<'a> MyVariant<'a> {
@@ -260,23 +259,21 @@ impl<'a> MyVariant<'a> {
 
         Ok(MyVariant {
             name: &variant_data.ident,
-            fields
+            fields,
         })
     }
 }
 
 #[derive(Debug)]
 pub struct MyStruct<'a> {
-    pub fields: MyFields<'a>
+    pub fields: MyFields<'a>,
 }
 
 impl<'a> MyStruct<'a> {
     pub fn from_ast(struct_data: &'a DataStruct) -> Result<MyStruct> {
         let fields = MyFields::from_ast(&struct_data.fields)?;
 
-        Ok(MyStruct {
-            fields
-        })
+        Ok(MyStruct { fields })
     }
 }
 
