@@ -2,13 +2,25 @@ const assert = require('assert');
 
 let addon = require('./dist');
 
-assert.deepEqual(addon.customJson(), {
+assert.deepStrictEqual(addon.customJson(), {
     customFieldName: 10
 }, "verify custom json");
-assert.deepEqual(addon.standardJson(), {
+assert.deepStrictEqual(addon.standardJson(), {
     someName: "John",
     aNumber: 1337
 }, "verify standard json");
-assert.deepEqual(addon.multilevelJson(), {
+assert.deepStrictEqual(addon.multilevelJson(), {
     val: ["hello"]
 }, "verify multilevel json");
+
+assert.deepStrictEqual(addon.withMessage(), {
+    withMessage: ["test", 321n]
+}, "simple unnamed enum variant");
+assert.deepStrictEqual(addon.withFields(), {
+    withFields: {
+        val: 123n
+    }
+}, "named enum variant");
+assert.deepStrictEqual(addon.withUnit(),
+    "UnitErrorType",
+    "unit enum variant")

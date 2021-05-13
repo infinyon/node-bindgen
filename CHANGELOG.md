@@ -3,6 +3,12 @@
 ## Unreleased
 ### Improvements
 
+## [4.5.0] - TBD
+### Improvements
+- Added support for automatic conversion of enums into the JS representation by decorating their definition with `#[node_bindgen]`
+- Defined a `NjError::Native` Error payload, which allows errors to return structured data to JS
+- `Result<T, E>` converts the error value to JS using `TryIntoJs` for structured error payloads
+
 ## [4.4.0] - TBD
 ### Improvements
 - Added support for automatic conversion of structs into the JS representation by decorating their definition with `#[node_bindgen]`
