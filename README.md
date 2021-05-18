@@ -325,7 +325,7 @@ assert.deepStrictEqual(addon.withFields(), {
 assert.deepStrictEqual(addon.withUnit(), "UnitErrorType")
 ```
 
-Unnamed variants will be converted to lists, named to objects and unit variants to strings equal to their name in PascalCase.
+Tuple variants will be converted into lists, struct variants converted to objects, and unit variants converted into strings matching the variant's name in PascalCase.
 Generics and references are supported, with the same caveats as for structs.
 
 ## JavaScript class

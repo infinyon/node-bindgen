@@ -5,13 +5,9 @@
 
 ## [4.5.0] - TBD
 ### Improvements
-- Added support for automatic conversion of enums into the JS representation by decorating their definition with `#[node_bindgen]`
+- Added support for automatic conversion of structs and enums into the JS representation by decorating their definition with `#[node_bindgen]` ([#148](https://github.com/infinyon/node-bindgen/pull/148) and [#155](https://github.com/infinyon/node-bindgen/pull/155))
 - Defined a `NjError::Native` Error payload, which allows errors to return structured data to JS
 - `Result<T, E>` converts the error value to JS using `TryIntoJs` for structured error payloads
-
-## [4.4.0] - TBD
-### Improvements
-- Added support for automatic conversion of structs into the JS representation by decorating their definition with `#[node_bindgen]`
 - Add support for passing tuples between Node and Rust ([#142](https://github.com/infinyon/node-bindgen/pull/142))
 - Bump electron from 9.3.1 to 9.4.0 in /examples/electron ([#135](https://github.com/infinyon/node-bindgen/pull/135))
 - Update JSArrayBuffer to be usable in `env.convert_to_rust` ([#136](https://github.com/infinyon/node-bindgen/pull/136))
