@@ -60,14 +60,14 @@ impl TryIntoJs for () {
 }
 
 impl TryIntoJs for NjError {
-    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
         // Re-throw the error into JS
         Err(self)
     }
 }
 
 impl TryIntoJs for std::io::Error {
-    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
         let message = self.to_string();
         Err(NjError::Other(message))
     }
