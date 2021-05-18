@@ -21,7 +21,7 @@ pub enum NjError {
     Other(String),
 }
 
-// error are throw
+// errors are thrown
 impl IntoJs for NjError {
     fn into_js(self, js_env: &JsEnv) -> napi_value {
         let msg = self.to_string();
