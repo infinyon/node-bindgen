@@ -26,3 +26,16 @@ assert.deepStrictEqual(addon.withFields(), {
 assert.deepStrictEqual(addon.withUnit(),
     "UnitErrorType",
     "unit enum variant")
+
+assert.throws(() => addon.failedResultWithFields(), {
+    "withFields": {
+        val: 987n
+    }
+}, "sync exception");
+
+assert.rejects(() => addon.asyncResultFailedUnit(),
+               (err) => {
+                   assert.strictEqual(err, "UnitErrorType");
+                   return true;
+               },
+               "async exception");

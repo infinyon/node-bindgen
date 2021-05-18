@@ -91,3 +91,15 @@ fn with_fields() -> ErrorType {
 fn with_unit() -> ErrorType {
     ErrorType::UnitErrorType
 }
+
+#[node_bindgen]
+fn failed_result_with_fields() -> Result<(), ErrorType> {
+    Err(ErrorType::WithFields {
+        val: 987
+    })
+}
+
+#[node_bindgen]
+async fn async_result_failed_unit() -> Result<(), ErrorType> {
+    Err(ErrorType::UnitErrorType)
+}

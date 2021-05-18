@@ -24,9 +24,17 @@ pub enum NjError {
 // errors are thrown
 impl IntoJs for NjError {
     fn into_js(self, js_env: &JsEnv) -> napi_value {
-        let msg = self.to_string();
-        js_env.throw_type_error(&msg);
-        ptr::null_mut()
+        match self {
+            NjError::Native(err) => {
+                js_env.throw(err);
+                ptr::null_mut()
+            },
+            _ => {
+                let msg = self.to_string();
+                js_env.throw_type_error(&msg);
+                ptr::null_mut()
+            }
+        }
     }
 }
 
