@@ -488,9 +488,7 @@ impl JsEnv {
             return;
         }
 
-        unsafe {
-            crate::sys::napi_throw(self.inner(), value)
-        };
+        unsafe { crate::sys::napi_throw(self.inner(), value) };
     }
 
     pub fn throw_type_error(&self, message: &str) {

@@ -28,7 +28,7 @@ impl IntoJs for NjError {
             NjError::Native(err) => {
                 js_env.throw(err);
                 ptr::null_mut()
-            },
+            }
             _ => {
                 let msg = self.to_string();
                 js_env.throw_type_error(&msg);
