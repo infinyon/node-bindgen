@@ -3,7 +3,7 @@
 ## Unreleased
 ### Improvements
 
-## [4.5.0] - TBD
+## [5.0.0] - TBD
 ### Improvements
 - Added support for automatic conversion of structs and enums into the JS representation by decorating their definition with `#[node_bindgen]` ([#148](https://github.com/infinyon/node-bindgen/pull/148) and [#155](https://github.com/infinyon/node-bindgen/pull/155))
 - Defined a `NjError::Native` Error payload, which allows errors to return structured data to JS
