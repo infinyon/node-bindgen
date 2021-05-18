@@ -59,15 +59,29 @@ impl TryIntoJs for () {
     }
 }
 
+impl TryIntoJs for NjError {
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
+        // Re-throw the error into JS
+        Err(self)
+    }
+}
+
+impl TryIntoJs for std::io::Error {
+    fn try_to_js(self, _js_env: &JsEnv) -> Result<napi_value, NjError> {
+        let message = self.to_string();
+        Err(NjError::Other(message))
+    }
+}
+
 impl<T, E> TryIntoJs for Result<T, E>
 where
     T: TryIntoJs,
-    E: ToString,
+    E: TryIntoJs,
 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         match self {
             Ok(val) => val.try_to_js(&js_env),
-            Err(err) => Err(NjError::Other(err.to_string())),
+            Err(err) => Err(NjError::Native(err.try_to_js(&js_env)?)),
         }
     }
 }

@@ -57,7 +57,7 @@ pub fn node_bindgen(args: TokenStream, item: TokenStream) -> TokenStream {
 
     // used for debugging, if error occurs println do not work so should uncomment express
     // println!("{}", out_express);
-    //let out_express = quote::quote! {};
+    // let out_express = quote::quote! {};
 
     out_express.into()
 }

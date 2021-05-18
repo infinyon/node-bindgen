@@ -476,6 +476,21 @@ impl JsEnv {
         pending
     }
 
+    pub fn throw(&self, value: napi_value) {
+        debug!("throwing a native value");
+
+        // check if there is exception pending, if so log and not do anything
+        if self.is_exception_pending() {
+            error!(
+                "there is exception pending when trying to throw \
+                 a native value, ignoring for now",
+            );
+            return;
+        }
+
+        unsafe { crate::sys::napi_throw(self.inner(), value) };
+    }
+
     pub fn throw_type_error(&self, message: &str) {
         debug!("throwing type error: {}", message);
         // check if there is exception pending, if so log and not do anything

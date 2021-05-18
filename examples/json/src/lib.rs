@@ -20,6 +20,18 @@ struct Outer {
 #[node_bindgen]
 struct Inner(String);
 
+#[node_bindgen]
+struct UnitStruct;
+
+#[node_bindgen]
+enum ErrorType {
+    WithMessage(String, usize),
+    WithFields {
+        val: usize
+    },
+    UnitErrorType
+}
+
 struct CustomJson {
     val: f64
 }
@@ -56,4 +68,38 @@ fn multilevel_json() -> Outer {
     Outer {
         val: Inner("hello".to_owned())
     }
+}
+
+#[node_bindgen]
+fn unit_struct() -> UnitStruct {
+    UnitStruct
+}
+
+#[node_bindgen]
+fn with_message() -> ErrorType {
+    ErrorType::WithMessage("test".to_owned(), 321)
+}
+
+#[node_bindgen]
+fn with_fields() -> ErrorType {
+    ErrorType::WithFields {
+        val: 123
+    }
+}
+
+#[node_bindgen]
+fn with_unit() -> ErrorType {
+    ErrorType::UnitErrorType
+}
+
+#[node_bindgen]
+fn failed_result_with_fields() -> Result<(), ErrorType> {
+    Err(ErrorType::WithFields {
+        val: 987
+    })
+}
+
+#[node_bindgen]
+async fn async_result_failed_unit() -> Result<(), ErrorType> {
+    Err(ErrorType::UnitErrorType)
 }

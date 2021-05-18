@@ -17,23 +17,37 @@ pub enum NjError {
     NoPlainConstructor,
     Utf8Error(FromUtf8Error),
     Utf8ErrorSlice(Utf8Error),
+    Native(napi_value),
     Other(String),
 }
 
-// error are throw
+// errors are thrown
 impl IntoJs for NjError {
     fn into_js(self, js_env: &JsEnv) -> napi_value {
-        let msg = self.to_string();
-        js_env.throw_type_error(&msg);
-        ptr::null_mut()
+        match self {
+            NjError::Native(err) => {
+                js_env.throw(err);
+                ptr::null_mut()
+            }
+            _ => {
+                let msg = self.to_string();
+                js_env.throw_type_error(&msg);
+                ptr::null_mut()
+            }
+        }
     }
 }
 
 impl NjError {
     /// convert to napi value
     pub fn as_js(&self, js_env: &JsEnv) -> napi_value {
-        let msg = self.to_string();
-        js_env.create_error(&msg).expect("error cannot be created")
+        match self {
+            NjError::Native(err) => *err,
+            _ => {
+                let msg = self.to_string();
+                js_env.create_error(&msg).expect("error cannot be created")
+            }
+        }
     }
 }
 
@@ -84,6 +98,7 @@ impl fmt::Display for NjError {
                 expected_count, actual_count
             ),
             Self::NoPlainConstructor => write!(f, "Plain constructor not supported yet"),
+            Self::Native(_val) => write!(f, "Native error payload"),
             Self::Other(msg) => write!(f, "{}", msg),
         }
     }
