@@ -121,7 +121,7 @@ impl TryIntoJs for serde_json::Value {
             }
             serde_json::Value::String(string) => string.try_to_js(js_env),
             serde_json::Value::Array(arr) => arr.try_to_js(js_env),
-            serde_json::Value::Object(obj) => obj.try_to_js(js_env)
+            serde_json::Value::Object(obj) => obj.try_to_js(js_env),
         }
     }
 }
@@ -173,12 +173,12 @@ where
 }
 
 #[cfg(feature = "serde_json")]
-impl TryIntoJs for serde_json::map::Map<String, serde_json::Value>
-{
+impl TryIntoJs for serde_json::map::Map<String, serde_json::Value> {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
-        let mut obj = JsObject::new(js_env.clone(), js_env.create_object()?);
+        let mut obj = JsObject::new(*js_env, js_env.create_object()?);
 
-        let converted_obj = self.into_iter()
+        let converted_obj = self
+            .into_iter()
             .map(|(key, val)| val.try_to_js(js_env).map(|v| (key, v)))
             .collect::<Result<Vec<(String, napi_value)>, NjError>>()?;
 
