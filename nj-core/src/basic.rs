@@ -119,6 +119,12 @@ impl JsEnv {
         Ok(result)
     }
 
+    pub fn create_uint32(&self, value: u32) -> Result<napi_value, NjError> {
+        let mut result = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_create_uint32(self.0, value, &mut result))?;
+        Ok(result)
+    }
+
     pub fn create_bigint_uint64(&self, value: u64) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_create_bigint_uint64(
