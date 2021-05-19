@@ -690,6 +690,7 @@ dependencies = [
  "nj-sys",
  "num-bigint",
  "pin-utils",
+ "serde_json",
 ]
 
 [[package]]

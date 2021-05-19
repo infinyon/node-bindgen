@@ -642,6 +642,7 @@ dependencies = [
  "nj-sys",
  "num-bigint",
  "pin-utils",
+ "serde_json",
 ]
 
 [[package]]
@@ -741,6 +742,7 @@ name = "nj-example-json"
 version = "0.1.0"
 dependencies = [
  "node-bindgen",
+ "serde_json",
 ]
 
 [[package]]

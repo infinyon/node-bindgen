@@ -39,3 +39,10 @@ assert.rejects(() => addon.asyncResultFailedUnit(),
                    return true;
                },
                "async exception");
+
+assert.deepStrictEqual(addon.withSerdeJson(), {
+    val: {
+        first: true,
+        second: "hello"
+    }
+}, "serde_json serialization")
