@@ -11,6 +11,7 @@
 - Add support for passing tuples between Node and Rust ([#142](https://github.com/infinyon/node-bindgen/pull/142))
 - Bump electron from 9.3.1 to 9.4.0 in /examples/electron ([#135](https://github.com/infinyon/node-bindgen/pull/135))
 - Update JSArrayBuffer to be usable in `env.convert_to_rust` ([#136](https://github.com/infinyon/node-bindgen/pull/136))
+- Added missing unsigned and signed integer conversions to JS [#158](https://github.com/infinyon/node-bindgen/pull/158)
 
 ## [4.3.0] - 2021-03-13
 ### Improvements

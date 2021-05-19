@@ -23,15 +23,45 @@ impl TryIntoJs for f64 {
     }
 }
 
-impl TryIntoJs for i64 {
+impl TryIntoJs for i8 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
-        js_env.create_int64(self)
+        js_env.create_int32(self as i32)
+    }
+}
+
+impl TryIntoJs for i16 {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_int32(self as i32)
     }
 }
 
 impl TryIntoJs for i32 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         js_env.create_int32(self)
+    }
+}
+
+impl TryIntoJs for i64 {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_int64(self)
+    }
+}
+
+impl TryIntoJs for u8 {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_uint32(self as u32)
+    }
+}
+
+impl TryIntoJs for u16 {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_uint32(self as u32)
+    }
+}
+
+impl TryIntoJs for u32 {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        js_env.create_uint32(self)
     }
 }
 
