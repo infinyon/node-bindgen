@@ -12,7 +12,6 @@ license = "Apache-2.0"
 test = false
 
 [features]
-default = ["serde_json"]
 serde-json = ["serde_json"]
 
 [dependencies]
