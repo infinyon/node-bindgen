@@ -3,6 +3,7 @@ use std::ptr;
 
 use crate::sys::napi_value;
 use crate::val::JsEnv;
+use crate::val::JsObject;
 use crate::NjError;
 use crate::napi_call_result;
 
@@ -103,6 +104,28 @@ impl TryIntoJs for std::io::Error {
     }
 }
 
+#[cfg(feature = "serde_json")]
+impl TryIntoJs for serde_json::Value {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        match self {
+            serde_json::Value::Null => js_env.get_null(),
+            serde_json::Value::Bool(val) => val.try_to_js(js_env),
+            serde_json::Value::Number(num) => {
+                if num.is_i64() {
+                    js_env.create_int64(num.as_i64().unwrap())
+                } else if num.is_u64() {
+                    js_env.create_bigint_uint64(num.as_u64().unwrap())
+                } else {
+                    js_env.create_double(num.as_f64().unwrap())
+                }
+            }
+            serde_json::Value::String(string) => string.try_to_js(js_env),
+            serde_json::Value::Array(arr) => arr.try_to_js(js_env),
+            serde_json::Value::Object(obj) => obj.try_to_js(js_env),
+        }
+    }
+}
+
 impl<T, E> TryIntoJs for Result<T, E>
 where
     T: TryIntoJs,
@@ -146,6 +169,24 @@ where
         }
 
         Ok(array)
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl TryIntoJs for serde_json::map::Map<String, serde_json::Value> {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        let mut obj = JsObject::new(*js_env, js_env.create_object()?);
+
+        let converted_obj = self
+            .into_iter()
+            .map(|(key, val)| val.try_to_js(js_env).map(|v| (key, v)))
+            .collect::<Result<Vec<(String, napi_value)>, NjError>>()?;
+
+        for (key, val) in converted_obj {
+            obj.set_property(&key, val)?;
+        }
+
+        Ok(obj.napi_value())
     }
 }
 

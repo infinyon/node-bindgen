@@ -12,6 +12,7 @@ license = "Apache-2.0"
 default = ["node"]
 node = ["nj-sys", "nj-core", "nj-derive"]
 build = ["nj-build"]
+serde-json = ["nj-core/serde-json"]
 
 [dependencies]
 nj-sys = { path = "nj-sys", version = "3.0.0", optional = true }

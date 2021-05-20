@@ -5,6 +5,9 @@ use node_bindgen::core::val::JsEnv;
 use node_bindgen::core::TryIntoJs;
 use node_bindgen::core::val::JsObject;
 
+use serde_json::value::Value;
+use serde_json::map::Map;
+
 // The recommended way of transforming to json
 #[node_bindgen]
 struct StandardJson {
@@ -30,6 +33,11 @@ enum ErrorType {
         val: usize
     },
     UnitErrorType
+}
+
+#[node_bindgen]
+struct WithSerdeJson {
+    val: Value
 }
 
 struct CustomJson {
@@ -102,4 +110,15 @@ fn failed_result_with_fields() -> Result<(), ErrorType> {
 #[node_bindgen]
 async fn async_result_failed_unit() -> Result<(), ErrorType> {
     Err(ErrorType::UnitErrorType)
+}
+
+#[node_bindgen]
+fn with_serde_json() -> WithSerdeJson {
+    let mut map = Map::new();
+    map.insert("first".to_owned(), Value::Bool(true));
+    map.insert("second".to_owned(), Value::String("hello".to_owned()));
+
+    WithSerdeJson {
+        val: Value::Object(map)
+    }
 }

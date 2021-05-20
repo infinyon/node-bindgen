@@ -10,7 +10,8 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../..", features = ["serde-json"] }
+serde_json = "1.0"
 
 
 [build-dependencies]
