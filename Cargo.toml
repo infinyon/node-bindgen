@@ -13,6 +13,7 @@ default = ["node"]
 node = ["nj-sys", "nj-core", "nj-derive"]
 build = ["nj-build"]
 serde-json = ["nj-core/serde-json"]
+uuid = ["nj-core/convert-uuid"]
 
 [dependencies]
 nj-sys = { path = "nj-sys", version = "3.0.0", optional = true }

@@ -126,6 +126,18 @@ impl TryIntoJs for serde_json::Value {
     }
 }
 
+#[cfg(feature = "convert-uuid")]
+impl TryIntoJs for uuid::Uuid {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        let as_str = self
+            .to_hyphenated()
+            .encode_lower(&mut uuid::Uuid::encode_buffer())
+            .to_owned();
+
+        as_str.try_to_js(js_env)
+    }
+}
+
 impl<T, E> TryIntoJs for Result<T, E>
 where
     T: TryIntoJs,
