@@ -2,41 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - staging
+      - trying
   pull_request:
     branches: [ master ]
-jobs:
-#  version_check:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#      - name: Install cargo-cvm
-#        uses: actions-rs/install@v0.1
-#        with:
-#          crate: cargo-cvm
-#          version: latest
-#      - name: Check Versions
-#        run: cargo cvm -x
-  check_clippy:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        rust: [stable]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          override: true
-      - name: check clippy
-        run: make check-clippy RUSTV=${{ matrix.rust }}
 
-  check_fmt:
-    name: check cargo fmt
+jobs:
+  rustfmt:
+    name: Rustfmt (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -52,16 +26,31 @@ jobs:
       - name: check fmt
         run: make check-fmt RUSTV=${{ matrix.rust }}
 
-        
-  smoke_test:
-    name: Smoke test
+  clippy:
+    name: Clippy (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: check clippy
+        run: make check-clippy RUSTV=${{ matrix.rust }}
+
+  test:
+    name: Smoke test (${{ matrix.os }}, ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         rust: [stable]
         node: [ '12', '14' ]
-
     steps:
     - uses: actions/checkout@v2
     - name: Cancel Workflow Action
@@ -82,3 +71,9 @@ jobs:
     - name: All Tests
       run: make test-all
 
+  done:
+    name: Done
+    needs: [rustfmt, clippy, test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Done!"
