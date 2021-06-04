@@ -1,0 +1,15 @@
+[package]
+name = "nj-example-uuid"
+version = "0.1.0"
+authors = ["fluvio.io"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+node-bindgen = { path = "../..", features = ["uuid"] }
+uuid = "0.8.2"
+
+[build-dependencies]
+node-bindgen = { path = "../../", features = ["build"] }

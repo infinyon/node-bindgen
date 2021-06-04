@@ -17,4 +17,5 @@ members = [
     "cleanup",
     "bigint",
     "tuples",
+    "uuid",
 ]

@@ -1,0 +1,1 @@
+Pass `uuid::Uuid` objects to and from Node
