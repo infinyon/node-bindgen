@@ -132,7 +132,7 @@ impl TryIntoJs for uuid::Uuid {
         let as_str = self
             .to_hyphenated()
             .encode_lower(&mut uuid::Uuid::encode_buffer())
-            .to_owned();
+            .to_string();
 
         as_str.try_to_js(js_env)
     }
