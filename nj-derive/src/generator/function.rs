@@ -387,7 +387,7 @@ mod closure {
                 _context: *mut ::std::os::raw::c_void,
                 data: *mut ::std::os::raw::c_void) {
 
-                if env != std::ptr::null_mut() {
+                if !env.is_null() {
 
                     node_bindgen::core::log::debug!("async cb invoked");
                     let js_env = node_bindgen::core::val::JsEnv::new(env);
