@@ -24,7 +24,7 @@ assert.deepStrictEqual(addon.withFields(), {
     }
 }, "named enum variant");
 assert.deepStrictEqual(addon.withUnit(),
-    "UnitErrorType",
+    "UnitError",
     "unit enum variant")
 
 assert.throws(() => addon.failedResultWithFields(), {
@@ -35,7 +35,7 @@ assert.throws(() => addon.failedResultWithFields(), {
 
 assert.rejects(() => addon.asyncResultFailedUnit(),
                (err) => {
-                   assert.strictEqual(err, "UnitErrorType");
+                   assert.strictEqual(err, "UnitError");
                    return true;
                },
                "async exception");
