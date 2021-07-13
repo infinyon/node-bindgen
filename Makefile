@@ -34,8 +34,11 @@ check-fmt:
 install-clippy:
 	rustup component add clippy --toolchain $(RUSTV)
 
-check-clippy:	install-clippy
+check-clippy:	install-clippy check-clippy-examples
 	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
 		-D warnings \
 		-A clippy::upper_case_acronyms \
 		-A clippy::needless-question-mark
+
+check-clippy-examples: install-clippy
+	make -C examples check-clippy

@@ -27,7 +27,7 @@ async fn hello2(arg: f64) -> Result<f64, NjError> {
 
 /// just sleep
 #[node_bindgen]
-async fn just_sleep(seconds: i32) -> () {
+async fn just_sleep(seconds: i32) {
     println!("sleeping");
     sleep(Duration::from_secs(seconds as u64)).await;
     println!("finished sleeping");

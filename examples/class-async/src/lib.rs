@@ -16,7 +16,7 @@ struct MyJson {
 impl TryIntoJs for MyJson {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         // create JSON
-        let mut json = JsObject::new(js_env.clone(), js_env.create_object()?);
+        let mut json = JsObject::new(*js_env, js_env.create_object()?);
 
         let js_val = js_env.create_double(self.val)?;
         json.set_property("val", js_val)?;
@@ -63,7 +63,7 @@ impl MyObject {
     async fn sleep<F: Fn(String)>(&self, cb: F) {
         println!("sleeping");
         sleep(Duration::from_secs(1)).await;
-        let msg = format!("hello world");
+        let msg = "hello world".to_string();
         cb(msg);
     }
 }
