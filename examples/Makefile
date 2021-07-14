@@ -67,3 +67,9 @@ test-tuple:
 
 test-cleanup:
 	make -C cleanup test
+
+check-clippy:
+	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+		-D warnings \
+		-A clippy::upper_case_acronyms \
+		-A clippy::needless-question-mark

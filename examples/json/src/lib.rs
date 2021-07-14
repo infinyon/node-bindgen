@@ -32,7 +32,7 @@ enum ErrorType {
     WithFields {
         val: usize
     },
-    UnitErrorType
+    UnitError
 }
 
 #[node_bindgen]
@@ -48,7 +48,7 @@ impl TryIntoJs for CustomJson {
     /// serialize into json object, with custom field names
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         // create JSON
-        let mut json = JsObject::new(js_env.clone(), js_env.create_object()?);
+        let mut json = JsObject::new(*js_env, js_env.create_object()?);
 
         let js_val = js_env.create_double(self.val)?;
         json.set_property("customFieldName", js_val)?;
@@ -97,7 +97,7 @@ fn with_fields() -> ErrorType {
 
 #[node_bindgen]
 fn with_unit() -> ErrorType {
-    ErrorType::UnitErrorType
+    ErrorType::UnitError
 }
 
 #[node_bindgen]
@@ -109,7 +109,7 @@ fn failed_result_with_fields() -> Result<(), ErrorType> {
 
 #[node_bindgen]
 async fn async_result_failed_unit() -> Result<(), ErrorType> {
-    Err(ErrorType::UnitErrorType)
+    Err(ErrorType::UnitError)
 }
 
 #[node_bindgen]
