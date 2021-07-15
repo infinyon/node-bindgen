@@ -126,6 +126,28 @@ impl TryIntoJs for serde_json::Value {
     }
 }
 
+#[cfg(feature = "convert-uuid")]
+impl TryIntoJs for uuid::Uuid {
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        let as_str = self
+            .to_hyphenated()
+            .encode_lower(&mut uuid::Uuid::encode_buffer())
+            .to_string();
+
+        as_str.try_to_js(js_env)
+    }
+}
+
+#[cfg(feature = "convert-uuid")]
+impl JSValue<'_> for uuid::Uuid {
+    fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+        let string = String::convert_to_rust(env, js_value)?;
+        let uuid = uuid::Uuid::parse_str(&string)
+            .map_err(|e| NjError::Other(format!("Failed to parse Uuid: {}", e)))?;
+        Ok(uuid)
+    }
+}
+
 impl<T, E> TryIntoJs for Result<T, E>
 where
     T: TryIntoJs,

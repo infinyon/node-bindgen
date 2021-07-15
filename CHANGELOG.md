@@ -13,6 +13,7 @@
 - Update JSArrayBuffer to be usable in `env.convert_to_rust` ([#136](https://github.com/infinyon/node-bindgen/pull/136))
 - Added missing unsigned and signed integer conversions to JS [#158](https://github.com/infinyon/node-bindgen/pull/158)
 - `serde_json` is automatically serialized to it's JS representation ([#159](https://github.com/infinyon/node-bindgen/pull/159))
+- `uuid`s are automatically serialized to JS ([#160](https://github.com/infinyon/node-bindgen/pull/160))
 
 ## [4.3.0] - 2021-03-13
 ### Improvements
