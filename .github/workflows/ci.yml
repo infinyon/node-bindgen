@@ -58,6 +58,7 @@ jobs:
         include:
           - os: macos-11
             rust: stable
+            node: 16
             rust-target: aarch64-apple-darwin
     env:
       TARGET: ${{ matrix.rust-target }}
