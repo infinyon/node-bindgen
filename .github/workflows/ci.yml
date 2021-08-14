@@ -61,7 +61,8 @@ jobs:
     - name: Install ${{ matrix.rust }}
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: ${{ matrix.rust }}
+        toolchain: stable
+        target: ${{ matrix.rust-target }}
         override: true
     - uses: Swatinem/rust-cache@v1
       with:
