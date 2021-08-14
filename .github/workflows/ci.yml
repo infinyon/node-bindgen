@@ -8,6 +8,10 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.head_ref || 'ci_staging' }}
+  cancel-in-progress: true
+
 jobs:
   rustfmt:
     name: Rustfmt (${{ matrix.os }})
@@ -43,6 +47,36 @@ jobs:
       - name: check clippy
         run: make check-clippy RUSTV=${{ matrix.rust }}
 
+  buid_m1:
+    name: Build examples for ${{ matrix.rust-target }} on (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ['16' ]
+        include:
+          - os: macos-11
+            rust-target: aarch64-apple-darwin
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install ${{ matrix.rust }}
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: ${{ matrix.rust-target }}
+        override: true
+    - uses: Swatinem/rust-cache@v1
+      with:
+        key: ${{ matrix.os }}-${{ matrix.rust-target }}
+    - name: Install nj-cli build
+      run:  cargo install nj-cli
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build examples
+      run: make build-examples
+    
+
   test:
     name: Smoke test (${{ matrix.os }}, ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
@@ -50,18 +84,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         rust: [stable]
-        node: [ '12', '14' ]
+        node: [ '12', '14','16' ]
+    env:
+      TARGET: ${{ matrix.rust-target }}
     steps:
     - uses: actions/checkout@v2
-    - name: Cancel Workflow Action
-      uses: styfle/cancel-workflow-action@0.4.1
-      with:
-        access_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install ${{ matrix.rust }}
       uses: actions-rs/toolchain@v1
       with:
         toolchain: ${{ matrix.rust }}
         override: true
+    - uses: Swatinem/rust-cache@v1
+      with:
+        key: ${{ matrix.os }}-${{ matrix.rust-target }}
     - name: Install nj-cli build
       run:  cargo install nj-cli
     - name: Use Node.js ${{ matrix.node-version }}

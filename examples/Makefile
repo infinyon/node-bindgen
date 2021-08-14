@@ -12,8 +12,25 @@ clean:
 	make -C param clean
 	make -C electron clean
 	make -C bigint clean
-	make -C tuple clean
+	make -C tuples clean
 	make -C cleanup clean
+
+
+build:
+	make -C function build
+	make -C async-cb build
+	make -C cb build
+	make -C promise build
+	make -C stream build
+	make -C json build
+	make -C class-simple build
+	make -C class-wrapper build
+	make -C class-async build
+	make -C param build
+	make -C electron build
+	make -C bigint build
+	make -C tuples build
+	make -C cleanup build
 
 
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
@@ -69,7 +86,7 @@ test-cleanup:
 	make -C cleanup test
 
 check-clippy:
-	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+	cargo clippy --all --all-features -- \
 		-D warnings \
 		-A clippy::upper_case_acronyms \
 		-A clippy::needless-question-mark

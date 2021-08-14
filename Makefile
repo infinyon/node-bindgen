@@ -1,4 +1,7 @@
-RUSTV=stable
+TARGET_FLAG=$(if $(TARGET),--target $(TARGET),)
+
+install_rustup_target:
+	./build-scripts/install_target.sh
 
 install_windows_on_mac:
 	rustup target add x86_64-pc-windows-gnu
@@ -11,14 +14,18 @@ build-windows:
 
 test-all:	test-unit test-derive test-examples
 
-test-unit:
-	cargo test --lib --all-features
+test-unit:	install_rustup_target 
+	cargo test --lib --all-features $(TARGET_FLAG)
 
 test-examples:
 	make -C examples test
 
+
+build-examples:
+	make -C examples build
+
 test-derive:
-	cd nj-derive; RUST_LOG=debug cargo test -- --nocapture
+	cd nj-derive; RUST_LOG=debug cargo test $(TARGET_FLAG) -- --nocapture
 
 
 #
@@ -26,16 +33,16 @@ test-derive:
 #
 
 install-fmt:
-	rustup component add rustfmt --toolchain $(RUSTV)
+	rustup component add rustfmt
 
 check-fmt:
-	cargo +$(RUSTV) fmt -- --check
+	cargo fmt -- --check
 
 install-clippy:
-	rustup component add clippy --toolchain $(RUSTV)
+	rustup component add clippy
 
 check-clippy:	install-clippy check-clippy-examples
-	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+	cargo clippy --all --all-features -- \
 		-D warnings \
 		-A clippy::upper_case_acronyms \
 		-A clippy::needless-question-mark

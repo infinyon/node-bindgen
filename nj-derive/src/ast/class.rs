@@ -35,7 +35,7 @@ impl<'a> Class<'a> {
 
         // find type path
         let self_ty = match &*item.self_ty {
-            Type::Path(path_type) => MyTypePath::from(&path_type)?,
+            Type::Path(path_type) => MyTypePath::from(path_type)?,
             _ => return Err(Error::new(item.span(), "not supported receiver type")),
         };
 

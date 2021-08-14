@@ -163,7 +163,7 @@ impl<'a> ClosureType<'a> {
         for ref bound in &param.bounds {
             match bound {
                 TypeParamBound::Trait(tt) => {
-                    for ref segment in &tt.path.segments {
+                    for segment in &tt.path.segments {
                         match segment.arguments {
                             PathArguments::Parenthesized(ref path) => {
                                 return Ok(Self {

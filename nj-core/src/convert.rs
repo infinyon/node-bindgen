@@ -155,8 +155,8 @@ where
 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         match self {
-            Ok(val) => val.try_to_js(&js_env),
-            Err(err) => Err(NjError::Native(err.try_to_js(&js_env)?)),
+            Ok(val) => val.try_to_js(js_env),
+            Err(err) => Err(NjError::Native(err.try_to_js(js_env)?)),
         }
     }
 }
@@ -167,7 +167,7 @@ where
 {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         match self {
-            Some(val) => val.try_to_js(&js_env),
+            Some(val) => val.try_to_js(js_env),
             None => js_env.get_null(),
         }
     }

@@ -134,7 +134,7 @@ impl<'a> MyDeriveInput<'a> {
 
         match &input.data {
             Data::Struct(inner_struct) => {
-                let parsed_struct = MyStruct::from_ast(&inner_struct)?;
+                let parsed_struct = MyStruct::from_ast(inner_struct)?;
                 Ok(MyDeriveInput {
                     name,
                     generics,
@@ -142,7 +142,7 @@ impl<'a> MyDeriveInput<'a> {
                 })
             }
             Data::Enum(inner_enum) => {
-                let parsed_enum = MyEnum::from_ast(&inner_enum)?;
+                let parsed_enum = MyEnum::from_ast(inner_enum)?;
                 Ok(MyDeriveInput {
                     name,
                     generics,
@@ -191,7 +191,7 @@ impl<'a> MyFields<'a> {
                     .iter()
                     .filter_map(|field| field.ident.as_ref().map(|ident| (ident, &field.ty)))
                     .map(|(ident, ty)| {
-                        MyFieldType::from(&ty).map(|ty| MyNamedField { name: &ident, ty })
+                        MyFieldType::from(ty).map(|ty| MyNamedField { name: ident, ty })
                     })
                     .collect::<Result<Vec<MyNamedField<'a>>>>()?;
 

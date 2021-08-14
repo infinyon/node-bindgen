@@ -119,7 +119,7 @@ unsafe impl Send for JSArrayBuffer {}
 
 impl JSArrayBuffer {
     pub fn as_bytes(&self) -> &[u8] {
-        &self.buffer
+        self.buffer
     }
 }
 
@@ -152,6 +152,6 @@ impl Deref for JSArrayBuffer {
     type Target = [u8];
 
     fn deref(&self) -> &Self::Target {
-        &self.buffer
+        self.buffer
     }
 }
