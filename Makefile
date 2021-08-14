@@ -1,3 +1,8 @@
+TARGET_FLAG=$(if $(TARGET),--target $(TARGET),)
+
+install_rustup_target:
+	./build-scripts/install_target.sh
+
 install_windows_on_mac:
 	rustup target add x86_64-pc-windows-gnu
 	brew install mingw-w64
@@ -9,14 +14,14 @@ build-windows:
 
 test-all:	test-unit test-derive test-examples
 
-test-unit:
-	cargo test --lib --all-features
+test-unit:	install_rustup_target 
+	cargo test --lib --all-features $(TARGET_FLAG)
 
 test-examples:
 	make -C examples test
 
 test-derive:
-	cd nj-derive; RUST_LOG=debug cargo test -- --nocapture
+	cd nj-derive; RUST_LOG=debug cargo test $(TARGET_FLAG) -- --nocapture
 
 
 #
