@@ -20,6 +20,10 @@ test-unit:	install_rustup_target
 test-examples:
 	make -C examples test
 
+
+buid-examples:
+	make -C examples build
+
 test-derive:
 	cd nj-derive; RUST_LOG=debug cargo test $(TARGET_FLAG) -- --nocapture
 
