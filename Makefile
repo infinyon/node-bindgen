@@ -1,5 +1,3 @@
-RUSTV=stable
-
 install_windows_on_mac:
 	rustup target add x86_64-pc-windows-gnu
 	brew install mingw-w64
@@ -26,16 +24,16 @@ test-derive:
 #
 
 install-fmt:
-	rustup component add rustfmt --toolchain $(RUSTV)
+	rustup component add rustfmt
 
 check-fmt:
-	cargo +$(RUSTV) fmt -- --check
+	cargo fmt -- --check
 
 install-clippy:
-	rustup component add clippy --toolchain $(RUSTV)
+	rustup component add clippy
 
 check-clippy:	install-clippy check-clippy-examples
-	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+	cargo clippy --all --all-features -- \
 		-D warnings \
 		-A clippy::upper_case_acronyms \
 		-A clippy::needless-question-mark

@@ -55,6 +55,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         rust: [stable]
         node: [ '12', '14','16' ]
+        include:
+          - os: macos-11
+            rust: stable
+            rust-target: aarch64-apple-darwin
+    env:
+      TARGET: ${{ matrix.rust-target }}
     steps:
     - uses: actions/checkout@v2
     - name: Install ${{ matrix.rust }}
