@@ -12,7 +12,7 @@ clean:
 	make -C param clean
 	make -C electron clean
 	make -C bigint clean
-	make -C tuple clean
+	make -C tuples clean
 	make -C cleanup clean
 
 
@@ -29,7 +29,7 @@ build:
 	make -C param build
 	make -C electron build
 	make -C bigint build
-	make -C tuple build
+	make -C tuples build
 	make -C cleanup build
 
 

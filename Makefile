@@ -21,7 +21,7 @@ test-examples:
 	make -C examples test
 
 
-buid-examples:
+build-examples:
 	make -C examples build
 
 test-derive:
