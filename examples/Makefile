@@ -16,6 +16,23 @@ clean:
 	make -C cleanup clean
 
 
+build:
+	make -C function build
+	make -C async-cb build
+	make -C cb build
+	make -C promise build
+	make -C stream build
+	make -C json build
+	make -C class-simple build
+	make -C class-wrapper build
+	make -C class-async build
+	make -C param build
+	make -C electron build
+	make -C bigint build
+	make -C tuple build
+	make -C cleanup build
+
+
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
 	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint \
 	test-cleanup
