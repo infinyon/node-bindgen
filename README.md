@@ -379,6 +379,13 @@ environment has a valid C/C++ compiler.
 
 In the future, this file will be re-written in Rust, removing this dependency.
 
+Just make sure that you are compiling the rust module using 
+```
+$ npx electron-build-env nj-cli build --release
+```
+
+otherwise you will get dreaded  `A dynamic link library (DLL) initialization routine failed` when importing the rust module in electron
+
 ## Contributing
 
 If you'd like to contribute to the project, please read our [Contributing guide](CONTRIBUTING.md).
