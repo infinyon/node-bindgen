@@ -575,7 +575,7 @@ impl JsEnv {
     where
         T: JSValue<'a>,
     {
-        T::convert_to_rust(&self, napi_value)
+        T::convert_to_rust(self, napi_value)
     }
 
     pub fn get_undefined(&self) -> Result<napi_value, NjError> {

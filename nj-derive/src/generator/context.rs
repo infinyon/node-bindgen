@@ -52,7 +52,7 @@ impl<'a> FnGeneratorCtx<'a> {
     }
 
     pub fn attributes(&self) -> &FunctionAttributes {
-        &self.attributes
+        self.attributes
     }
 
     /// used for registering in the Napi

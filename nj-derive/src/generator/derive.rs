@@ -37,14 +37,14 @@ pub fn generate_datatype(input_data: DeriveInput) -> TokenStream {
 }
 
 fn generate_try_into_js(parsed_data: &MyDeriveInput) -> TokenStream {
-    let impl_signature = generate_impl_signature(&parsed_data.name, &parsed_data.generics);
+    let impl_signature = generate_impl_signature(parsed_data.name, &parsed_data.generics);
 
     match &parsed_data.payload {
         MyDerivePayload::Struct(struct_data) => {
-            generate_struct_try_into_js(&impl_signature, &struct_data)
+            generate_struct_try_into_js(&impl_signature, struct_data)
         }
         MyDerivePayload::Enum(enum_data) => {
-            generate_enum_try_into_js(&parsed_data.name, &impl_signature, &enum_data)
+            generate_enum_try_into_js(parsed_data.name, &impl_signature, enum_data)
         }
     }
 }
@@ -61,12 +61,8 @@ fn generate_struct_try_into_js(
     match &struct_data.fields {
         MyFields::Named(named_fields) => {
             let output_obj = format_ident!("output_obj");
-            let field_conversions = generate_named_field_conversions(
-                &output_obj,
-                &fields_scope,
-                &js_env,
-                &named_fields,
-            );
+            let field_conversions =
+                generate_named_field_conversions(&output_obj, &fields_scope, &js_env, named_fields);
 
             quote! {
                 #impl_signature {
@@ -93,7 +89,7 @@ fn generate_struct_try_into_js(
             let fields_count = unnamed_fields.len();
             let output_arr = format_ident!("output_arr");
             let field_conversions =
-                generate_unnamed_field_conversions(&output_arr, &js_env, &unnamed_fields);
+                generate_unnamed_field_conversions(&output_arr, &js_env, unnamed_fields);
 
             quote! {
                 #impl_signature {
@@ -182,8 +178,8 @@ fn generate_variant_conversion(
             let field_conversions = generate_named_field_conversions(
                 &variant_output_obj,
                 &fields_scope,
-                &js_env,
-                &named_fields,
+                js_env,
+                named_fields,
             );
 
             quote! {
@@ -215,7 +211,7 @@ fn generate_variant_conversion(
 
             let field_conversions = generate_bound_unnamed_field_conversions(
                 &variant_output_arr,
-                &js_env,
+                js_env,
                 &field_bindings,
             );
 
