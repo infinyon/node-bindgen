@@ -139,7 +139,7 @@ fn copy_lib(out: String, target_type: &str) {
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
     if let Some(package) = find_current_package(&metadata, &manifest_path) {
-        if let Some(target) = find_cdylib(&package) {
+        if let Some(target) = find_cdylib(package) {
             let lib_path = lib_path(&metadata.target_directory, target_type, &target.name);
             let error_msg = format!("copy failed of {:?}", lib_path);
             copy_cdylib(&lib_path, &out).expect(&error_msg);
