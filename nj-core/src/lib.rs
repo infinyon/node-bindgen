@@ -28,6 +28,9 @@ use class::JSObjectWrapper;
 pub mod sys {
     pub use nj_sys::*;
 }
+pub mod init {
+    pub use ctor::ctor as node_bindgen_init_once;
+}
 
 pub mod future {
     pub use fluvio_future::task::spawn;
@@ -119,8 +122,4 @@ macro_rules! method {
     ($name:literal,$rs_method:expr) => {{
         nj::core::Property::new($name).method($rs_method)
     }};
-}
-
-pub fn init_logger() {
-    fluvio_future::subscriber::init_logger();
 }

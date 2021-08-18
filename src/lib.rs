@@ -9,6 +9,11 @@ pub mod sys {
 }
 
 #[cfg(feature = "node")]
+pub mod init {
+    pub use nj_core::init::*;
+}
+
+#[cfg(feature = "node")]
 pub mod derive {
     pub use nj_derive::*;
 }
