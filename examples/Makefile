@@ -14,10 +14,11 @@ clean:
 	make -C bigint clean
 	make -C tuple clean
 	make -C cleanup clean
+	make -C logging clean
 
 
 test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
-	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint \
+	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint test-logging\
 	test-cleanup
 
 test-function:
@@ -64,6 +65,9 @@ test-bigint:
 
 test-tuple:
 	make -C tuple test
+
+test-logging:
+	make -C logging test
 
 test-cleanup:
 	make -C cleanup test

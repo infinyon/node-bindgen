@@ -18,4 +18,5 @@ members = [
     "bigint",
     "tuples",
     "uuid",
+    "logging",
 ]
