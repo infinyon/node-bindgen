@@ -11,7 +11,6 @@ use syn::PathArguments;
 use syn::Result;
 use syn::spanned::Spanned;
 use syn::ParenthesizedGenericArguments;
-use syn::Receiver;
 
 use super::MyTypePath;
 use super::MyReferenceType;
@@ -22,7 +21,6 @@ use super::MyTupleType;
 pub struct FunctionArgs<'a> {
     pub args: Vec<FunctionArg<'a>>,
     pub is_method: bool,
-    receiver: Option<&'a Receiver>,
 }
 
 impl<'a> FunctionArgs<'a> {
@@ -50,11 +48,7 @@ impl<'a> FunctionArgs<'a> {
             }
         }
 
-        Ok(Self {
-            args,
-            is_method,
-            ..Default::default()
-        })
+        Ok(Self { args, is_method })
     }
 
     pub fn inner(&self) -> &Vec<FunctionArg> {

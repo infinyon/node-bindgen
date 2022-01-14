@@ -133,6 +133,7 @@ pub trait JSWorker: Sized + Send + 'static {
     }
 
     /// call by Node to create promise
+    #[allow(unused_attributes)]
     #[no_mangle]
     extern "C" fn start_promise(env: napi_env, info: napi_callback_info) -> napi_value {
         let js_env = JsEnv::new(env);

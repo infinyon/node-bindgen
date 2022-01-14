@@ -19,7 +19,7 @@ fn test(b: i32) -> Result<ArrayBuffer, NjError> {
     };
 
     let json_string = serde_json::to_vec(&my_struct)
-        .map_err(|err| NjError::Other(format!("serialization error: {}", err.to_string())))?;
+        .map_err(|err| NjError::Other(format!("serialization error: {}", err)))?;
 
     Ok(ArrayBuffer::new(json_string))
 }
@@ -56,7 +56,7 @@ fn test2(b: i32) -> Result<Record, NjError> {
     };
 
     let json_string = serde_json::to_vec(&my_struct)
-        .map_err(|err| NjError::Other(format!("serialization error: {}", err.to_string())))?;
+        .map_err(|err| NjError::Other(format!("serialization error: {}", err)))?;
 
     Ok(Record {
         buffer: ArrayBuffer::new(json_string),
