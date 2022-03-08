@@ -247,8 +247,8 @@ fn generate_variant_conversion(
 
 fn drop_generic_bounds(params: &[GenericParam]) -> Vec<GenericParam> {
     params
-        .to_owned()
-        .into_iter()
+        .iter()
+        .cloned()
         .map(|generic| match generic {
             GenericParam::Type(type_param) => GenericParam::Type(TypeParam {
                 colon_token: None,

@@ -22,7 +22,7 @@ use super::MyTupleType;
 pub struct FunctionArgs<'a> {
     pub args: Vec<FunctionArg<'a>>,
     pub is_method: bool,
-    receiver: Option<&'a Receiver>,
+    _receiver: Option<&'a Receiver>,
 }
 
 impl<'a> FunctionArgs<'a> {

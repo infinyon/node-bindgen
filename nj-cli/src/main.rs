@@ -38,6 +38,9 @@ struct BuildOpt {
     #[structopt(long)]
     release: bool,
 
+    #[structopt(long)]
+    target: Option<String>,
+
     extras: Vec<String>,
 }
 
@@ -98,6 +101,9 @@ fn build(opt: BuildOpt) {
     if opt.release {
         args.push("--release".to_string());
     }
+    if let Some(ref target) = opt.target {
+        args.push(format!("--target={target}"));
+    }
     args.extend(opt.extras);
 
     let mut build_command = Command::new("cargo")
@@ -129,18 +135,24 @@ fn build(opt: BuildOpt) {
         }
         Some(_) => {}
     }
-    let target = if opt.release { "release" } else { "debug" };
 
-    copy_lib(opt.output, target);
+    let target_mode = if opt.release { "release" } else { "debug" };
+
+    copy_lib(opt.output, target_mode, opt.target);
 }
 
 /// copy library to target directory
-fn copy_lib(out: String, target_type: &str) {
+fn copy_lib(out: String, target_mode: &str, target_tripple: Option<String>) {
     let manifest_path = manifest_path();
     let metadata = load_metadata(&manifest_path);
     if let Some(package) = find_current_package(&metadata, &manifest_path) {
         if let Some(target) = find_cdylib(package) {
-            let lib_path = lib_path(&metadata.target_directory, target_type, &target.name);
+            let lib_path = lib_path(
+                &metadata.target_directory,
+                target_mode,
+                &target.name,
+                target_tripple,
+            );
             let error_msg = format!("copy failed of {:?}", lib_path);
             copy_cdylib(&lib_path, &out).expect(&error_msg);
         } else {
@@ -184,7 +196,12 @@ fn manifest_path() -> PathBuf {
     current_path.join("Cargo.toml")
 }
 
-fn lib_path(target: &Path, build_type: &str, target_name: &str) -> PathBuf {
+fn lib_path(
+    target: &Path,
+    build_type: &str,
+    target_name: &str,
+    target_tripple: Option<String>,
+) -> PathBuf {
     let file_name = if cfg!(target_os = "windows") {
         format!("{}.dll", target_name)
     } else if cfg!(target_os = "macos") {
@@ -194,9 +211,16 @@ fn lib_path(target: &Path, build_type: &str, target_name: &str) -> PathBuf {
     } else {
         panic!("Unsupported operating system.");
     }
-    .replace("-", "_");
-
-    target.join(target).join(build_type).join(file_name)
+    .replace('-', "_");
+    if let Some(target_tripple) = target_tripple {
+        target
+            .join(target)
+            .join(target_tripple)
+            .join(build_type)
+            .join(file_name)
+    } else {
+        target.join(target).join(build_type).join(file_name)
+    }
 }
 
 // where we are outputting
