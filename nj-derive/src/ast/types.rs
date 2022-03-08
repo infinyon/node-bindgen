@@ -238,7 +238,7 @@ impl<'a> MyEnum<'a> {
         let variants = enum_data
             .variants
             .iter()
-            .map(|v| MyVariant::from_ast(v))
+            .map(MyVariant::from_ast)
             .collect::<Result<Vec<MyVariant>>>()?;
 
         Ok(MyEnum { variants })

@@ -147,7 +147,12 @@ fn copy_lib(out: String, target_mode: &str, target_tripple: Option<String>) {
     let metadata = load_metadata(&manifest_path);
     if let Some(package) = find_current_package(&metadata, &manifest_path) {
         if let Some(target) = find_cdylib(package) {
-            let lib_path = lib_path(&metadata.target_directory, target_mode, &target.name, target_tripple);
+            let lib_path = lib_path(
+                &metadata.target_directory,
+                target_mode,
+                &target.name,
+                target_tripple,
+            );
             let error_msg = format!("copy failed of {:?}", lib_path);
             copy_cdylib(&lib_path, &out).expect(&error_msg);
         } else {
@@ -191,7 +196,12 @@ fn manifest_path() -> PathBuf {
     current_path.join("Cargo.toml")
 }
 
-fn lib_path(target: &Path, build_type: &str, target_name: &str, target_tripple: Option<String>) -> PathBuf {
+fn lib_path(
+    target: &Path,
+    build_type: &str,
+    target_name: &str,
+    target_tripple: Option<String>,
+) -> PathBuf {
     let file_name = if cfg!(target_os = "windows") {
         format!("{}.dll", target_name)
     } else if cfg!(target_os = "macos") {
@@ -201,13 +211,16 @@ fn lib_path(target: &Path, build_type: &str, target_name: &str, target_tripple: 
     } else {
         panic!("Unsupported operating system.");
     }
-    .replace("-", "_");
+    .replace('-', "_");
     if let Some(target_tripple) = target_tripple {
-        target.join(target).join(target_tripple).join(build_type).join(file_name)
+        target
+            .join(target)
+            .join(target_tripple)
+            .join(build_type)
+            .join(file_name)
     } else {
         target.join(target).join(build_type).join(file_name)
     }
-
 }
 
 // where we are outputting

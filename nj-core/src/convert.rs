@@ -3,7 +3,6 @@ use std::ptr;
 
 use crate::sys::napi_value;
 use crate::val::JsEnv;
-use crate::val::JsObject;
 use crate::NjError;
 use crate::napi_call_result;
 
@@ -197,6 +196,7 @@ where
 #[cfg(feature = "serde_json")]
 impl TryIntoJs for serde_json::map::Map<String, serde_json::Value> {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        use crate::val::JsObject;
         let mut obj = JsObject::new(*js_env, js_env.create_object()?);
 
         let converted_obj = self
