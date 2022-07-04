@@ -11,6 +11,8 @@ use crate::NjError;
 
 type ClassCallback = fn(&mut JsExports) -> Result<(), NjError>;
 
+/// This is used striclly internally to map NAPI Registry
+#[allow(unused)]
 enum NapiRegister {
     Property(Property),
     Callback(ClassCallback),
