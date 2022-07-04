@@ -11,7 +11,7 @@ use crate::NjError;
 
 type ClassCallback = fn(&mut JsExports) -> Result<(), NjError>;
 
-/// This is used striclly internally to map NAPI Registry
+/// This is used stricly internally to map NAPI Registry
 #[allow(unused)]
 enum NapiRegister {
     Property(Property),
@@ -19,7 +19,6 @@ enum NapiRegister {
 }
 
 inventory::collect!(NapiRegister);
-
 
 #[macro_export]
 macro_rules! submit_property {
@@ -38,8 +37,6 @@ macro_rules! submit_register_callback {
         }
     };
 }
-
-
 
 #[no_mangle]
 pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value {

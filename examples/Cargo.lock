@@ -484,9 +484,9 @@ dependencies = [
 
 [[package]]
 name = "ghost"
-version = "0.1.2"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a5bcf1bbeab73aa4cf2fde60a846858dc036163c7c33bec309f8d17de785479"
+checksum = "b93490550b1782c589a350f2211fff2e34682e25fed17ef53fc4fa8fe184975e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -542,24 +542,12 @@ dependencies = [
 
 [[package]]
 name = "inventory"
-version = "0.1.10"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f0f7efb804ec95e33db9ad49e4252f049e37e8b0a4652e3cd61f7999f2eff7f"
+checksum = "e0257e268c91daba296499206db5dd5a058875936bec3d8429b5f3e20ec9dc9a"
 dependencies = [
  "ctor",
  "ghost",
- "inventory-impl",
-]
-
-[[package]]
-name = "inventory-impl"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75c094e94816723ab936484666968f5b58060492e880f3c8d00489a1e244fa51"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -673,12 +661,12 @@ dependencies = [
  "num-bigint",
  "pin-utils",
  "serde_json",
- "uuid",
+ "uuid 1.1.2",
 ]
 
 [[package]]
 name = "nj-derive"
-version = "3.4.1"
+version = "4.0.0"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -821,7 +809,7 @@ name = "nj-example-uuid"
 version = "0.1.0"
 dependencies = [
  "node-bindgen",
- "uuid",
+ "uuid 0.8.2",
 ]
 
 [[package]]
@@ -830,7 +818,7 @@ version = "3.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "5.0.0"
+version = "6.0.0"
 dependencies = [
  "nj-build",
  "nj-core",
@@ -1411,6 +1399,12 @@ name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+
+[[package]]
+name = "uuid"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd6469f4314d5f1ffec476e05f17cc9a78bc7a27a6a857842170bdf8d6f98d2f"
 
 [[package]]
 name = "value-bag"
