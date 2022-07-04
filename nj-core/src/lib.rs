@@ -20,8 +20,8 @@ pub use worker::JsPromiseFuture;
 pub use worker::NjFutureExt;
 pub use convert::*;
 pub use ctor::ctor;
-pub use module::submit_property;
-pub use module::submit_register_callback;
+//pub use module::submit_property;
+//pub use module::submit_register_callback;
 
 use class::JSObjectWrapper;
 

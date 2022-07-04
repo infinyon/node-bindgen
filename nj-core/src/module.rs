@@ -1,10 +1,7 @@
 use std::ptr;
 
 use log::debug;
-use inventory::Collect;
-use inventory::submit;
 use inventory::iter;
-use inventory::Registry;
 
 use crate::Property;
 use crate::val::JsExports;
@@ -19,21 +16,28 @@ enum NapiRegister {
     Callback(ClassCallback),
 }
 
-impl Collect for NapiRegister {
-    fn registry() -> &'static Registry<Self> {
-        static REGISTRY: Registry<NapiRegister> = Registry::new();
-        &REGISTRY
-    }
+inventory::collect!(NapiRegister);
+
+
+#[macro_export]
+macro_rules! submit_property {
+    ($property:expr) => {
+        inventory::submit! {
+            NapiRegister::Property(value)
+        }
+    };
 }
 
-/// submit property for including in global registry
-pub fn submit_property(value: Property) {
-    submit::<NapiRegister>(NapiRegister::Property(value))
+#[macro_export]
+macro_rules! submit_register_callback {
+    ($property:expr) => {
+        inventory::submit! {
+            NapiRegister::Callback(value)
+        }
+    };
 }
 
-pub fn submit_register_callback(callback: ClassCallback) {
-    submit::<NapiRegister>(NapiRegister::Callback(callback));
-}
+
 
 #[no_mangle]
 pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value {
