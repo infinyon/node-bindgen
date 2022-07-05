@@ -1,6 +1,6 @@
 [package]
 name = "nj-build"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "build configuration for node-bindgen"
