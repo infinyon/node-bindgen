@@ -1,5 +1,6 @@
 use std::ptr;
 use std::ops::Deref;
+use std::convert::TryInto;
 
 use log::trace;
 
@@ -44,7 +45,7 @@ impl ArrayBuffer {
 
 impl TryIntoJs for ArrayBuffer {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
-        let len = self.data.len();
+        let len: u64 = self.data.len().try_into().unwrap();
 
         let box_data = Box::new(self.data);
 

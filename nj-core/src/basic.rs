@@ -1,8 +1,9 @@
 use std::ptr;
 use std::ffi::CString;
 use std::collections::VecDeque;
+use std::convert::TryInto;
 
-use libc::size_t;
+
 use log::error;
 use log::debug;
 use log::trace;
@@ -82,7 +83,7 @@ impl JsEnv {
         napi_call_result!(napi_create_string_utf8(
             self.0,
             r_string.as_ptr() as *const ::std::os::raw::c_char,
-            r_string.len(),
+            r_string.len().try_into().unwrap(),
             &mut js_value
         ))?;
         Ok(js_value)
@@ -95,7 +96,7 @@ impl JsEnv {
         napi_call_result!(napi_create_string_utf8(
             self.0,
             r_string.as_ptr() as *const ::std::os::raw::c_char,
-            r_string.len(),
+            r_string.len().try_into().unwrap(),
             &mut js_value
         ))?;
         Ok(js_value)
@@ -152,7 +153,7 @@ impl JsEnv {
         let mut array = ptr::null_mut();
 
         napi_call_result!(crate::sys::napi_create_array_with_length(
-            self.0, len, &mut array
+            self.0, len.try_into().unwrap(), &mut array
         ))?;
         Ok(array)
     }
@@ -248,7 +249,7 @@ impl JsEnv {
             self.0,
             recv,
             func,
-            argv.len(),
+            argv.len().try_into().unwrap(),
             argv.as_mut_ptr(),
             &mut result
         ))?;
@@ -266,7 +267,7 @@ impl JsEnv {
 
         let mut this = ptr::null_mut();
 
-        let mut argc: size_t = max_count as size_t;
+        let mut argc: u64 = max_count as u64;
         let mut args = vec![ptr::null_mut(); max_count];
         napi_call_result!(napi_get_cb_info(
             self.0,
@@ -278,7 +279,7 @@ impl JsEnv {
         ))?;
 
         // truncate arg to actual received count
-        args.resize(argc, ptr::null_mut());
+        args.resize(argc.try_into().unwrap(), ptr::null_mut());
 
         Ok(JsCallback::new(JsEnv::new(self.0), this, args))
     }
@@ -301,10 +302,10 @@ impl JsEnv {
         napi_call_result!(crate::sys::napi_define_class(
             self.0,
             name.as_ptr() as *const ::std::os::raw::c_char,
-            name.len(),
+            name.len().try_into().unwrap(),
             Some(constructor),
             ptr::null_mut(),
-            raw_properties.len(),
+            raw_properties.len().try_into().unwrap(),
             raw_properties.as_mut_ptr(),
             &mut js_constructor
         ))?;
@@ -387,7 +388,7 @@ impl JsEnv {
         napi_call_result!(crate::sys::napi_new_instance(
             self.0,
             constructor,
-            args.len(),
+            args.len().try_into().unwrap(),
             args.as_mut_ptr(),
             &mut result
         ))?;
@@ -596,7 +597,7 @@ impl JsEnv {
         use std::slice;
         use crate::sys::napi_get_buffer_info;
 
-        let mut len: size_t = 0;
+        let mut len: u64 = 0;
         let mut data = ptr::null_mut();
 
         //  napi_status napi_get_buffer_info(napi_env env,
@@ -889,7 +890,7 @@ impl JsExports {
         napi_call_result!(crate::sys::napi_define_properties(
             self.env.inner(),
             self.inner,
-            raw_properties.len(),
+            raw_properties.len().try_into().unwrap(),
             raw_properties.as_mut_ptr()
         ))
     }

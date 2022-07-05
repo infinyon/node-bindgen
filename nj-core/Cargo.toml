@@ -17,8 +17,8 @@ convert-uuid = ["uuid"]
 
 [dependencies]
 log = "0.4.8"
-ctor = "0.1.6"
-libc = "0.2.66"
+ctor = "0.1.22"
+libc = "0.2.126"
 inventory = "0.3.0"
 async-trait = "0.1.22"
 futures-lite = "1.7.0"

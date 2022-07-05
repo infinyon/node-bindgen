@@ -61,6 +61,7 @@ pub fn configure() {
 pub fn configure() {
 
     println!("cargo:rustc-cdylib-link-arg=-undefined");
+    println!("cargo:rustc-cdylib-link-arg=dynamic_lookup");
     if cfg!(target_os = "macos") {
         // Set up the build environment by setting Cargo configuration variables.
         println!("cargo:rustc-cdylib-link-arg=dynamic_lookup");
