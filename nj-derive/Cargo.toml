@@ -1,8 +1,8 @@
 [package]
 name = "nj-derive"
-version = "4.0.0"
+version = "3.5.0"
 authors = ["fluvio.io"]
-edition = "2018"
+edition = "2021"
 description = "procedure macro for node-bindgen"
 repository = "https://github.com/infinyon/node-bindgen"
 readme = "README.md"
@@ -20,5 +20,5 @@ Inflector = "0.11.4"
 
 [dev-dependencies]
 trybuild = { git = "https://github.com/infinyon/trybuild", branch = "check_option" }
-node-bindgen = { path = ".." }
+node-bindgen = { path = ".."}
 fluvio-future = { version = "0.3.0", features = ["timer"] }
