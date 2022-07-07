@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../.." }
 
 
 [build-dependencies]

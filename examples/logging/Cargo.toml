@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../.." }
 log = "0.4"
 env_logger = "0.9"
 
