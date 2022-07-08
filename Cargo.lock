@@ -511,9 +511,9 @@ dependencies = [
 
 [[package]]
 name = "http_req"
-version = "0.7.2"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1dab1fb99f5163b9b25805e4c191ea9425ae311442688bfe03c97e8a2ba66e9d"
+checksum = "9e6cd45a270dff33553602fd84beb02c89460ee32db638715f10d9060389fd6a"
 dependencies = [
  "native-tls",
  "unicase",
@@ -644,7 +644,7 @@ dependencies = [
 
 [[package]]
 name = "nj-build"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "cc",
  "http_req",
