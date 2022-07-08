@@ -1,6 +1,7 @@
 mod init;
 mod watch;
 
+use cargo_metadata::camino::Utf8PathBuf;
 use watch::{WatchOpt};
 use structopt::StructOpt;
 
@@ -197,11 +198,11 @@ fn manifest_path() -> PathBuf {
 }
 
 fn lib_path(
-    target: &Path,
+    target: &Utf8PathBuf,
     build_type: &str,
     target_name: &str,
     target_tripple: Option<String>,
-) -> PathBuf {
+) -> Utf8PathBuf {
     let file_name = if cfg!(target_os = "windows") {
         format!("{}.dll", target_name)
     } else if cfg!(target_os = "macos") {
@@ -233,7 +234,7 @@ fn output_dir(output: &str) -> Result<PathBuf> {
     Ok(output_dir)
 }
 
-fn copy_cdylib(lib_path: &Path, out: &str) -> Result<()> {
+fn copy_cdylib(lib_path: &Utf8PathBuf, out: &str) -> Result<()> {
     let dir = output_dir(out)?;
     let output_path = dir.join("index.node");
     std::fs::copy(lib_path, output_path)?;
