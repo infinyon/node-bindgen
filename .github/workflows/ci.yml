@@ -77,7 +77,8 @@ jobs:
       with:
         key: ${{ matrix.os }}
     - name: Install nj-cli build
-      run:  cargo install nj-cli
+   #   run:  cargo install nj-cli
+      run:  cargo install --path nj-cli
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
