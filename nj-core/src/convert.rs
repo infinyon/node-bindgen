@@ -129,7 +129,7 @@ impl TryIntoJs for serde_json::Value {
 impl TryIntoJs for uuid::Uuid {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         let as_str = self
-            .to_hyphenated()
+            .as_hyphenated()
             .encode_lower(&mut uuid::Uuid::encode_buffer())
             .to_string();
 
@@ -228,6 +228,7 @@ pub trait JSValue<'a>: Sized {
 }
 
 impl JSValue<'_> for f64 {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
 
@@ -244,6 +245,7 @@ impl JSValue<'_> for f64 {
 }
 
 impl JSValue<'_> for i32 {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
 
@@ -260,6 +262,7 @@ impl JSValue<'_> for i32 {
 }
 
 impl JSValue<'_> for u32 {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
 
@@ -276,6 +279,7 @@ impl JSValue<'_> for u32 {
 }
 
 impl JSValue<'_> for i64 {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
 
@@ -292,6 +296,7 @@ impl JSValue<'_> for i64 {
 }
 
 impl JSValue<'_> for bool {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_boolean)?;
 
@@ -308,6 +313,7 @@ impl JSValue<'_> for bool {
 }
 
 impl JSValue<'_> for String {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_string)?;
 
@@ -344,6 +350,7 @@ impl JSValue<'_> for String {
 }
 
 impl<'a> JSValue<'a> for &'a str {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         use crate::sys::napi_get_buffer_info;
 
@@ -369,6 +376,7 @@ impl<'a, T> JSValue<'a> for Vec<T>
 where
     T: JSValue<'a>,
 {
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         if !env.is_array(js_value)? {
             return Err(NjError::Other(
@@ -400,6 +408,7 @@ macro_rules! impl_js_value_for_tuple {
             where
                 $($t: JSValue<'a> + Send,)+
             {
+                #[allow(clippy::not_unsafe_ptr_arg_deref)]
                 fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
                     use crate::sys::napi_get_array_length;
                     if !env.is_array(js_value)? {

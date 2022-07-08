@@ -9,7 +9,7 @@ build-windows:
 	cargo build --target=x86_64-pc-windows-gnu
 
 
-test-all:	test-unit test-derive test-examples
+test-all:	test-derive test-examples
 
 test-unit:
 	cargo test --lib --all-features

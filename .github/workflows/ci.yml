@@ -1,5 +1,9 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -7,6 +11,12 @@ on:
       - trying
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: "Set --verbose to get verbose build output"
+        required: false
+        default: ""
 
 jobs:
   rustfmt:
@@ -47,8 +57,10 @@ jobs:
     name: Smoke test (${{ matrix.os }}, ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+   #     os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
         rust: [stable]
         node: [ '12', '14' ]
     steps:
@@ -62,8 +74,12 @@ jobs:
       with:
         toolchain: ${{ matrix.rust }}
         override: true
+    - uses: Swatinem/rust-cache@v1
+      with:
+        key: ${{ matrix.os }}
     - name: Install nj-cli build
-      run:  cargo install nj-cli
+   #   run:  cargo install nj-cli
+      run:  cargo install --path nj-cli
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:

@@ -1,8 +1,9 @@
 [package]
 name = "nj-example-buffer"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["fluvio.io"]
-edition = "2018"
+edition = "2021"
+publish = false
 
 
 [lib]
@@ -12,8 +13,8 @@ crate-type = ["cdylib"]
 [dependencies]
 serde = { version = "1.0.110", features = ["derive"] }
 serde_json = "1.0.53"
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../.." }
 
 
 [build-dependencies]
-node-bindgen = { path = "../../", features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

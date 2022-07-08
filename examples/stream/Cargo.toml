@@ -1,8 +1,9 @@
 [package]
 name = "nj-example-stream"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["fluvio.io"]
-edition = "2018"
+edition = "2021"
+publish = false
 
 
 [lib]
@@ -11,9 +12,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures-lite = "1.7.0"
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../.." }
 fluvio-future = { version = "0.3.0" }
 
 
 [build-dependencies]
-node-bindgen = { path = "../../", features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

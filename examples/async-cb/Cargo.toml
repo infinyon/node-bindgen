@@ -1,17 +1,17 @@
 [package]
 name = "nj-example-async-cb"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["fluvio.io"]
-edition = "2018"
-
+edition = "2021"
+publish = false
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
 log = "0.4.8"
-node-bindgen = { path = "../.."}
-fluvio-future = { version = "0.3.0",features=["timer"]}
+node-bindgen = { path = "../.." }
+fluvio-future = { version = "0.3.0", features = ["timer"] }
 
 [build-dependencies]
-node-bindgen = { path = "../../", features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

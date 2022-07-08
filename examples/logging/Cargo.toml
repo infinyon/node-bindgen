@@ -1,8 +1,9 @@
 [package]
 name = "nj-example-logging"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["fluvio.io"]
-edition = "2018"
+edition = "2021"
+publish = false
 
 
 [lib]
@@ -10,9 +11,9 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { path = "../.."}
+node-bindgen = { path = "../.." }
 log = "0.4"
 env_logger = "0.9"
 
 [build-dependencies]
-node-bindgen = { path = "../../", features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }
