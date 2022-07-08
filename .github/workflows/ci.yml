@@ -73,6 +73,9 @@ jobs:
       with:
         toolchain: ${{ matrix.rust }}
         override: true
+    - uses: Swatinem/rust-cache@v1
+      with:
+        key: ${{ matrix.os }}
     - name: Install nj-cli build
       run:  cargo install nj-cli
     - name: Use Node.js ${{ matrix.node-version }}
