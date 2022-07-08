@@ -129,7 +129,7 @@ impl TryIntoJs for serde_json::Value {
 impl TryIntoJs for uuid::Uuid {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         let as_str = self
-            .to_hyphenated()
+            .as_hyphenated()
             .encode_lower(&mut uuid::Uuid::encode_buffer())
             .to_string();
 

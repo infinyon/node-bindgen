@@ -1,9 +1,9 @@
 [package]
 name = "nj-example-async-cb"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["fluvio.io"]
-edition = "2018"
-
+edition = "2021"
+publish = false
 
 [lib]
 crate-type = ["cdylib"]
