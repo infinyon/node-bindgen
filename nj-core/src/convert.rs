@@ -228,7 +228,6 @@ pub trait JSValue<'a>: Sized {
 }
 
 impl JSValue<'_> for f64 {
-
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
