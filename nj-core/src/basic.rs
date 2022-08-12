@@ -174,6 +174,24 @@ impl JsEnv {
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    pub fn set_property(
+        &self,
+        object: napi_value,
+        name: &str,
+        value: napi_value,
+    ) -> Result<(), NjError> {
+        // napi does not accept a length argument here, so name MUST be nul-terminated
+        let name_utf8 = [name.as_bytes(), &[0x00]].concat();
+        napi_call_result!(crate::sys::napi_set_named_property(
+            self.0,
+            object,
+            name_utf8.as_ptr() as *const ::std::os::raw::c_char,
+            value
+        ))?;
+        Ok(())
+    }
+
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_element(&self, array: napi_value, index: u32) -> Result<napi_value, NjError> {
         let mut element = ptr::null_mut();
 

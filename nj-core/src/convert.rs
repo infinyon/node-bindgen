@@ -193,6 +193,21 @@ where
     }
 }
 
+impl<T> TryIntoJs for std::collections::HashMap<String, T>
+where
+    T: TryIntoJs,
+{
+    fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
+        let obj = js_env.create_object()?;
+        for (key, value) in self {
+            let js_value = value.try_to_js(js_env)?;
+            js_env.set_property(obj, &key, js_value)?;
+        }
+
+        Ok(obj)
+    }
+}
+
 #[cfg(feature = "serde_json")]
 impl TryIntoJs for serde_json::map::Map<String, serde_json::Value> {
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
