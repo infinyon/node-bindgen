@@ -104,7 +104,7 @@ impl fmt::Display for NjError {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum NapiStatus {
     Ok = crate::sys::napi_status_napi_ok as isize,
     InvalidArg = crate::sys::napi_status_napi_invalid_arg as isize,
