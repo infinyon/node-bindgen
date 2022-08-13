@@ -418,7 +418,7 @@ where
 
 impl<'a, T> JSValue<'a> for std::collections::HashMap<String, T>
 where
-    T: JSValue<'a>
+    T: JSValue<'a>,
 {
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
