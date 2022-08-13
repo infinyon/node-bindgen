@@ -173,6 +173,24 @@ impl JsEnv {
         Ok(())
     }
 
+    pub fn coerce_to_object(&self, value: napi_value) -> Result<napi_value, NjError> {
+        let mut napi_obj = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_coerce_to_object(self.0, value, &mut napi_obj))?;
+        Ok(napi_obj)
+    }
+
+    pub fn get_property_names(&self, js_obj: napi_value) -> Result<napi_value, NjError> {
+        let mut js_arr = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_get_property_names(self.0, js_obj, &mut js_arr))?;
+        Ok(js_arr)
+    }
+
+    pub fn get_property(&self, js_obj: napi_value, name: napi_value) -> Result<napi_value, NjError> {
+        let mut value = ptr::null_mut();
+        napi_call_result!(crate::sys::napi_get_property(self.0, js_obj, name, &mut value))?;
+        Ok(value)
+    }
+
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn set_property(
         &self,

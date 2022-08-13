@@ -416,6 +416,36 @@ where
     }
 }
 
+impl<'a, T> JSValue<'a> for std::collections::HashMap<String, T>
+where
+    T: JSValue<'a>
+{
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+        let js_obj = env.coerce_to_object(js_value)?;
+        let js_props = env.get_property_names(js_obj)?;
+
+        use crate::sys::napi_get_array_length;
+        let mut props_len: u32 = 0;
+        napi_call_result!(napi_get_array_length(env.inner(), js_props, &mut props_len))?;
+
+        let mut hashmap = Self::new();
+        for i in 0..props_len {
+            // get raw property values
+            let js_prop_name = env.get_element(js_props, i)?;
+            let js_prop_value = env.get_property(js_obj, js_prop_name)?;
+
+            // convert to rust values
+            let name = String::convert_to_rust(env, js_prop_name)?;
+            let value = T::convert_to_rust(env, js_prop_value)?;
+
+            hashmap.insert(name, value);
+        }
+
+        Ok(hashmap)
+    }
+}
+
 macro_rules! impl_js_value_for_tuple {
     ( $( $len:expr => ( $( $n:tt $t:ident ),+ $(,)? ))+ ) => {
         $(
