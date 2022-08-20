@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Improvements
+- Add support for naive conversion of JS objects to `HashMap<String, T>` and vice versa. ([#201](https://github.com/infinyon/node-bindgen/pull/201).
 - Add cross compilation support to nj-cli. ([#182](https://github.com/infinyon/node-bindgen/pull/182)).
 
 ## [5.0.0] - 2021-07-15
