@@ -12,4 +12,12 @@ fn make_hash() -> HashMap<String, bool> {
 
 /// Sum the values of a hash of integers
 #[node_bindgen]
-fn sum_hash(hash: HashMap<String, i32>) -> i32 { hash.values().sum() }
+fn sum_hash(hash: HashMap<String, i32>) -> i32 {
+    hash.values().sum()
+}
+
+/// Count all elements in a hash of hashes
+#[node_bindgen]
+fn ragged_len(hash: HashMap<String, HashMap<String, String>>) -> i32 {
+    hash.values().map(|a| a.values().len() as i32).sum()
+}
