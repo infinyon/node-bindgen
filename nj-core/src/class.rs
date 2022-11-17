@@ -158,7 +158,7 @@ pub trait JSClass: Sized {
         debug!("my object finalize");
         unsafe {
             let ptr: *mut JSObjectWrapper<Self> = finalize_data as *mut JSObjectWrapper<Self>;
-            Box::from_raw(ptr);
+            let _ = Box::from_raw(ptr);
         }
     }
 }
