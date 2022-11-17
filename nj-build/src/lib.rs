@@ -12,7 +12,10 @@ pub fn configure() {
     use std::env::temp_dir;
 
     let node_full_version =
-        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap().trim_end().to_string();
+        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout)
+            .unwrap()
+            .trim_end()
+            .to_string();
 
     let tmp_dir = temp_dir();
     let temp_lib = tmp_dir
