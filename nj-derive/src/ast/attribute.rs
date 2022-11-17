@@ -203,7 +203,7 @@ impl FunctionAttributes {
     }
 
     pub fn name(&self) -> Option<&String> {
-        (&self.name).as_ref()
+        self.name.as_ref()
     }
 
     pub fn is_multi_threaded(&self) -> bool {

@@ -87,7 +87,7 @@ fn init(opt: InitOpt) {
             let manifest_path = format!("--manifest-path={}/Cargo.toml", dir.display());
             let mut fmt = Command::new("cargo")
                 .stdout(Stdio::inherit())
-                .args(&["fmt", &manifest_path])
+                .args(["fmt", &manifest_path])
                 .spawn()
                 .expect("Failed to execute command");
 
@@ -165,23 +165,17 @@ fn copy_lib(out: String, target_mode: &str, target_tripple: Option<String>) {
 }
 
 fn find_cdylib(package: &Package) -> Option<&Target> {
-    for target in &package.targets {
-        if target.name == package.name {
-            return Some(target);
-        }
-    }
-    None
+    package
+        .targets
+        .iter()
+        .find(|&target| target.name == package.name)
 }
 
 fn find_current_package<'a>(metadata: &'a Metadata, manifest_path: &Path) -> Option<&'a Package> {
-    for package in &metadata.packages {
-        //println!("package names target: {:#?}",package.name);
-        if package.manifest_path == manifest_path {
-            return Some(package);
-        }
-    }
-
-    None
+    metadata
+        .packages
+        .iter()
+        .find(|&package| package.manifest_path == manifest_path)
 }
 
 fn load_metadata(manifest_path: &Path) -> Metadata {
