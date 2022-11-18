@@ -42,7 +42,7 @@ impl<'a> FunctionArgs<'a> {
                 FnArg::Receiver(_) => {}
                 FnArg::Typed(arg_type) => match &*arg_type.pat {
                     Pat::Ident(identity) => {
-                        let arg = FunctionArg::new(i, &identity.ident, &*arg_type.ty, generics)?;
+                        let arg = FunctionArg::new(i, &identity.ident, &arg_type.ty, generics)?;
                         args.push(arg);
                     }
                     _ => return Err(Error::new(arg_type.span(), "not supported type")),

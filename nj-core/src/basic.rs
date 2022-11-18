@@ -633,7 +633,7 @@ impl JsEnv {
             &mut len
         ))?;
 
-        let array: &[u8] = unsafe { slice::from_raw_parts(data as *const u8, len as usize) };
+        let array: &[u8] = unsafe { slice::from_raw_parts(data as *const u8, len) };
 
         Ok(array)
     }

@@ -8,7 +8,7 @@ pub struct WatchOpt {
 }
 
 pub fn check_cargo_watch() -> Result<(), Box<dyn std::error::Error>> {
-    let output = Command::new("cargo").args(&["watch", "--help"]).output()?;
+    let output = Command::new("cargo").args(["watch", "--help"]).output()?;
 
     if output.status.success() {
         println!("cargo watch is installed");
@@ -17,7 +17,7 @@ pub fn check_cargo_watch() -> Result<(), Box<dyn std::error::Error>> {
         println!("installing cargo watch... this might take a minute.");
         // Cargo watch is not installed, attempt to install;
         Command::new("cargo")
-            .args(&["install", "cargo-watch"])
+            .args(["install", "cargo-watch"])
             .output()?;
         // Re-run check
         println!("checking cargo watch installation...");

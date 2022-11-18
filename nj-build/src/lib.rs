@@ -6,18 +6,21 @@ mod win_delay_load_hook;
 pub fn configure() {
     // On Windows, we need to download the dynamic library from the nodejs.org website first
     use std::env::var;
-    use std::fs::File;
+    use std::fs::{File, remove_file};
     use http_req::request;
     use std::process::Command;
     use std::env::temp_dir;
 
     let node_full_version =
-        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout).unwrap();
+        String::from_utf8(Command::new("node").arg("-v").output().unwrap().stdout)
+            .unwrap()
+            .trim_end()
+            .to_string();
 
     let tmp_dir = temp_dir();
     let temp_lib = tmp_dir
         .clone()
-        .join(format!("node-{}.lib", node_full_version.trim_end()));
+        .join(format!("node-{}.lib", node_full_version));
 
     if !temp_lib.exists() {
         let lib_file_download_url = format!(
@@ -31,8 +34,14 @@ pub fn configure() {
         );
 
         let mut node_lib_file = File::create(&temp_lib).unwrap();
-        request::get(&lib_file_download_url, &mut node_lib_file)
-            .expect("Download node.lib file failed");
+        if let Err(err) = request::get(&lib_file_download_url, &mut node_lib_file) {
+            if temp_lib.exists() {
+                if let Err(err) = remove_file(&temp_lib) {
+                    eprintln!("Fail to remove {:#?} due error: {}", temp_lib, err);
+                }
+            }
+            panic!("Download node.lib file failed with: {}", err);
+        };
     }
 
     println!(
