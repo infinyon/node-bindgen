@@ -270,7 +270,7 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, ty)| {
-                let arg_name = format!("cb_arg{}", index);
+                let arg_name = format!("cb_arg{index}");
                 let var_name = ident(&arg_name);
                 let type_name = ty.expansion();
                 quote! {
@@ -305,7 +305,7 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, _path)| {
-                let arg_name = format!("cb_arg{}", index);
+                let arg_name = format!("cb_arg{index}");
                 let var_name = Ident::new(&arg_name, Span::call_site());
                 quote! {
                     #var_name
@@ -341,7 +341,7 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, ty)| {
-                let var_name = Ident::new(&format!("arg{}", index), Span::call_site());
+                let var_name = Ident::new(&format!("arg{index}"), Span::call_site());
                 let type_name = ty.expansion();
                 quote! {
                     #var_name: #type_name
@@ -354,8 +354,8 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, _path)| {
-                let js_var_iden = Ident::new(&format!("js_arg{}", index), Span::call_site());
-                let arg_idn = Ident::new(&format!("arg{}", index), Span::call_site());
+                let js_var_iden = Ident::new(&format!("js_arg{index}"), Span::call_site());
+                let arg_idn = Ident::new(&format!("arg{index}"), Span::call_site());
                 quote! {
                     let #js_var_iden = my_val.#arg_idn.try_to_js(&js_env)?;
                 }
@@ -367,7 +367,7 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, _path)| {
-                let js_var_iden = Ident::new(&format!("js_arg{}", index), Span::call_site());
+                let js_var_iden = Ident::new(&format!("js_arg{index}"), Span::call_site());
                 quote! {
                     #js_var_iden
                 }
@@ -414,8 +414,8 @@ mod closure {
             .iter()
             .enumerate()
             .map(|(index, _path)| {
-                let arg_name = Ident::new(&format!("arg{}", index), Span::call_site());
-                let cb_name: Ident = Ident::new(&format!("cb_arg{}", index), Span::call_site());
+                let arg_name = Ident::new(&format!("arg{index}"), Span::call_site());
+                let cb_name: Ident = Ident::new(&format!("cb_arg{index}"), Span::call_site());
                 quote! {
                     #arg_name: #cb_name
                 }
@@ -461,7 +461,7 @@ fn generate_rust_arg_var(index: usize) -> TokenStream {
 
 /// given index, generate rust_value var name
 fn rust_arg_var(index: usize) -> Ident {
-    let var_name = format!("rust_value_{}", index);
+    let var_name = format!("rust_value_{index}");
     Ident::new(&var_name, Span::call_site())
 }
 

@@ -44,13 +44,13 @@ fn generate_class_helper(class: Class) -> TokenStream {
         }
     };
 
-    let helper_module_name = ident(&format!("{}_helper", type_name).to_lowercase());
+    let helper_module_name = ident(&format!("{type_name}_helper").to_lowercase());
 
-    let class_type_lit = lit_str(&format!("{}", type_name));
+    let class_type_lit = lit_str(&format!("{type_name}"));
     let properties = generate_properties(&class);
     let constructor_exp = class_constructor(constructor_method);
     let class_arg_exp = generate_class_arg(constructor_method, &class);
-    let construct_name = ident(&format!("{}Constructor", type_name));
+    let construct_name = ident(&format!("{type_name}Constructor"));
 
     quote! {
 
@@ -115,7 +115,7 @@ fn generate_properties(class: &Class) -> Vec<TokenStream> {
                 let method_ident = &method.method_name();
 
                 let property_name = method.property_name();
-                let napi_name = ident(&format!("napi_{}", method_ident));
+                let napi_name = ident(&format!("napi_{method_ident}"));
 
                 Some(if method.attributes.is_getter() {
                     quote! {

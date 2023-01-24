@@ -142,7 +142,7 @@ impl JSValue<'_> for uuid::Uuid {
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         let string = String::convert_to_rust(env, js_value)?;
         let uuid = uuid::Uuid::parse_str(&string)
-            .map_err(|e| NjError::Other(format!("Failed to parse Uuid: {}", e)))?;
+            .map_err(|e| NjError::Other(format!("Failed to parse Uuid: {e}")))?;
         Ok(uuid)
     }
 }

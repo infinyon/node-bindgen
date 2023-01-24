@@ -66,7 +66,7 @@ where
     O: TryIntoJs,
 {
     let (promise, deferred) = js_env.create_promise()?;
-    let function_name = format!("async_worker_th_{}", name);
+    let function_name = format!("async_worker_th_{name}");
     let ts_fn =
         js_env.create_thread_safe_function(&function_name, None, Some(promise_complete::<O>))?;
     let js_deferred = JsDeferred(deferred);

@@ -154,7 +154,7 @@ fn copy_lib(out: String, target_mode: &str, target_tripple: Option<String>) {
                 &target.name,
                 target_tripple,
             );
-            let error_msg = format!("copy failed of {:?}", lib_path);
+            let error_msg = format!("copy failed of {lib_path:?}");
             copy_cdylib(&lib_path, &out).expect(&error_msg);
         } else {
             eprintln!("no cdylib target was founded");
@@ -198,11 +198,11 @@ fn lib_path(
     target_tripple: Option<String>,
 ) -> Utf8PathBuf {
     let file_name = if cfg!(target_os = "windows") {
-        format!("{}.dll", target_name)
+        format!("{target_name}.dll")
     } else if cfg!(target_os = "macos") {
-        format!("lib{}.dylib", target_name)
+        format!("lib{target_name}.dylib")
     } else if cfg!(target_os = "linux") {
-        format!("lib{}.so", target_name)
+        format!("lib{target_name}.so")
     } else {
         panic!("Unsupported operating system.");
     }

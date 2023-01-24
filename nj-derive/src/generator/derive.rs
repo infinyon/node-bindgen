@@ -295,7 +295,7 @@ fn generate_named_field_conversions<'a>(
     fields
         .iter()
         .map(|MyNamedField { name, ty }| {
-            let field_name = format!("{}", name).to_camel_case();
+            let field_name = format!("{name}").to_camel_case();
 
             // References needs to be cloned for try_to_js
             // to take their ownership. Values can be passed as is
@@ -344,10 +344,10 @@ fn generate_unnamed_field_conversions<'a>(
 }
 
 // Unnamed fields, bound ahead of time to named variables
-fn generate_bound_unnamed_field_conversions<'a>(
+fn generate_bound_unnamed_field_conversions(
     output_array: &Ident,
     js_env: &Ident,
-    field_bindings: &'a [Ident],
+    field_bindings: &[Ident],
 ) -> Vec<TokenStream> {
     field_bindings
         .iter()
