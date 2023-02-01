@@ -19,7 +19,7 @@ fn test(b: i32) -> Result<ArrayBuffer, NjError> {
     };
 
     let json_string = serde_json::to_vec(&my_struct)
-        .map_err(|err| NjError::Other(format!("serialization error: {}", err)))?;
+        .map_err(|err| NjError::Other(format!("serialization error: {err}")))?;
 
     Ok(ArrayBuffer::new(json_string))
 }
@@ -56,7 +56,7 @@ fn test2(b: i32) -> Result<Record, NjError> {
     };
 
     let json_string = serde_json::to_vec(&my_struct)
-        .map_err(|err| NjError::Other(format!("serialization error: {}", err)))?;
+        .map_err(|err| NjError::Other(format!("serialization error: {err}")))?;
 
     Ok(Record {
         buffer: ArrayBuffer::new(json_string),
@@ -67,7 +67,7 @@ fn test2(b: i32) -> Result<Record, NjError> {
 #[node_bindgen]
 fn test3(data: JSArrayBuffer) -> Result<String, NjError> {
     let message = String::from_utf8(data.to_vec())?;
-    Ok(format!("reply {}", message))
+    Ok(format!("reply {message}"))
 }
 
 #[node_bindgen]
@@ -75,5 +75,5 @@ fn test4(first: JSArrayBuffer, second: JSArrayBuffer) -> Result<String, NjError>
     let message1 = String::from_utf8(first.to_vec())?;
     let message2 = String::from_utf8(second.to_vec())?;
 
-    Ok(format!("{} {}", message1, message2))
+    Ok(format!("{message1} {message2}"))
 }

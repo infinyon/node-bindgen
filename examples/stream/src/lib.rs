@@ -29,8 +29,7 @@ impl StreamFactory {
         // only allow count to be less than 10
         if count > 10 {
             return Err(NjError::Other(format!(
-                "count: {} should be less than or equal to 10",
-                count
+                "count: {count} should be less than or equal to 10"
             )));
         }
         let stream = test_stream(count);

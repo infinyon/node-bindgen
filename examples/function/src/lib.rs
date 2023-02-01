@@ -3,7 +3,7 @@ use node_bindgen::core::NjError;
 
 #[node_bindgen()]
 fn hello(count: i32) -> String {
-    format!("hello world {}", count)
+    format!("hello world {count}")
 }
 
 #[node_bindgen]
@@ -39,7 +39,7 @@ fn sum2(first: i32, second_arg: Option<i32>) -> i32 {
 #[node_bindgen()]
 fn string(first: String, second_arg: Option<String>) -> String {
     if let Some(second) = second_arg {
-        format!("{} {}", first, second)
+        format!("{first} {second}")
     } else {
         first
     }
