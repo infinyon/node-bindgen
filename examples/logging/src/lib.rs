@@ -12,5 +12,5 @@ fn init_logging() {
 #[node_bindgen()]
 fn hello(count: i32) -> String {
     warn!("calling hello");
-    format!("hello world {}", count)
+    format!("hello world {count}")
 }

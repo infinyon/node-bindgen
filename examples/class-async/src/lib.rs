@@ -41,7 +41,7 @@ impl MyObject {
     async fn plus_two(&self, arg: f64) -> f64 {
         println!("sleeping");
         sleep(Duration::from_secs(1)).await;
-        println!("woke and adding {}", arg);
+        println!("woke and adding {arg}");
 
         self.val + arg
     }
@@ -53,7 +53,7 @@ impl MyObject {
     async fn multiply2(&self, arg: f64) -> MyObjectConstructor {
         println!("sleeping");
         sleep(Duration::from_secs(1)).await;
-        println!("woke and adding {}", arg);
+        println!("woke and adding {arg}");
 
         MyObjectConstructor::new(self.val * arg)
     }

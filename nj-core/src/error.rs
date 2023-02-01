@@ -81,25 +81,22 @@ impl From<NapiStatus> for NjError {
 impl fmt::Display for NjError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::NapiCall(status) => write!(f, "napi call failed {:#?}", status),
-            Self::InvalidType(expected, actual) => write!(
-                f,
-                "invalid type, expected: {}, actual: {}",
-                expected, actual
-            ),
-            Self::Utf8Error(err) => write!(f, "ut8 error: {}", err),
-            Self::Utf8ErrorSlice(err) => write!(f, "ut8 error: {}", err),
+            Self::NapiCall(status) => write!(f, "napi call failed {status:#?}"),
+            Self::InvalidType(expected, actual) => {
+                write!(f, "invalid type, expected: {expected}, actual: {actual}")
+            }
+            Self::Utf8Error(err) => write!(f, "ut8 error: {err}"),
+            Self::Utf8ErrorSlice(err) => write!(f, "ut8 error: {err}"),
             Self::InvalidArgIndex(index, len) => {
-                write!(f, "attempt to access arg: {} out of len: {}", index, len)
+                write!(f, "attempt to access arg: {index} out of len: {len}")
             }
             Self::InvalidArgCount(actual_count, expected_count) => write!(
                 f,
-                "{} args expected but {} is present",
-                expected_count, actual_count
+                "{expected_count} args expected but {actual_count} is present"
             ),
             Self::NoPlainConstructor => write!(f, "Plain constructor not supported yet"),
             Self::Native(_val) => write!(f, "Native error payload"),
-            Self::Other(msg) => write!(f, "{}", msg),
+            Self::Other(msg) => write!(f, "{msg}"),
         }
     }
 }

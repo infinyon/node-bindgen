@@ -1,8 +1,13 @@
 # Changelog
 
 ## Unreleased
+
+## [5.1.0] - 2023-01-24
 ### Improvements
 - Add cross compilation support to nj-cli. ([#182](https://github.com/infinyon/node-bindgen/pull/182)).
+- Add option to configure a custom logging backend ([#174](https://github.com/infinyon/node-bindgen/pull/174))
+    - Note: without this global initialization applications need to setup their own logging infrastructure at startup
+    - See the logging example that uses a custom logger
 
 ## [5.0.0] - 2021-07-15
 ### Improvements

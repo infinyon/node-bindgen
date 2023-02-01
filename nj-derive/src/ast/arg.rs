@@ -140,7 +140,7 @@ pub enum FunctionArgType<'a> {
 }
 
 /// find generic with match ident
-fn find_generic<'a, 'b>(generics: &'a Generics, ident: Option<&'b Ident>) -> Option<&'a TypeParam> {
+fn find_generic<'a>(generics: &'a Generics, ident: Option<&Ident>) -> Option<&'a TypeParam> {
     if let Some(ident) = ident {
         generics
             .type_params()

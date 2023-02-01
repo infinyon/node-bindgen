@@ -16,7 +16,7 @@ pub fn generate_class_arg(method: Option<&Method>, class: &Class) -> TokenStream
 
         let constr_conversion = as_constructor_try_to_js(&method.args);
         let invocation = as_constructor_invocation(&method.args);
-        let construct_name = ident(&format!("{}Constructor", class_name));
+        let construct_name = ident(&format!("{class_name}Constructor"));
         quote! {
 
             pub struct #construct_name {

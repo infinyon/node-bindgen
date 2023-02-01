@@ -8,6 +8,6 @@ use node_bindgen::core::val::JsEnv;
 /// JsEnv argument does not manipulate JsCb arguments
 #[node_bindgen]
 fn multiply(env: JsEnv, arg: f64) -> Result<napi_value, NjError> {
-    println!("arg: {}", arg);
+    println!("arg: {arg}");
     env.create_double(arg * 2.0)
 }

@@ -81,13 +81,13 @@ Add two dependencies to your projects' ```Cargo.toml```.
 Add ```node-bindgen``` as a regular dependency (as below):
 ```
 [dependencies]
-node-bindgen = { version = "4.0" }
+node-bindgen = { version = "5.1" }
 ```
 
 Then add ```node-bindgen```'s procedure macro to your build-dependencies as below:
 ```
 [build-dependencies]
-node-bindgen = { version = "4.0", features = ["build"] }
+node-bindgen = { version = "5.1", features = ["build"] }
 ```
 
 Then update crate type to ```cdylib``` to generate node.js compatible native module:
@@ -276,7 +276,7 @@ assert.deepStrictEqual(addon.my_json(), {
 });
 ```
 
-Note that the fields must implement 
+Note that the fields must implement
 `node_bindgen::core::TryIntoJs` themselves.
 Any references must also implement `Clone`.
 Field names will be converted to camelCase.
@@ -379,7 +379,7 @@ environment has a valid C/C++ compiler.
 
 In the future, this file will be re-written in Rust, removing this dependency.
 
-Just make sure that you are compiling the rust module using 
+Just make sure that you are compiling the rust module using
 ```
 $ npx electron-build-env nj-cli build --release
 ```

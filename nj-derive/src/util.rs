@@ -9,7 +9,7 @@ pub fn default_function_property_name(fn_name: &str) -> String {
 }
 
 pub fn arg_ident(index: usize) -> syn::Ident {
-    ident(&format!("arg{}", index))
+    ident(&format!("arg{index}"))
 }
 
 pub fn ident(ident: &str) -> syn::Ident {

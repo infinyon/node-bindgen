@@ -758,10 +758,7 @@ impl JsCallback {
             self.env
                 .create_thread_safe_function(name, Some(self.args[index]), call_js_cb)
         } else {
-            Err(NjError::Other(format!(
-                "expected js callback at: {}",
-                index
-            )))
+            Err(NjError::Other(format!("expected js callback at: {index}")))
         }
     }
 

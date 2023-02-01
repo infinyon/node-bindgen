@@ -718,7 +718,7 @@ version = "3.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "5.0.0"
+version = "5.1.0"
 dependencies = [
  "nj-build",
  "nj-core",
