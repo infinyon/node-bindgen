@@ -1,5 +1,5 @@
 #[cfg(windows)]
-pub fn build(dir: std::path::PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn build(dir: std::path::PathBuf) -> Result<String, Box<dyn std::error::Error>> {
     use std::fs::{File, remove_file};
     use std::io::prelude::*;
     use std::env::current_dir;
@@ -65,5 +65,5 @@ pub fn build(dir: std::path::PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     // Remove tmp file once the artifact is built;
     remove_file(&tmp_file)?;
 
-    Ok(())
+    Ok(file_name.to_string())
 }
