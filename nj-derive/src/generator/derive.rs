@@ -205,7 +205,6 @@ fn generate_variant_conversion(
             let variant_output_arr = format_ident!("variant_output_arr");
             let fields_count = unnamed_fields.len();
             let field_bindings = (0..fields_count)
-                .into_iter()
                 .map(|field_idx| format_ident!("field_{}", field_idx))
                 .collect::<Vec<Ident>>();
 
