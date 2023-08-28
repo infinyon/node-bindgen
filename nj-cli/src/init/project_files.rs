@@ -74,7 +74,7 @@ impl ProjectFiles {
             remove_file(&lib_rs)?;
         }
 
-        const LIB_RS: &str = r##"
+        const LIB_RS: &str = r#"
             use node_bindgen::derive::node_bindgen;
             
             struct MyObject {}
@@ -92,7 +92,7 @@ impl ProjectFiles {
                     "world".to_string()
                 }
             }
-        "##;
+        "#;
 
         let mut file = File::create(&lib_rs)?;
         file.write_all(LIB_RS.as_bytes())?;
