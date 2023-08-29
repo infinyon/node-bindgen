@@ -3,6 +3,7 @@
 #![allow(non_snake_case)]
 //https://github.com/rust-lang/rust-bindgen/issues/1651
 #![cfg_attr(test, allow(deref_nullptr))]
+#[allow(clippy::redundant_static_lifetimes)]
 mod binding;
 
 pub use binding::*;
