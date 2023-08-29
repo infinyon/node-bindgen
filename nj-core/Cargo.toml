@@ -1,6 +1,6 @@
 [package]
 name = "nj-core"
-version = "5.0.1"
+version = "6.0.0"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "high level wrapper for Node N-API"
@@ -22,7 +22,7 @@ libc = "0.2.66"
 inventory = "0.1.5"
 async-trait = "0.1.22"
 futures-lite = "1.7.0"
-nj-sys = { version = "3.0.0", path = "../nj-sys" }
+nj-sys = { version = "4.0.0", path = "../nj-sys" }
 fluvio-future = { version = "0.3.0", default-features=false, features=["task","subscriber"]}
 pin-utils = "0.1.0"
 num-bigint = "0.4.0"
