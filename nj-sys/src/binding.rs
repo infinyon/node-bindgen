@@ -737,6 +737,8 @@ pub const napi_status_napi_date_expected: napi_status = 18;
 pub const napi_status_napi_arraybuffer_expected: napi_status = 19;
 pub const napi_status_napi_detachable_arraybuffer_expected: napi_status = 20;
 pub const napi_status_napi_would_deadlock: napi_status = 21;
+pub const napi_status_napi_no_external_buffers_allowed: napi_status = 22;
+pub const napi_status_napi_cannot_run_js: napi_status = 23;
 pub type napi_status = ::std::os::raw::c_uint;
 pub type napi_callback = ::std::option::Option<
     unsafe extern "C" fn(env: napi_env, info: napi_callback_info) -> napi_value,
@@ -1570,7 +1572,7 @@ extern "C" {
     pub fn napi_add_finalizer(
         env: napi_env,
         js_object: napi_value,
-        native_object: *mut ::std::os::raw::c_void,
+        finalize_data: *mut ::std::os::raw::c_void,
         finalize_cb: napi_finalize,
         finalize_hint: *mut ::std::os::raw::c_void,
         result: *mut napi_ref,
@@ -1676,6 +1678,8 @@ pub struct napi_async_work__ {
     _unused: [u8; 0],
 }
 pub type napi_async_work = *mut napi_async_work__;
+pub type napi_cleanup_hook =
+    ::std::option::Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct napi_threadsafe_function__ {
@@ -1773,6 +1777,7 @@ pub struct uv_loop_s {
 }
 pub type napi_addon_register_func =
     ::std::option::Option<unsafe extern "C" fn(env: napi_env, exports: napi_value) -> napi_value>;
+pub type node_api_addon_get_api_version_func = ::std::option::Option<unsafe extern "C" fn() -> i32>;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct napi_module {
@@ -1973,14 +1978,14 @@ extern "C" {
 extern "C" {
     pub fn napi_add_env_cleanup_hook(
         env: napi_env,
-        fun: ::std::option::Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
+        fun: napi_cleanup_hook,
         arg: *mut ::std::os::raw::c_void,
     ) -> napi_status;
 }
 extern "C" {
     pub fn napi_remove_env_cleanup_hook(
         env: napi_env,
-        fun: ::std::option::Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
+        fun: napi_cleanup_hook,
         arg: *mut ::std::os::raw::c_void,
     ) -> napi_status;
 }
