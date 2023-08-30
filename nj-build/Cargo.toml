@@ -2,7 +2,7 @@
 name = "nj-build"
 version = "0.3.0"
 authors = ["fluvio.io"]
-edition = "2021"
+edition = "2018"
 description = "build configuration for node-bindgen"
 repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
