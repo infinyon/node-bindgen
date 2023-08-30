@@ -25,12 +25,13 @@ jobs:
       - name: Build nj-cli
         run: cargo build --release --manifest-path nj-cli/Cargo.toml
       - name: Upload binary to release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/release/${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
+          overwrite: true
   publish_crates:
     name: Publish to Crates.io
     runs-on: ubuntu-latest
@@ -41,7 +42,6 @@ jobs:
           toolchain: stable
       - uses: actions-rs/install@v0.1
         with:
-          crate: cargo-publish-all
+          crate: cargo-workspaces
           version: latest
-      - run: cargo-publish-all --dry-run
-      - run: cargo-publish-all --token ${{ secrets.CRATES_TOKEN }} --yes
+      - run: cargo workspaces publish --token ${{ secrets.CRATES_TOKEN }} --yes
