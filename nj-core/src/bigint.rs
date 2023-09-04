@@ -22,25 +22,29 @@ impl<'a> JSValue<'a> for BigInt {
 
         // https://nodejs.org/api/n-api.html#n_api_napi_get_value_bigint_words
         // Frist call is to figure out how long of a vec to make.
-        crate::napi_call_result!(crate::sys::napi_get_value_bigint_words(
-            env.inner(),
-            js_value,
-            ptr::null_mut(),
-            &mut word_count,
-            ptr::null_mut(),
-        ))?;
+        crate::napi_call_result(unsafe {
+            crate::sys::napi_get_value_bigint_words(
+                env.inner(),
+                js_value,
+                ptr::null_mut(),
+                &mut word_count,
+                ptr::null_mut(),
+            )
+        })?;
 
         // Now we actually get the sign and the vector.
         let mut napi_buffer: Vec<u64> = vec![0; usize::try_from(word_count).unwrap()];
         let mut sign = 0;
 
-        crate::napi_call_result!(crate::sys::napi_get_value_bigint_words(
-            env.inner(),
-            js_value,
-            &mut sign,
-            &mut word_count,
-            napi_buffer.as_mut_ptr(),
-        ))?;
+        crate::napi_call_result(unsafe {
+            crate::sys::napi_get_value_bigint_words(
+                env.inner(),
+                js_value,
+                &mut sign,
+                &mut word_count,
+                napi_buffer.as_mut_ptr(),
+            )
+        })?;
 
         // BigInt is initialized via a little endian &[u8] so we need to build the u8s from the
         // u64s
@@ -106,13 +110,15 @@ impl TryIntoJs for BigInt {
         let mut napi_buffer = ptr::null_mut();
 
         // https://nodejs.org/api/n-api.html#n_api_napi_create_bigint_words
-        crate::napi_call_result!(crate::sys::napi_create_bigint_words(
-            env.inner(),
-            sign,
-            size_t::try_from(word_count).unwrap(),
-            words.as_ptr(),
-            &mut napi_buffer
-        ))?;
+        crate::napi_call_result(unsafe {
+            crate::sys::napi_create_bigint_words(
+                env.inner(),
+                sign,
+                size_t::try_from(word_count).unwrap(),
+                words.as_ptr(),
+                &mut napi_buffer,
+            )
+        })?;
         Ok(napi_buffer)
     }
 }

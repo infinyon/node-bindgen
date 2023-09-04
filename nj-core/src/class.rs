@@ -53,7 +53,7 @@ where
         // ONLY in response to the finalize callback invocation. If it is deleted before then,
         // then the finalize callback may never be invoked. Therefore, when obtaining a reference a
         // finalize callback is also required in order to enable correct disposal of the reference."
-        js_env.delete_reference(wrap)?;
+        unsafe { js_env.delete_reference(wrap)? };
 
         Ok(js_cb.this_owned())
     }
@@ -80,14 +80,22 @@ pub trait JSClass: Sized {
     }
 
     /// given instance, return my object
-    fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<&'static mut Self, NjError> {
-        Ok(js_env
-            .unwrap_mut::<JSObjectWrapper<Self>>(instance)?
-            .mut_inner())
+    fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<*mut Self, NjError> {
+        Ok(unsafe {
+            js_env
+                .unwrap_mut::<JSObjectWrapper<Self>>(instance)?
+                .read_unaligned()
+                .mut_inner()
+        })
     }
 
-    fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<&'static Self, NjError> {
-        Ok(js_env.unwrap::<JSObjectWrapper<Self>>(instance)?.inner())
+    fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<*const Self, NjError> {
+        Ok(unsafe {
+            js_env
+                .unwrap::<JSObjectWrapper<Self>>(instance)?
+                .read_unaligned()
+                .inner()
+        })
     }
 
     fn properties() -> PropertiesBuilder {

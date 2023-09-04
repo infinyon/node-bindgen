@@ -41,19 +41,23 @@ impl ThreadSafeFunction {
             None => ptr::null_mut(),
         };
         debug!("calling thread safe");
-        crate::napi_call_result!(crate::sys::napi_call_threadsafe_function(
-            self.tf,
-            data_ptr,
-            crate::sys::napi_threadsafe_function_call_mode_napi_tsfn_blocking
-        ))
+        crate::napi_call_result(unsafe {
+            crate::sys::napi_call_threadsafe_function(
+                self.tf,
+                data_ptr,
+                crate::sys::napi_threadsafe_function_call_mode_napi_tsfn_blocking,
+            )
+        })
     }
 }
 
 impl Drop for ThreadSafeFunction {
     fn drop(&mut self) {
-        crate::napi_call_assert!(crate::sys::napi_release_threadsafe_function(
-            self.tf,
-            crate::sys::napi_threadsafe_function_release_mode_napi_tsfn_release
-        ));
+        crate::napi_call_assert(unsafe {
+            crate::sys::napi_release_threadsafe_function(
+                self.tf,
+                crate::sys::napi_threadsafe_function_release_mode_napi_tsfn_release,
+            )
+        });
     }
 }

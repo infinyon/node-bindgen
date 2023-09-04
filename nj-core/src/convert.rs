@@ -186,8 +186,10 @@ where
     fn try_to_js(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         let array = js_env.create_array_with_len(self.len())?;
         for (i, element) in self.into_iter().enumerate() {
-            let js_element = element.try_to_js(js_env)?;
-            js_env.set_element(array, js_element, i)?;
+            unsafe {
+                let js_element = element.try_to_js(js_env)?;
+                js_env.set_element(array, js_element, i)?
+            };
         }
 
         Ok(array)
@@ -235,11 +237,9 @@ impl JSValue<'_> for f64 {
 
         let mut value: f64 = 0.0;
 
-        napi_call_result!(crate::sys::napi_get_value_double(
-            env.inner(),
-            js_value,
-            &mut value
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_value_double(env.inner(), js_value, &mut value)
+        })?;
 
         Ok(value)
     }
@@ -252,11 +252,9 @@ impl JSValue<'_> for i32 {
 
         let mut value: i32 = 0;
 
-        napi_call_result!(crate::sys::napi_get_value_int32(
-            env.inner(),
-            js_value,
-            &mut value
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_value_int32(env.inner(), js_value, &mut value)
+        })?;
 
         Ok(value)
     }
@@ -269,11 +267,9 @@ impl JSValue<'_> for u32 {
 
         let mut value: u32 = 0;
 
-        napi_call_result!(crate::sys::napi_get_value_uint32(
-            env.inner(),
-            js_value,
-            &mut value
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_value_uint32(env.inner(), js_value, &mut value)
+        })?;
 
         Ok(value)
     }
@@ -286,11 +282,9 @@ impl JSValue<'_> for i64 {
 
         let mut value: i64 = 0;
 
-        napi_call_result!(crate::sys::napi_get_value_int64(
-            env.inner(),
-            js_value,
-            &mut value
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_value_int64(env.inner(), js_value, &mut value)
+        })?;
 
         Ok(value)
     }
@@ -303,11 +297,9 @@ impl JSValue<'_> for bool {
 
         let mut value: bool = false;
 
-        napi_call_result!(crate::sys::napi_get_value_bool(
-            env.inner(),
-            js_value,
-            &mut value
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_value_bool(env.inner(), js_value, &mut value)
+        })?;
 
         Ok(value)
     }
@@ -322,13 +314,9 @@ impl JSValue<'_> for String {
 
         let mut string_size: size_t = 0;
 
-        napi_call_result!(napi_get_value_string_utf8(
-            env.inner(),
-            js_value,
-            ptr::null_mut(),
-            0,
-            &mut string_size
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_value_string_utf8(env.inner(), js_value, ptr::null_mut(), 0, &mut string_size)
+        })?;
 
         string_size += 1;
 
@@ -336,13 +324,15 @@ impl JSValue<'_> for String {
         let mut chars: Box<[u8]> = chars_vec.into_boxed_slice();
         let mut read_size: size_t = 0;
 
-        napi_call_result!(napi_get_value_string_utf8(
-            env.inner(),
-            js_value,
-            chars.as_mut_ptr() as *mut ::std::os::raw::c_char,
-            string_size,
-            &mut read_size
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_value_string_utf8(
+                env.inner(),
+                js_value,
+                chars.as_mut_ptr() as *mut ::std::os::raw::c_char,
+                string_size,
+                &mut read_size,
+            )
+        })?;
 
         let my_chars: Vec<u8> = chars[0..usize::try_from(read_size).unwrap()].into();
 
@@ -358,12 +348,9 @@ impl<'a> JSValue<'a> for &'a str {
         let mut len: size_t = 0;
         let mut data = ptr::null_mut();
 
-        napi_call_result!(napi_get_buffer_info(
-            env.inner(),
-            js_value,
-            &mut data,
-            &mut len
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_buffer_info(env.inner(), js_value, &mut data, &mut len)
+        })?;
 
         unsafe {
             let i8slice = std::slice::from_raw_parts(
@@ -382,26 +369,28 @@ where
 {
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
-        if !env.is_array(js_value)? {
-            return Err(NjError::Other(
-                "Provided value was not an array as expected".to_owned(),
-            ));
+        unsafe {
+            if !env.is_array(js_value)? {
+                return Err(NjError::Other(
+                    "Provided value was not an array as expected".to_owned(),
+                ));
+            }
+
+            use crate::sys::napi_get_array_length;
+
+            let mut length: u32 = 0;
+
+            napi_call_result(napi_get_array_length(env.inner(), js_value, &mut length))?;
+
+            let mut elements = vec![];
+
+            for i in 0..length {
+                let js_element = env.get_element(js_value, i)?;
+                elements.push(T::convert_to_rust(env, js_element)?);
+            }
+
+            Ok(elements)
         }
-
-        use crate::sys::napi_get_array_length;
-
-        let mut length: u32 = 0;
-
-        napi_call_result!(napi_get_array_length(env.inner(), js_value, &mut length))?;
-
-        let mut elements = vec![];
-
-        for i in 0..length {
-            let js_element = env.get_element(js_value, i)?;
-            elements.push(T::convert_to_rust(env, js_element)?);
-        }
-
-        Ok(elements)
     }
 }
 
@@ -415,12 +404,14 @@ macro_rules! impl_js_value_for_tuple {
                 #[allow(clippy::not_unsafe_ptr_arg_deref)]
                 fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
                     use crate::sys::napi_get_array_length;
-                    if !env.is_array(js_value)? {
+
+                    unsafe {
+                        if !env.is_array(js_value)? {
                         return Err(NjError::Other("Tuples must come from JS arrays".to_owned()));
                     }
 
                     let mut length: u32 = 0;
-                    napi_call_result!(napi_get_array_length(env.inner(), js_value, &mut length))?;
+                    napi_call_result(napi_get_array_length(env.inner(), js_value, &mut length))?;
                     let required_length = $len;
                     if length != required_length {
                         return Err(NjError::Other(format!("{n}Tuple must have exactly length {n}", n = required_length)));
@@ -433,6 +424,7 @@ macro_rules! impl_js_value_for_tuple {
                     )+
 
                     Ok(( $($t,)+ ))
+                    }
                 }
             }
         )+
@@ -465,8 +457,11 @@ macro_rules! impl_try_into_js_for_tuple {
                     let ( $($t, )+ ) = self;
 
                     $(
-                        let js_element = $t.try_to_js(js_env)?;
+                        unsafe {
+                            let js_element = $t.try_to_js(js_env)?;
                         js_env.set_element(array, js_element, $n)?;
+                        }
+
                     )+
 
                     Ok(array)

@@ -99,12 +99,14 @@ impl JsEnv {
         let r_string = std::str::from_utf8(r_string)?;
 
         let mut js_value = ptr::null_mut();
-        napi_call_result(unsafe { napi_create_string_utf8(
-            self.0,
-            r_string.as_ptr() as *const ::std::os::raw::c_char,
-            size_t::try_from(r_string.len()).unwrap(),
-            &mut js_value
-        ) })?;
+        napi_call_result(unsafe {
+            napi_create_string_utf8(
+                self.0,
+                r_string.as_ptr() as *const ::std::os::raw::c_char,
+                size_t::try_from(r_string.len()).unwrap(),
+                &mut js_value,
+            )
+        })?;
         assert!(!js_value.is_null());
 
         Ok(js_value)
@@ -112,127 +114,121 @@ impl JsEnv {
 
     pub fn create_double(&self, value: f64) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_double(self.0, value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_create_double(self.0, value, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_int64(&self, value: i64) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_int64(self.0, value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_create_int64(self.0, value, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_int32(&self, value: i32) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_int32(self.0, value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_create_int32(self.0, value, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_uint32(&self, value: u32) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_uint32(self.0, value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_create_uint32(self.0, value, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_bigint_uint64(&self, value: u64) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_bigint_uint64(
-            self.0,
-            value,
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_create_bigint_uint64(self.0, value, &mut result)
+        })?;
         Ok(result)
     }
 
     pub fn create_object(&self) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_create_object(self.0, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_create_object(self.0, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_boolean(&self, value: bool) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_get_boolean(self.0, value, &mut result,))?;
+        napi_call_result(unsafe { crate::sys::napi_get_boolean(self.0, value, &mut result) })?;
         Ok(result)
     }
 
     pub fn create_array_with_len(&self, len: usize) -> Result<napi_value, NjError> {
         let mut array = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_create_array_with_length(
-            self.0,
-            size_t::try_from(len).unwrap(),
-            &mut array
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_create_array_with_length(
+                self.0,
+                size_t::try_from(len).unwrap(),
+                &mut array,
+            )
+        })?;
         Ok(array)
     }
 
-    pub fn set_element(
+    pub unsafe fn set_element(
         &self,
         object: napi_value,
         element: napi_value,
         index: usize,
     ) -> Result<(), NjError> {
-        napi_call_result!(crate::sys::napi_set_element(
-            self.0,
-            object,
-            index as u32,
-            element
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_set_element(self.0, object, index as u32, element)
+        })?;
         Ok(())
     }
 
-    pub fn get_element(&self, array: napi_value, index: u32) -> Result<napi_value, NjError> {
+    pub unsafe fn get_element(&self, array: napi_value, index: u32) -> Result<napi_value, NjError> {
         let mut element = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_get_element(
-            self.0,
-            array,
-            index,
-            &mut element
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_element(self.0, array, index, &mut element)
+        })?;
         Ok(element)
     }
 
     /// check if napi value is array
-    pub fn is_array(&self, array: napi_value) -> Result<bool, NjError> {
+    pub unsafe fn is_array(&self, array: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
-        napi_call_result!(crate::sys::napi_is_array(self.0, array, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_is_array(self.0, array, &mut result) })?;
 
         Ok(result)
     }
 
     /// check if napi value is array buffer
-    pub fn is_array_buffer(&self, array: napi_value) -> Result<bool, NjError> {
+    pub unsafe fn is_array_buffer(&self, array: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
-        napi_call_result!(crate::sys::napi_is_arraybuffer(self.0, array, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_is_arraybuffer(self.0, array, &mut result) })?;
 
         Ok(result)
     }
 
-    pub fn is_buffer(&self, n_value: napi_value) -> Result<bool, NjError> {
+    pub unsafe fn is_buffer(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
-        napi_call_result!(crate::sys::napi_is_buffer(self.0, n_value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_is_buffer(self.0, n_value, &mut result) })?;
 
         Ok(result)
     }
 
-    pub fn is_date(&self, n_value: napi_value) -> Result<bool, NjError> {
+    pub unsafe fn is_date(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
-        napi_call_result!(crate::sys::napi_is_date(self.0, n_value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_is_date(self.0, n_value, &mut result) })?;
 
         Ok(result)
     }
 
-    pub fn is_error(&self, n_value: napi_value) -> Result<bool, NjError> {
+    pub unsafe fn is_error(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
-        napi_call_result!(crate::sys::napi_is_error(self.0, n_value, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_is_error(self.0, n_value, &mut result) })?;
 
         Ok(result)
     }
@@ -241,11 +237,11 @@ impl JsEnv {
         use nj_sys::napi_get_global;
 
         let mut js_global = ptr::null_mut();
-        napi_call_result!(napi_get_global(self.0, &mut js_global))?;
+        napi_call_result(unsafe { napi_get_global(self.0, &mut js_global) })?;
         Ok(js_global)
     }
 
-    pub fn call_function(
+    pub unsafe fn call_function(
         &self,
         recv: napi_value,
         func: napi_value,
@@ -255,20 +251,22 @@ impl JsEnv {
 
         let mut result = ptr::null_mut();
 
-        napi_call_result!(napi_call_function(
-            self.0,
-            recv,
-            func,
-            size_t::try_from(argv.len()).unwrap(),
-            argv.as_mut_ptr(),
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            napi_call_function(
+                self.0,
+                recv,
+                func,
+                size_t::try_from(argv.len()).unwrap(),
+                argv.as_mut_ptr(),
+                &mut result,
+            )
+        })?;
 
         Ok(result)
     }
 
     /// get callback information
-    pub fn get_cb_info(
+    pub unsafe fn get_cb_info(
         &self,
         info: napi_callback_info,
         max_count: usize,
@@ -279,14 +277,16 @@ impl JsEnv {
 
         let mut argc = size_t::try_from(max_count).unwrap();
         let mut args = vec![ptr::null_mut(); max_count];
-        napi_call_result!(napi_get_cb_info(
-            self.0,
-            info,
-            &mut argc,
-            args.as_mut_ptr(),
-            &mut this,
-            ptr::null_mut()
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_cb_info(
+                self.0,
+                info,
+                &mut argc,
+                args.as_mut_ptr(),
+                &mut this,
+                ptr::null_mut(),
+            )
+        })?;
 
         // truncate arg to actual received count
         args.resize(usize::try_from(argc).unwrap(), ptr::null_mut());
@@ -309,41 +309,40 @@ impl JsEnv {
             name,
             raw_properties.len()
         );
-        napi_call_result!(crate::sys::napi_define_class(
-            self.0,
-            name.as_ptr() as *const ::std::os::raw::c_char,
-            u64::try_from(name.len()).unwrap(),
-            Some(constructor),
-            ptr::null_mut(),
-            u64::try_from(raw_properties.len()).unwrap(),
-            raw_properties.as_mut_ptr(),
-            &mut js_constructor
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_define_class(
+                self.0,
+                name.as_ptr() as *const ::std::os::raw::c_char,
+                u64::try_from(name.len()).unwrap(),
+                Some(constructor),
+                ptr::null_mut(),
+                u64::try_from(raw_properties.len()).unwrap(),
+                raw_properties.as_mut_ptr(),
+                &mut js_constructor,
+            )
+        })?;
 
         Ok(js_constructor)
     }
 
     pub fn create_reference(&self, cons: napi_value, count: u32) -> Result<napi_ref, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_create_reference(
-            self.0,
-            cons,
-            count,
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_create_reference(self.0, cons, count, &mut result)
+        })?;
 
         Ok(result)
     }
 
-    pub fn delete_reference(&self, ref_: napi_ref) -> Result<(), NjError> {
-        Ok(napi_call_result!(crate::sys::napi_delete_reference(
-            self.0, ref_
-        ))?)
+    pub unsafe fn delete_reference(&self, ref_: napi_ref) -> Result<(), NjError> {
+        Ok(napi_call_result(
+            crate::sys::napi_delete_reference(self.0, ref_)
+        )?)
     }
 
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_get_new_target(self.0, info, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_get_new_target(self.0, info, &mut result) })?;
 
         Ok(result)
     }
@@ -356,36 +355,32 @@ impl JsEnv {
     ) -> Result<napi_ref, NjError> {
         let mut result = ptr::null_mut();
 
-        napi_call_result(unsafe { crate::sys::napi_wrap(
-            self.0,
-            js_object,
-            rust_obj as *mut core::ffi::c_void,
-            Some(finalize),
-            ptr::null_mut(),
-            &mut result
-        ) })?;
+        napi_call_result(unsafe {
+            crate::sys::napi_wrap(
+                self.0,
+                js_object,
+                rust_obj as *mut core::ffi::c_void,
+                Some(finalize),
+                ptr::null_mut(),
+                &mut result,
+            )
+        })?;
 
         Ok(result)
     }
 
-    pub fn unwrap<T>(&self, js_this: napi_value) -> Result<&'static T, NjError> {
+    pub fn unwrap<T>(&self, js_this: napi_value) -> Result<*const T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result(unsafe { crate::sys::napi_unwrap(self.0, js_this, &mut result) })?;
 
-        Ok(unsafe {
-            let rust_ref: &T = &mut (result as *mut T).read_unaligned();
-            rust_ref
-        })
+        Ok(result as *const T)
     }
 
-    pub fn unwrap_mut<T>(&self, js_this: napi_value) -> Result<&'static mut T, NjError> {
+    pub fn unwrap_mut<T>(&self, js_this: napi_value) -> Result<*mut T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result(unsafe { crate::sys::napi_unwrap(self.0, js_this, &mut result) })?;
 
-        Ok(unsafe {
-            let rust_ref: &mut T = &mut (result as *mut T).read_unaligned();
-            rust_ref
-        })
+        Ok(result as *mut T)
     }
 
     pub fn new_instance(
@@ -395,24 +390,24 @@ impl JsEnv {
     ) -> Result<napi_value, NjError> {
         trace!("napi new instance: {}", args.len());
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_new_instance(
-            self.0,
-            constructor,
-            u64::try_from(args.len()).unwrap(),
-            args.as_mut_ptr(),
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_new_instance(
+                self.0,
+                constructor,
+                u64::try_from(args.len()).unwrap(),
+                args.as_mut_ptr(),
+                &mut result,
+            )
+        })?;
 
         Ok(result)
     }
 
     pub fn get_reference_value(&self, obj_ref: napi_ref) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_get_reference_value(
-            self.0,
-            obj_ref,
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_get_reference_value(self.0, obj_ref, &mut result)
+        })?;
 
         Ok(result)
     }
@@ -422,11 +417,9 @@ impl JsEnv {
         let mut deferred = ptr::null_mut();
         let mut promise = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_create_promise(
-            self.0,
-            &mut deferred,
-            &mut promise
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_create_promise(self.0, &mut deferred, &mut promise)
+        })?;
 
         Ok((promise, deferred))
     }
@@ -436,9 +429,7 @@ impl JsEnv {
         deferred: napi_deferred,
         resolution: napi_value,
     ) -> Result<(), NjError> {
-        napi_call_result!(crate::sys::napi_resolve_deferred(
-            self.0, deferred, resolution
-        ))
+        napi_call_result(unsafe { crate::sys::napi_resolve_deferred(self.0, deferred, resolution) })
     }
 
     pub fn reject_deferred(
@@ -446,9 +437,7 @@ impl JsEnv {
         deferred: napi_deferred,
         rejection: napi_value,
     ) -> Result<(), NjError> {
-        napi_call_result!(crate::sys::napi_reject_deferred(
-            self.0, deferred, rejection
-        ))
+        napi_call_result(unsafe { crate::sys::napi_reject_deferred(self.0, deferred, rejection) })
     }
 
     pub fn create_thread_safe_function(
@@ -465,19 +454,21 @@ impl JsEnv {
 
         trace!("trying to create threadsafe fn: {}", name);
 
-        napi_call_result!(napi_create_threadsafe_function(
-            self.inner(),
-            js_func.unwrap_or(ptr::null_mut()),
-            ptr::null_mut(),
-            work_name,
-            0,
-            1,
-            ptr::null_mut(),
-            None,
-            ptr::null_mut(),
-            call_js_cb,
-            &mut tsfn
-        ))?;
+        napi_call_result(unsafe {
+            napi_create_threadsafe_function(
+                self.inner(),
+                js_func.unwrap_or(ptr::null_mut()),
+                ptr::null_mut(),
+                work_name,
+                0,
+                1,
+                ptr::null_mut(),
+                None,
+                ptr::null_mut(),
+                call_js_cb,
+                &mut tsfn,
+            )
+        })?;
 
         trace!("created threadsafe fn: {}", name);
 
@@ -486,10 +477,9 @@ impl JsEnv {
 
     pub fn is_exception_pending(&self) -> bool {
         let mut pending = false;
-        napi_call_assert!(crate::sys::napi_is_exception_pending(
-            self.inner(),
-            &mut pending
-        ));
+        napi_call_assert(unsafe {
+            crate::sys::napi_is_exception_pending(self.inner(), &mut pending)
+        });
         pending
     }
 
@@ -530,12 +520,9 @@ impl JsEnv {
 
         let err_message = self.create_string_utf8(message)?;
 
-        napi_call_result!(crate::sys::napi_create_error(
-            self.0,
-            ptr::null_mut(),
-            err_message,
-            &mut result
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_create_error(self.0, ptr::null_mut(), err_message, &mut result)
+        })?;
 
         Ok(result)
     }
@@ -546,7 +533,7 @@ impl JsEnv {
 
         let mut valuetype: napi_valuetype = 0;
 
-        napi_call_result!(napi_typeof(self.inner(), napi_value, &mut valuetype))?;
+        napi_call_result(unsafe { napi_typeof(self.inner(), napi_value, &mut valuetype) })?;
 
         Ok(valuetype)
     }
@@ -592,13 +579,13 @@ impl JsEnv {
     pub fn get_undefined(&self) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_get_undefined(self.0, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_get_undefined(self.0, &mut result) })?;
 
         Ok(result)
     }
     pub fn get_null(&self) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_get_null(self.0, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_get_null(self.0, &mut result) })?;
         Ok(result)
     }
 
@@ -615,12 +602,9 @@ impl JsEnv {
         //      void** data,
         //      size_t* length)
 
-        napi_call_result!(napi_get_buffer_info(
-            self.inner(),
-            napi_value,
-            &mut data,
-            &mut len
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_buffer_info(self.inner(), napi_value, &mut data, &mut len)
+        })?;
 
         let array: &[u8] =
             unsafe { slice::from_raw_parts(data as *const u8, usize::try_from(len).unwrap()) };
@@ -630,21 +614,16 @@ impl JsEnv {
 
     /// Detach ArrayBuffer
     pub fn detach_arraybuffer(&self, napi_value: napi_value) -> Result<(), NjError> {
-        napi_call_result!(crate::sys::napi_detach_arraybuffer(
-            self.inner(),
-            napi_value
-        ))?;
+        napi_call_result(unsafe { crate::sys::napi_detach_arraybuffer(self.inner(), napi_value) })?;
         Ok(())
     }
 
     /// Is this ArrayBuffer Detached?
     pub fn is_detached_arraybuffer(&self, napi_value: napi_value) -> Result<bool, NjError> {
         let mut is_detached = false;
-        napi_call_result!(crate::sys::napi_is_detached_arraybuffer(
-            self.inner(),
-            napi_value,
-            &mut is_detached,
-        ))?;
+        napi_call_result(unsafe {
+            crate::sys::napi_is_detached_arraybuffer(self.inner(), napi_value, &mut is_detached)
+        })?;
         Ok(is_detached)
     }
 
@@ -655,7 +634,7 @@ impl JsEnv {
     ) -> Result<(), NjError> {
         use crate::sys::napi_add_env_cleanup_hook;
 
-        napi_call_result!(napi_add_env_cleanup_hook(self.inner(), init_func, arg))?;
+        napi_call_result(unsafe { napi_add_env_cleanup_hook(self.inner(), init_func, arg) })?;
 
         Ok(())
     }
@@ -748,15 +727,22 @@ impl JsCallback {
         }
     }
 
-    pub fn unwrap_mut<T>(&self) -> Result<&'static mut T, NjError> {
-        Ok(self
-            .env
-            .unwrap_mut::<JSObjectWrapper<T>>(self.this())?
-            .mut_inner())
+    pub fn unwrap_mut<T>(&self) -> Result<*mut T, NjError> {
+        Ok(unsafe {
+            self.env
+                .unwrap_mut::<JSObjectWrapper<T>>(self.this())?
+                .read_unaligned()
+                .mut_inner()
+        })
     }
 
-    pub fn unwrap<T>(&self) -> Result<&'static T, NjError> {
-        Ok(self.env.unwrap::<JSObjectWrapper<T>>(self.this())?.inner())
+    pub fn unwrap<T>(&self) -> Result<*const T, NjError> {
+        Ok(unsafe {
+            self.env
+                .unwrap::<JSObjectWrapper<T>>(self.this())?
+                .read_unaligned()
+                .inner()
+        })
     }
 }
 
@@ -893,23 +879,27 @@ impl JsExports {
         // since it is source of name string
         let mut raw_properties = properties.as_raw_properties();
 
-        napi_call_result!(crate::sys::napi_define_properties(
-            self.env.inner(),
-            self.inner,
-            u64::try_from(raw_properties.len()).unwrap(),
-            raw_properties.as_mut_ptr()
-        ))
+        napi_call_result(unsafe {
+            crate::sys::napi_define_properties(
+                self.env.inner(),
+                self.inner,
+                u64::try_from(raw_properties.len()).unwrap(),
+                raw_properties.as_mut_ptr(),
+            )
+        })
     }
 
     pub fn set_name_property(&self, name: &str, js_class: napi_value) -> Result<(), NjError> {
         let c_name = CString::new(name).expect("should work");
 
-        napi_call_result!(crate::sys::napi_set_named_property(
-            self.env.inner(),
-            self.inner,
-            c_name.as_ptr(),
-            js_class
-        ))
+        napi_call_result(unsafe {
+            crate::sys::napi_set_named_property(
+                self.env.inner(),
+                self.inner,
+                c_name.as_ptr(),
+                js_class,
+            )
+        })
     }
 }
 
@@ -957,7 +947,7 @@ impl JsCallbackFunction {
             }
         }
 
-        self.env.call_function(self.ctx, self.js_func, argv)
+        unsafe { self.env.call_function(self.ctx, self.js_func, argv) }
     }
 }
 
@@ -993,12 +983,9 @@ impl JsObject {
         let property_key = self.env.create_string_utf8(key)?;
 
         let mut exist: bool = false;
-        napi_call_result!(napi_has_property(
-            self.env.inner(),
-            self.napi_value,
-            property_key,
-            &mut exist,
-        ))?;
+        napi_call_result(unsafe {
+            napi_has_property(self.env.inner(), self.napi_value, property_key, &mut exist)
+        })?;
 
         if !exist {
             return Ok(None);
@@ -1006,12 +993,14 @@ impl JsObject {
 
         let mut property_value = ptr::null_mut();
 
-        napi_call_result!(napi_get_property(
-            self.env.inner(),
-            self.napi_value,
-            property_key,
-            &mut property_value,
-        ))?;
+        napi_call_result(unsafe {
+            napi_get_property(
+                self.env.inner(),
+                self.napi_value,
+                property_key,
+                &mut property_value,
+            )
+        })?;
 
         Ok(Some(Self {
             env: self.env,
@@ -1024,12 +1013,14 @@ impl JsObject {
 
         let property_key = self.env.create_string_utf8(key)?;
 
-        napi_call_result!(napi_set_property(
-            self.env.inner(),
-            self.napi_value,
-            property_key,
-            property_value,
-        ))?;
+        napi_call_result(unsafe {
+            napi_set_property(
+                self.env.inner(),
+                self.napi_value,
+                property_key,
+                property_value,
+            )
+        })?;
 
         Ok(())
     }

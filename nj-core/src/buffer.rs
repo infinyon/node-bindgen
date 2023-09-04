@@ -58,14 +58,16 @@ impl TryIntoJs for ArrayBuffer {
         // get raw pointer to box, this will be used to reconstruct box
         let data_box_ptr = Box::into_raw(box_data) as *mut core::ffi::c_void;
 
-        crate::napi_call_result!(crate::sys::napi_create_external_arraybuffer(
-            js_env.inner(),
-            data_buffer as *mut core::ffi::c_void,
-            size_t::try_from(len).unwrap(),
-            Some(Self::finalize_buffer),
-            data_box_ptr,
-            &mut napi_buffer
-        ))?;
+        crate::napi_call_result(unsafe {
+            crate::sys::napi_create_external_arraybuffer(
+                js_env.inner(),
+                data_buffer as *mut core::ffi::c_void,
+                size_t::try_from(len).unwrap(),
+                Some(Self::finalize_buffer),
+                data_box_ptr,
+                &mut napi_buffer,
+            )
+        })?;
 
         Ok(napi_buffer)
     }
@@ -73,8 +75,10 @@ impl TryIntoJs for ArrayBuffer {
 
 impl<'a> JSValue<'a> for &'a [u8] {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+        assert!(!js_value.is_null());
+
         // check if this is really buffer
-        if !env.is_buffer(js_value)? {
+        if unsafe { !env.is_buffer(js_value)? } {
             return Err(NjError::InvalidType(
                 "Buffer".to_owned(),
                 env.value_type_string(js_value)?.to_owned(),
@@ -144,9 +148,11 @@ impl JSValue<'_> for JSArrayBuffer {
 
 impl Drop for JSArrayBuffer {
     fn drop(&mut self) {
-        self.env
+        unsafe {
+            self.env
             .delete_reference(self.napi_ref)
             .expect("reference can't be deleted to array buf");
+        }
     }
 }
 

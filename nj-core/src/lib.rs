@@ -1,3 +1,5 @@
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
+
 mod basic;
 mod error;
 mod thread_fn;
@@ -42,11 +44,6 @@ pub mod val {
 
 pub mod log {
     pub use ::log::*;
-}
-
-fn ptr_null_mut() -> *mut sys::napi_value {
-    let ptr: sys::size_t = 0;
-    unsafe { std::mem::transmute(ptr) }    
 }
 
 fn napi_call_assert(status: sys::napi_status) {
