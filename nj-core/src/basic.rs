@@ -160,7 +160,6 @@ impl JsEnv {
         Ok(array)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn set_element(
         &self,
         object: napi_value,
@@ -176,7 +175,6 @@ impl JsEnv {
         Ok(())
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_element(&self, array: napi_value, index: u32) -> Result<napi_value, NjError> {
         let mut element = ptr::null_mut();
 
@@ -190,7 +188,6 @@ impl JsEnv {
     }
 
     /// check if napi value is array
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_array(&self, array: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
@@ -200,7 +197,6 @@ impl JsEnv {
     }
 
     /// check if napi value is array buffer
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_array_buffer(&self, array: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
@@ -209,7 +205,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_buffer(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
@@ -218,7 +213,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_date(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
@@ -227,7 +221,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_error(&self, n_value: napi_value) -> Result<bool, NjError> {
         let mut result: bool = false;
 
@@ -244,7 +237,6 @@ impl JsEnv {
         Ok(js_global)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn call_function(
         &self,
         recv: napi_value,
@@ -268,7 +260,6 @@ impl JsEnv {
     }
 
     /// get callback information
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_cb_info(
         &self,
         info: napi_callback_info,
@@ -324,7 +315,6 @@ impl JsEnv {
         Ok(js_constructor)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn create_reference(&self, cons: napi_value, count: u32) -> Result<napi_ref, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_create_reference(
@@ -337,14 +327,12 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn delete_reference(&self, ref_: napi_ref) -> Result<(), NjError> {
         Ok(napi_call_result!(crate::sys::napi_delete_reference(
             self.0, ref_
         ))?)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_get_new_target(self.0, info, &mut result))?;
@@ -352,7 +340,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn wrap(
         &self,
         js_object: napi_value,
@@ -373,7 +360,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn unwrap<T>(&self, js_this: napi_value) -> Result<&'static T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
@@ -384,7 +370,6 @@ impl JsEnv {
         })
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn unwrap_mut<T>(&self, js_this: napi_value) -> Result<&'static mut T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
@@ -395,7 +380,6 @@ impl JsEnv {
         })
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn new_instance(
         &self,
         constructor: napi_value,
@@ -414,7 +398,6 @@ impl JsEnv {
         Ok(result)
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_reference_value(&self, obj_ref: napi_ref) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_get_reference_value(
@@ -440,7 +423,6 @@ impl JsEnv {
         Ok((promise, deferred))
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn resolve_deferred(
         &self,
         deferred: napi_deferred,
@@ -451,7 +433,6 @@ impl JsEnv {
         ))
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn reject_deferred(
         &self,
         deferred: napi_deferred,
@@ -504,7 +485,6 @@ impl JsEnv {
         pending
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn throw(&self, value: napi_value) {
         debug!("throwing a native value");
 
@@ -553,7 +533,6 @@ impl JsEnv {
     }
 
     /// get value type
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn value_type(&self, napi_value: napi_value) -> Result<napi_valuetype, NjError> {
         use crate::sys::napi_typeof;
 
@@ -616,7 +595,6 @@ impl JsEnv {
     }
 
     /// get buffer info
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn get_buffer_info(&self, napi_value: napi_value) -> Result<&[u8], NjError> {
         use std::slice;
         use crate::sys::napi_get_buffer_info;
@@ -643,7 +621,6 @@ impl JsEnv {
     }
 
     /// Detach ArrayBuffer
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn detach_arraybuffer(&self, napi_value: napi_value) -> Result<(), NjError> {
         napi_call_result!(crate::sys::napi_detach_arraybuffer(
             self.inner(),
@@ -653,7 +630,6 @@ impl JsEnv {
     }
 
     /// Is this ArrayBuffer Detached?
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn is_detached_arraybuffer(&self, napi_value: napi_value) -> Result<bool, NjError> {
         let mut is_detached = false;
         napi_call_result!(crate::sys::napi_is_detached_arraybuffer(
@@ -664,8 +640,6 @@ impl JsEnv {
         Ok(is_detached)
     }
 
-    #[allow(unused_unsafe)]
-    #[allow(clippy::missing_safety_doc)]
     pub unsafe fn add_env_clean_up_hook(
         &self,
         init_func: Option<unsafe extern "C" fn(arg: *mut ::std::os::raw::c_void)>,
@@ -919,7 +893,6 @@ impl JsExports {
         ))
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn set_name_property(&self, name: &str, js_class: napi_value) -> Result<(), NjError> {
         let c_name = CString::new(name).expect("should work");
 
@@ -1038,7 +1011,6 @@ impl JsObject {
         }))
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     pub fn set_property(&mut self, key: &str, property_value: napi_value) -> Result<(), NjError> {
         use crate::sys::napi_set_property;
 

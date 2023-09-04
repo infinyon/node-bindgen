@@ -49,7 +49,7 @@ pub mod log {
 #[macro_export]
 macro_rules! napi_call_assert {
     ($napi_expr:expr) => {{
-        let status = unsafe { $napi_expr };
+        let status = $napi_expr;
         if status != $crate::sys::napi_status_napi_ok {
             let nj_status: $crate::NapiStatus = status.into();
             log::error!("error executing napi call {:#?}", nj_status);
@@ -62,7 +62,7 @@ macro_rules! napi_call_assert {
 #[macro_export]
 macro_rules! napi_call_result {
     ($napi_expr:expr) => {{
-        let status = unsafe { $napi_expr };
+        let status = $napi_expr;
         if status == $crate::sys::napi_status_napi_ok {
             Ok(())
         } else {
