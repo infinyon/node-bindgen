@@ -52,7 +52,7 @@ macro_rules! napi_call_assert {
         let status = $napi_expr;
         if status != $crate::sys::napi_status_napi_ok {
             let nj_status: $crate::NapiStatus = status.into();
-            log::error!("error executing napi call {:#?}", nj_status);
+            panic!("error executing napi call {:#?}", nj_status);
         }
     }};
 }
