@@ -44,33 +44,21 @@ pub mod log {
     pub use ::log::*;
 }
 
-/// call napi and assert
-/// used only in this crate
-#[macro_export]
-macro_rules! napi_call_assert {
-    ($napi_expr:expr) => {{
-        let status = $napi_expr;
-        if status != $crate::sys::napi_status_napi_ok {
-            let nj_status: $crate::NapiStatus = status.into();
-            panic!("error executing napi call {:#?}", nj_status);
-        }
-    }};
+fn napi_call_assert(status: sys::napi_status) {
+    if status != sys::napi_status_napi_ok {
+        let nj_status = NapiStatus::from(status);
+        panic!("error executing napi call {:#?}", nj_status);
+    }
 }
 
-/// call napi and wrap into result
-/// used only in this crate
-#[macro_export]
-macro_rules! napi_call_result {
-    ($napi_expr:expr) => {{
-        let status = $napi_expr;
-        if status == $crate::sys::napi_status_napi_ok {
-            Ok(())
-        } else {
-            let nj_status: $crate::NapiStatus = status.into();
-            log::error!("node-bindgen error {:#?}", nj_status);
-            Err(NjError::NapiCall(nj_status))
-        }
-    }};
+fn napi_call_result(status: sys::napi_status) -> Result<(), NjError> {
+    if status == sys::napi_status_napi_ok {
+        Ok(())
+    } else {
+        let nj_status = NapiStatus::from(status);
+        log::error!("node-bindgen error {:#?}", nj_status);
+        Err(NjError::NapiCall(nj_status))
+    }
 }
 
 /// convert result into napi value if ok otherwise convert to error
