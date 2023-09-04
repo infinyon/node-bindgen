@@ -80,25 +80,33 @@ impl JsEnv {
         use nj_sys::napi_create_string_utf8;
 
         let mut js_value = ptr::null_mut();
-        napi_call_result!(napi_create_string_utf8(
-            self.0,
-            r_string.as_ptr() as *const ::std::os::raw::c_char,
-            size_t::try_from(r_string.len()).unwrap(),
-            &mut js_value
-        ))?;
+        napi_call_result(unsafe {
+            napi_create_string_utf8(
+                self.0,
+                r_string.as_ptr() as *const ::std::os::raw::c_char,
+                size_t::try_from(r_string.len()).unwrap(),
+                &mut js_value,
+            )
+        })?;
+        assert!(!js_value.is_null());
+
         Ok(js_value)
     }
 
     pub fn create_string_utf8_from_bytes(&self, r_string: &[u8]) -> Result<napi_value, NjError> {
         use nj_sys::napi_create_string_utf8;
 
+        let r_string = std::str::from_utf8(r_string)?;
+
         let mut js_value = ptr::null_mut();
-        napi_call_result!(napi_create_string_utf8(
+        napi_call_result(unsafe { napi_create_string_utf8(
             self.0,
             r_string.as_ptr() as *const ::std::os::raw::c_char,
             size_t::try_from(r_string.len()).unwrap(),
             &mut js_value
-        ))?;
+        ) })?;
+        assert!(!js_value.is_null());
+
         Ok(js_value)
     }
 
@@ -340,42 +348,42 @@ impl JsEnv {
         Ok(result)
     }
 
-    pub fn wrap(
+    pub fn wrap<T>(
         &self,
         js_object: napi_value,
-        rust_obj: *mut u8,
+        rust_obj: *mut T,
         finalize: napi_finalize_raw,
     ) -> Result<napi_ref, NjError> {
         let mut result = ptr::null_mut();
 
-        napi_call_result!(crate::sys::napi_wrap(
+        napi_call_result(unsafe { crate::sys::napi_wrap(
             self.0,
             js_object,
             rust_obj as *mut core::ffi::c_void,
             Some(finalize),
             ptr::null_mut(),
             &mut result
-        ))?;
+        ) })?;
 
         Ok(result)
     }
 
     pub fn unwrap<T>(&self, js_this: napi_value) -> Result<&'static T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_unwrap(self.0, js_this, &mut result) })?;
 
         Ok(unsafe {
-            let rust_ref: &T = &mut *(result as *mut T);
+            let rust_ref: &T = &mut (result as *mut T).read_unaligned();
             rust_ref
         })
     }
 
     pub fn unwrap_mut<T>(&self, js_this: napi_value) -> Result<&'static mut T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
-        napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
+        napi_call_result(unsafe { crate::sys::napi_unwrap(self.0, js_this, &mut result) })?;
 
         Ok(unsafe {
-            let rust_ref: &mut T = &mut *(result as *mut T);
+            let rust_ref: &mut T = &mut (result as *mut T).read_unaligned();
             rust_ref
         })
     }

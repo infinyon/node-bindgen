@@ -44,6 +44,11 @@ pub mod log {
     pub use ::log::*;
 }
 
+fn ptr_null_mut() -> *mut sys::napi_value {
+    let ptr: sys::size_t = 0;
+    unsafe { std::mem::transmute(ptr) }    
+}
+
 fn napi_call_assert(status: sys::napi_status) {
     if status != sys::napi_status_napi_ok {
         let nj_status = NapiStatus::from(status);
