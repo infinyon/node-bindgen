@@ -67,8 +67,9 @@ where
 {
     let (promise, deferred) = js_env.create_promise()?;
     let function_name = format!("async_worker_th_{name}");
-    let ts_fn =
-        js_env.create_thread_safe_function(&function_name, None, Some(promise_complete::<O>))?;
+    let ts_fn = unsafe {
+        js_env.create_thread_safe_function(&function_name, None, Some(promise_complete::<O>))?
+    };
     let js_deferred = JsDeferred(deferred);
 
     spawn(async move {
@@ -91,20 +92,21 @@ extern "C" fn promise_complete<O>(
         trace!("promise complete");
         let js_env = JsEnv::new(env);
 
-        let worker_result: Box<WorkerResult<O>> =
-            unsafe { Box::from_raw(data as *mut WorkerResult<O>) };
+        unsafe {
+            let worker_result: Box<WorkerResult<O>> = Box::from_raw(data as *mut WorkerResult<O>);
 
-        let result: Result<(), NjError> = match worker_result.result.try_to_js(&js_env) {
-            Ok(val) => {
-                trace!("trying to resolve to deferred");
-                js_env.resolve_deferred(worker_result.deferred.0, val)
-            }
-            Err(js_err) => {
-                trace!("trying to resolve to deferred");
-                js_env.reject_deferred(worker_result.deferred.0, js_err.as_js(&js_env))
-            }
-        };
-        assert_napi!(result)
+            let result: Result<(), NjError> = match worker_result.result.try_to_js(&js_env) {
+                Ok(val) => {
+                    trace!("trying to resolve to deferred");
+                    js_env.resolve_deferred(worker_result.deferred.0, val)
+                }
+                Err(js_err) => {
+                    trace!("trying to resolve to deferred");
+                    js_env.reject_deferred(worker_result.deferred.0, js_err.as_js(&js_env))
+                }
+            };
+            assert_napi!(result)
+        }
     }
 }
 
@@ -149,11 +151,13 @@ pub trait JSWorker: Sized + Send + 'static {
     fn create_promise(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
         let (promise, deferred) = js_env.create_promise()?;
         let function_name = format!("async_worker_th_{}", std::any::type_name::<Self>());
-        let ts_fn = js_env.create_thread_safe_function(
-            &function_name,
-            None,
-            Some(promise_complete::<Self::Output>),
-        )?;
+        let ts_fn = unsafe {
+            js_env.create_thread_safe_function(
+                &function_name,
+                None,
+                Some(promise_complete::<Self::Output>),
+            )?
+        };
         let js_deferred = JsDeferred(deferred);
 
         spawn(async move {
@@ -174,7 +178,7 @@ pub trait NjFutureExt: Future {
         Self: Sized + Send + 'static,
         Self::Output: TryIntoJs,
     {
-        extern "C" fn promise_complete2<O>(
+        unsafe extern "C" fn promise_complete2<O>(
             env: napi_env,
             _js_cb: napi_value,
             _context: *mut ::std::os::raw::c_void,
@@ -184,16 +188,18 @@ pub trait NjFutureExt: Future {
                 trace!("promise complete");
                 let _ = JsEnv::new(env);
 
-                let _: Box<O> = unsafe { Box::from_raw(data as *mut O) };
+                let _: Box<O> = Box::from_raw(data as *mut O);
             }
         }
 
         let function_name = "stream_example_1".to_string();
-        let _ = js_env.create_thread_safe_function(
-            &function_name,
-            None,
-            Some(promise_complete2::<Self::Output>),
-        )?;
+        let _ = unsafe {
+            js_env.create_thread_safe_function(
+                &function_name,
+                None,
+                Some(promise_complete2::<Self::Output>),
+            )?
+        };
 
         debug!("spawning task");
         spawn(async move {

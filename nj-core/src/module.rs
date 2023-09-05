@@ -36,7 +36,7 @@ pub fn submit_register_callback(callback: ClassCallback) {
 }
 
 #[no_mangle]
-pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value {
+pub unsafe extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value {
     debug!("initializing modules");
 
     let mut js_exports = JsExports::new(env, exports);

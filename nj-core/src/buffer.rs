@@ -74,7 +74,7 @@ impl TryIntoJs for ArrayBuffer {
 }
 
 impl<'a> JSValue<'a> for &'a [u8] {
-    fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+    unsafe fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         assert!(!js_value.is_null());
 
         // check if this is really buffer
@@ -130,7 +130,7 @@ impl JSArrayBuffer {
 }
 
 impl JSValue<'_> for JSArrayBuffer {
-    fn convert_to_rust(env: &JsEnv, napi_value: napi_value) -> Result<Self, NjError> {
+    unsafe fn convert_to_rust(env: &JsEnv, napi_value: napi_value) -> Result<Self, NjError> {
         use std::mem::transmute;
 
         let napi_ref = env.create_reference(napi_value, 1)?;
@@ -150,8 +150,8 @@ impl Drop for JSArrayBuffer {
     fn drop(&mut self) {
         unsafe {
             self.env
-            .delete_reference(self.napi_ref)
-            .expect("reference can't be deleted to array buf");
+                .delete_reference(self.napi_ref)
+                .expect("reference can't be deleted to array buf");
         }
     }
 }

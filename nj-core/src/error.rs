@@ -26,7 +26,7 @@ impl IntoJs for NjError {
     fn into_js(self, js_env: &JsEnv) -> napi_value {
         match self {
             NjError::Native(err) => {
-                js_env.throw(err);
+                unsafe { js_env.throw(err) };
                 ptr::null_mut()
             }
             _ => {

@@ -13,8 +13,7 @@ use crate::NjError;
 pub use num_bigint::*;
 
 impl<'a> JSValue<'a> for BigInt {
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
-    fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+    unsafe fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         trace!("Converting JS BigInt to Rust!");
 
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_bigint)?;

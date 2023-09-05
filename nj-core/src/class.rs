@@ -38,24 +38,23 @@ where
         let boxed_self = Box::new(self);
         let raw_ptr = Box::into_raw(boxed_self); // rust no longer manages this struct
 
-        let wrap = js_env.wrap(js_cb.this(), raw_ptr as *mut u8, T::js_finalize)?;
-
         unsafe {
+            let wrap = js_env.wrap(js_cb.this(), raw_ptr as *mut u8, T::js_finalize)?;
             // save the wrap reference in wrapper container
             let rust_ref: &mut Self = &mut *raw_ptr;
             rust_ref.wrapper = wrap;
+
+            // Finally, remove the reference in response to finalize callback
+            // See footnote on `napi_wrap` documentation: https://nodejs.org/api/n-api.html#n_api_napi_wrap
+            //
+            // "Caution: The optional returned reference (if obtained) should be deleted via napi_delete_reference
+            // ONLY in response to the finalize callback invocation. If it is deleted before then,
+            // then the finalize callback may never be invoked. Therefore, when obtaining a reference a
+            // finalize callback is also required in order to enable correct disposal of the reference."
+            js_env.delete_reference(wrap)?;
         }
 
-        // Finally, remove the reference in response to finalize callback
-        // See footnote on `napi_wrap` documentation: https://nodejs.org/api/n-api.html#n_api_napi_wrap
-        //
-        // "Caution: The optional returned reference (if obtained) should be deleted via napi_delete_reference
-        // ONLY in response to the finalize callback invocation. If it is deleted before then,
-        // then the finalize callback may never be invoked. Therefore, when obtaining a reference a
-        // finalize callback is also required in order to enable correct disposal of the reference."
-        unsafe { js_env.delete_reference(wrap)? };
-
-        Ok(js_cb.this_owned())
+        Ok(js_cb.this())
     }
 }
 
@@ -73,29 +72,28 @@ pub trait JSClass: Sized {
     fn get_constructor() -> napi_ref;
 
     /// new instance
-    fn new_instance(js_env: &JsEnv, js_args: Vec<napi_value>) -> Result<napi_value, NjError> {
+    unsafe fn new_instance(
+        js_env: &JsEnv,
+        js_args: Vec<napi_value>,
+    ) -> Result<napi_value, NjError> {
         debug!("new instance with args: {:#?}", js_args);
         let constructor = js_env.get_reference_value(Self::get_constructor())?;
         js_env.new_instance(constructor, js_args)
     }
 
     /// given instance, return my object
-    fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<*mut Self, NjError> {
-        Ok(unsafe {
-            js_env
-                .unwrap_mut::<JSObjectWrapper<Self>>(instance)?
-                .read_unaligned()
-                .mut_inner()
-        })
+    unsafe fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<*mut Self, NjError> {
+        Ok(js_env
+            .unwrap::<JSObjectWrapper<Self>>(instance)?
+            .read_unaligned()
+            .mut_inner())
     }
 
-    fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<*const Self, NjError> {
-        Ok(unsafe {
-            js_env
-                .unwrap::<JSObjectWrapper<Self>>(instance)?
-                .read_unaligned()
-                .inner()
-        })
+    unsafe fn unwrap(js_env: &JsEnv, instance: napi_value) -> Result<*const Self, NjError> {
+        Ok(js_env
+            .unwrap::<JSObjectWrapper<Self>>(instance)?
+            .read_unaligned()
+            .inner())
     }
 
     fn properties() -> PropertiesBuilder {
@@ -103,7 +101,7 @@ pub trait JSClass: Sized {
     }
 
     /// define class and properties under exports
-    fn js_init(js_exports: &mut JsExports) -> Result<(), NjError> {
+    unsafe fn js_init(js_exports: &mut JsExports) -> Result<(), NjError> {
         let js_constructor =
             js_exports
                 .env()
@@ -119,7 +117,7 @@ pub trait JSClass: Sized {
 
     /// call when Javascript class constructor is called
     /// For example:  new Car(...)
-    extern "C" fn js_new(env: napi_env, info: napi_callback_info) -> napi_value {
+    unsafe extern "C" fn js_new(env: napi_env, info: napi_callback_info) -> napi_value {
         let js_env = JsEnv::new(env);
 
         let result: Result<napi_value, NjError> = (|| {
