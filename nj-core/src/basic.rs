@@ -378,10 +378,7 @@ impl JsEnv {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
 
-        Ok(unsafe {
-            let rust_ref: &T = &mut *(result as *mut T);
-            rust_ref
-        })
+        Ok(unsafe { Box::leak(Box::new((result as *mut T).read_unaligned())) })
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
@@ -389,10 +386,7 @@ impl JsEnv {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
 
-        Ok(unsafe {
-            let rust_ref: &mut T = &mut *(result as *mut T);
-            rust_ref
-        })
+        Ok(unsafe { Box::leak(Box::new((result as *mut T).read_unaligned())) })
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
