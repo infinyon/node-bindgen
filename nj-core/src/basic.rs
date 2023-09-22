@@ -1,7 +1,6 @@
 use std::ptr;
 use std::ffi::CString;
 use std::collections::VecDeque;
-use std::convert::TryFrom;
 
 use log::error;
 use log::debug;
@@ -287,7 +286,7 @@ impl JsEnv {
         ))?;
 
         // truncate arg to actual received count
-        args.resize(usize::try_from(argc).unwrap(), ptr::null_mut());
+        args.resize(argc, ptr::null_mut());
 
         Ok(JsCallback::new(JsEnv::new(self.0), this, args))
     }
@@ -633,8 +632,7 @@ impl JsEnv {
             &mut len
         ))?;
 
-        let array: &[u8] =
-            unsafe { slice::from_raw_parts(data as *const u8, usize::try_from(len).unwrap()) };
+        let array: &[u8] = unsafe { slice::from_raw_parts(data as *const u8, len) };
 
         Ok(array)
     }

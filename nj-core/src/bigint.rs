@@ -1,5 +1,4 @@
 use std::ptr;
-use std::convert::TryFrom;
 
 use log::trace;
 
@@ -30,7 +29,7 @@ impl<'a> JSValue<'a> for BigInt {
         ))?;
 
         // Now we actually get the sign and the vector.
-        let mut napi_buffer: Vec<u64> = vec![0; usize::try_from(word_count).unwrap()];
+        let mut napi_buffer: Vec<u64> = vec![0; word_count];
         let mut sign = 0;
 
         crate::napi_call_result!(crate::sys::napi_get_value_bigint_words(
