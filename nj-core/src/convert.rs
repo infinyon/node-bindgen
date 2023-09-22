@@ -1,7 +1,5 @@
-use std::convert::TryFrom;
 use std::ptr;
 
-use crate::sys::size_t;
 use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
@@ -320,7 +318,7 @@ impl JSValue<'_> for String {
 
         use crate::sys::napi_get_value_string_utf8;
 
-        let mut string_size: size_t = 0;
+        let mut string_size: usize = 0;
 
         napi_call_result!(napi_get_value_string_utf8(
             env.inner(),
@@ -332,9 +330,9 @@ impl JSValue<'_> for String {
 
         string_size += 1;
 
-        let chars_vec: Vec<u8> = vec![0; usize::try_from(string_size).unwrap()];
+        let chars_vec: Vec<u8> = vec![0; string_size];
         let mut chars: Box<[u8]> = chars_vec.into_boxed_slice();
-        let mut read_size: size_t = 0;
+        let mut read_size: usize = 0;
 
         napi_call_result!(napi_get_value_string_utf8(
             env.inner(),
@@ -344,7 +342,7 @@ impl JSValue<'_> for String {
             &mut read_size
         ))?;
 
-        let my_chars: Vec<u8> = chars[0..usize::try_from(read_size).unwrap()].into();
+        let my_chars: Vec<u8> = chars[0..read_size].into();
 
         String::from_utf8(my_chars).map_err(|err| err.into())
     }
@@ -355,7 +353,7 @@ impl<'a> JSValue<'a> for &'a str {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         use crate::sys::napi_get_buffer_info;
 
-        let mut len: size_t = 0;
+        let mut len: usize = 0;
         let mut data = ptr::null_mut();
 
         napi_call_result!(napi_get_buffer_info(
@@ -366,10 +364,7 @@ impl<'a> JSValue<'a> for &'a str {
         ))?;
 
         unsafe {
-            let i8slice = std::slice::from_raw_parts(
-                data as *mut ::std::os::raw::c_char,
-                usize::try_from(len).unwrap(),
-            );
+            let i8slice = std::slice::from_raw_parts(data as *mut ::std::os::raw::c_char, len);
             let u8slice = &*(i8slice as *const _ as *const [u8]);
             std::str::from_utf8(u8slice).map_err(|err| err.into())
         }
