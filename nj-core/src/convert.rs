@@ -1,7 +1,6 @@
 use std::convert::TryFrom;
 use std::ptr;
 
-use crate::sys::size_t;
 use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
@@ -320,7 +319,7 @@ impl JSValue<'_> for String {
 
         use crate::sys::napi_get_value_string_utf8;
 
-        let mut string_size: size_t = 0;
+        let mut string_size: usize = 0;
 
         napi_call_result!(napi_get_value_string_utf8(
             env.inner(),
@@ -334,7 +333,7 @@ impl JSValue<'_> for String {
 
         let chars_vec: Vec<u8> = vec![0; usize::try_from(string_size).unwrap()];
         let mut chars: Box<[u8]> = chars_vec.into_boxed_slice();
-        let mut read_size: size_t = 0;
+        let mut read_size: usize = 0;
 
         napi_call_result!(napi_get_value_string_utf8(
             env.inner(),
@@ -355,7 +354,7 @@ impl<'a> JSValue<'a> for &'a str {
     fn convert_to_rust(env: &'a JsEnv, js_value: napi_value) -> Result<Self, NjError> {
         use crate::sys::napi_get_buffer_info;
 
-        let mut len: size_t = 0;
+        let mut len: usize = 0;
         let mut data = ptr::null_mut();
 
         napi_call_result!(napi_get_buffer_info(

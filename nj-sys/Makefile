@@ -1,6 +1,6 @@
 
 install_bindgen:
-	cargo install bindgen --version 0.56.0
+	cargo install bindgen-cli --version 0.68.1
 
 generate:	install_bindgen
 	bindgen --verbose node.h  -o src/binding.rs

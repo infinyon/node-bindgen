@@ -1,10 +1,8 @@
 use std::ptr;
 use std::ops::Deref;
-use std::convert::TryFrom;
 
 use log::trace;
 
-use crate::sys::size_t;
 use crate::TryIntoJs;
 use crate::JSValue;
 use crate::sys::{napi_value, napi_ref, napi_env};
@@ -61,7 +59,7 @@ impl TryIntoJs for ArrayBuffer {
         crate::napi_call_result!(crate::sys::napi_create_external_arraybuffer(
             js_env.inner(),
             data_buffer as *mut core::ffi::c_void,
-            size_t::try_from(len).unwrap(),
+            len,
             Some(Self::finalize_buffer),
             data_box_ptr,
             &mut napi_buffer
