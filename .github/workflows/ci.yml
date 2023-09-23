@@ -37,7 +37,6 @@ jobs:
         run: make check-fmt RUSTV=${{ matrix.rust }}
 
   clippy:
-    if: false
     name: Clippy (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
