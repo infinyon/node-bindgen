@@ -2,7 +2,7 @@
 name = "nj-sys"
 version = "4.0.0"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
-edition = "2018"
+edition = "2021"
 description = "low level binding to Node N-API"
 repository = "https://github.com/infinyon/node-bindgen"
 readme = "README.md"
