@@ -6,5 +6,6 @@ target-docker
 .vscode/tasks.json
 dist
 dylib
+crash.log
 .idea/
 node_modules

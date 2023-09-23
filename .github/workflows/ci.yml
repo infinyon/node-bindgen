@@ -85,6 +85,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: All Tests
       run: make test-all
+    - name: Print segfault logs
+      if: failure()
+      run: |
+        find examples -name crash.log  | xargs cat
 
   done:
     name: Done
