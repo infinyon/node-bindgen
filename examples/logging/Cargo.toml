@@ -11,9 +11,9 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { path = "../.." }
-log = "0.4"
-env_logger = "0.9"
+node-bindgen = { workspace = true}
+log = { workspace = true }
+env_logger = { workspace = true }
 
 [build-dependencies]
-node-bindgen = { path = "../../", default-features = false, features = ["build"] }
+node-bindgen = {workspace = true, features = ["build"] }

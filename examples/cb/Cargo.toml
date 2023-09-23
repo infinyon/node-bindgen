@@ -8,9 +8,8 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-
 [dependencies]
-node-bindgen = { path = "../.." }
+node-bindgen = { workspace = true}
 
 [build-dependencies]
-node-bindgen = { path = "../../", default-features = false, features = ["build"] }
+node-bindgen = {workspace = true, features = ["build"] }

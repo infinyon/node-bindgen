@@ -9,9 +9,9 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-log = "0.4.8"
-node-bindgen = { path = "../.." }
-fluvio-future = { version = "0.3.0", features = ["timer"] }
+log = { workspace = true }
+node-bindgen = { workspace = true}
+fluvio-future = { workspace = true}
 
 [build-dependencies]
-node-bindgen = { path = "../../", default-features = false, features = ["build"] }
+node-bindgen = {workspace = true, features = ["build"] }

@@ -170,17 +170,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1181e1e0d1fce796a03db1ae795d67167da795f9cf4a39c37589e85ef57f26d3"
 
 [[package]]
-name = "atty"
-version = "0.2.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b39be18770d11421cdb1b9947a45dd3f37e93092cbf377614828a319d5fee8"
-dependencies = [
- "hermit-abi 0.1.19",
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -290,12 +279,12 @@ dependencies = [
 
 [[package]]
 name = "env_logger"
-version = "0.9.3"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
+checksum = "85cdab6a89accf66733ad5a1693a4dcced6aeff64602b634530dd73c1f3ee9f0"
 dependencies = [
- "atty",
  "humantime",
+ "is-terminal",
  "log",
  "regex",
  "termcolor",
@@ -342,22 +331,6 @@ name = "fastrand"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6999dc1837253364c2ebb0704ba97994bd874e8f195d665c50b7548f6ea92764"
-
-[[package]]
-name = "fluvio-future"
-version = "0.3.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e2d1fad8e412d44c516add2349a34f6d71d9279b108c8e012325ab17fcbf982"
-dependencies = [
- "async-io",
- "fluvio-wasm-timer",
- "futures-lite",
- "log",
- "pin-project",
- "thiserror",
- "tracing",
- "ws_stream_wasm",
-]
 
 [[package]]
 name = "fluvio-future"
@@ -537,15 +510,6 @@ dependencies = [
 
 [[package]]
 name = "hermit-abi"
-version = "0.1.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
-dependencies = [
- "libc",
-]
-
-[[package]]
-name = "hermit-abi"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "443144c8cdadd93ebf52ddb4056d257f5b52c04d3c804e657d19eb73fc33668b"
@@ -606,8 +570,19 @@ version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eae7b9aee968036d54dce06cebaefd919e4472e753296daccd6d344e3e2df0c2"
 dependencies = [
- "hermit-abi 0.3.2",
+ "hermit-abi",
  "libc",
+ "windows-sys",
+]
+
+[[package]]
+name = "is-terminal"
+version = "0.4.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb0889898416213fab133e1d33a0e5858a48177452750691bde3666d0fdbaf8b"
+dependencies = [
+ "hermit-abi",
+ "rustix 0.38.10",
  "windows-sys",
 ]
 
@@ -725,7 +700,7 @@ version = "6.0.0"
 dependencies = [
  "async-trait",
  "ctor 0.2.4",
- "fluvio-future 0.6.0",
+ "fluvio-future",
  "futures-lite",
  "inventory",
  "libc",
@@ -734,7 +709,6 @@ dependencies = [
  "num-bigint",
  "pin-utils",
  "serde_json",
- "uuid",
 ]
 
 [[package]]
@@ -758,7 +732,7 @@ dependencies = [
 name = "nj-example-async-cb"
 version = "0.0.0"
 dependencies = [
- "fluvio-future 0.3.18",
+ "fluvio-future",
  "log",
  "node-bindgen",
 ]
@@ -790,7 +764,7 @@ dependencies = [
 name = "nj-example-class-async"
 version = "0.0.0"
 dependencies = [
- "fluvio-future 0.3.18",
+ "fluvio-future",
  "node-bindgen",
 ]
 
@@ -857,7 +831,7 @@ dependencies = [
 name = "nj-example-promise"
 version = "0.0.0"
 dependencies = [
- "fluvio-future 0.3.18",
+ "fluvio-future",
  "node-bindgen",
 ]
 
@@ -865,7 +839,7 @@ dependencies = [
 name = "nj-example-stream"
 version = "0.0.0"
 dependencies = [
- "fluvio-future 0.6.0",
+ "fluvio-future",
  "futures-lite",
  "node-bindgen",
 ]

@@ -11,10 +11,10 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-futures-lite = "1.7.0"
-node-bindgen = { path = "../.." }
-fluvio-future = { version = "0.6.0", features = ["timer"]}
+futures-lite = { workspace = true }
+node-bindgen = { workspace = true}
+fluvio-future = { workspace = true}
 
 
 [build-dependencies]
-node-bindgen = { path = "../../", default-features = false, features = ["build"] }
+node-bindgen = {workspace = true, features = ["build"] }
