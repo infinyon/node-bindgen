@@ -1,7 +1,8 @@
 all:	build
 
 build:
-	nj-cli build -- -p nj-example-json
+	nj-cli build
+
 test:	build
 	node test.js
 

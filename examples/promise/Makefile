@@ -2,7 +2,7 @@ all:	build
 
 
 build:
-	nj-cli build -- -p nj-example-promise
+	nj-cli build
 
 
 test:	build

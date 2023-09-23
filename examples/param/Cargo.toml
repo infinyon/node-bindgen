@@ -15,4 +15,4 @@ node-bindgen = { workspace = true}
 
 
 [build-dependencies]
-node-bindgen = { workspace = true}
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

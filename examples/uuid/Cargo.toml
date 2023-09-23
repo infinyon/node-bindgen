@@ -13,4 +13,4 @@ uuid = { workspace = true }
 node-bindgen = { workspace = true, features = ["uuid"]}
 
 [build-dependencies]
-node-bindgen = {workspace = true, features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

@@ -2,7 +2,7 @@ all:	build
 
 
 build:
-	nj-cli build -- -p nj-example-stream
+	nj-cli build
 
 
 test:	build

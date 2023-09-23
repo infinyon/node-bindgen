@@ -17,4 +17,4 @@ fluvio-future = { workspace = true}
 
 
 [build-dependencies]
-node-bindgen = {workspace = true, features = ["build"] }
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

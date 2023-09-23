@@ -4,7 +4,7 @@ install:
 	npm install
 
 build: install
-	nj-cli build -- -p nj-example-tuple
+	nj-cli build
 
 test: build
 	npx ts-node test.ts

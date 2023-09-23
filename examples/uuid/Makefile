@@ -1,7 +1,7 @@
 all:	build
 
 build:
-	nj-cli build -- -p nj-example-uuid
+	nj-cli build
 
 test:	build
 	npx -y ts-node test.ts
