@@ -21,7 +21,7 @@ jobs:
             asset_name: nj-cli.exe
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build nj-cli
         run: cargo build --release --manifest-path nj-cli/Cargo.toml
       - name: Upload binary to release
@@ -36,7 +36,7 @@ jobs:
     name: Publish to Crates.io
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable

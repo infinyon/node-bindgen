@@ -27,7 +27,7 @@ jobs:
         os: [ubuntu-latest]
         rust: [stable]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install ${{ matrix.rust }}
         uses: actions-rs/toolchain@v1
         with:
@@ -44,7 +44,7 @@ jobs:
         os: [ubuntu-latest]
         rust: [stable]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install ${{ matrix.rust }}
         uses: actions-rs/toolchain@v1
         with:
@@ -64,7 +64,7 @@ jobs:
         rust: [stable]
         node: [ '12', '14', '16', '18' ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Cancel Workflow Action
       uses: styfle/cancel-workflow-action@0.4.1
       with:
