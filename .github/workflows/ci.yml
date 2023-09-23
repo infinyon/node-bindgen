@@ -54,7 +54,7 @@ jobs:
         run: make check-clippy
 
   test:
-    name: Smoke test (${{ matrix.os }}, ${{ matrix.node }})
+    name: Smoke test (${{ matrix.os }}, ${{ matrix.node-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -62,7 +62,7 @@ jobs:
    #     os: [ubuntu-latest, windows-latest, macOS-latest]
         os: [ubuntu-latest, macOS-latest]
         rust: [stable]
-        node: [ '16', '18', '20' ]
+        node-version: [ '16', '18', '20' ]
     steps:
     - uses: actions/checkout@v4
     - name: Cancel Workflow Action
