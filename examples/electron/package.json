@@ -5,7 +5,7 @@
   "main": "test.js",
   "scripts": {
     "test": "npm run build && npx electron ./test.js",
-    "build": "npm install && npx electron-build-env nj-cli build",
+    "build": "npm install && npx electron-build-env nj-cli build -- -p test-electron",
     "start": "npm run test"
   },
   "keywords": [
