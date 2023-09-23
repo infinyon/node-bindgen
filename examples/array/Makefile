@@ -1,7 +1,7 @@
 all:	build
 
 build:
-	nj-cli build -- -p nj-example-array
+	nj-cli build
 
 test:	build
 	node test.js
