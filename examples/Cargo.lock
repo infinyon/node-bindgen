@@ -279,6 +279,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctor"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f34ba9a9bcb8645379e9de8cb3ecfcf4d1c85ba66d90deb3259206fa5aa193b"
+dependencies = [
+ "quote",
+ "syn 2.0.29",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -338,6 +348,22 @@ name = "fluvio-future"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e2d1fad8e412d44c516add2349a34f6d71d9279b108c8e012325ab17fcbf982"
+dependencies = [
+ "async-io",
+ "fluvio-wasm-timer",
+ "futures-lite",
+ "log",
+ "pin-project",
+ "thiserror",
+ "tracing",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "fluvio-future"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "daf01d41a3439ecf3377477c34d5913241c186d03500a0a6793a6c2688815a61"
 dependencies = [
  "async-io",
  "async-std",
@@ -558,7 +584,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0eb5160c60ba1e809707918ee329adb99d222888155835c6feedba19f6c3fd4"
 dependencies = [
- "ctor",
+ "ctor 0.1.26",
  "ghost",
  "inventory-impl",
 ]
@@ -698,8 +724,8 @@ name = "nj-core"
 version = "6.0.0"
 dependencies = [
  "async-trait",
- "ctor",
- "fluvio-future",
+ "ctor 0.2.4",
+ "fluvio-future 0.6.0",
  "futures-lite",
  "inventory",
  "libc",
@@ -732,7 +758,7 @@ dependencies = [
 name = "nj-example-async-cb"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "log",
  "node-bindgen",
 ]
@@ -764,7 +790,7 @@ dependencies = [
 name = "nj-example-class-async"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "node-bindgen",
 ]
 
@@ -831,7 +857,7 @@ dependencies = [
 name = "nj-example-promise"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "node-bindgen",
 ]
 
@@ -839,7 +865,7 @@ dependencies = [
 name = "nj-example-stream"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.0",
  "futures-lite",
  "node-bindgen",
 ]

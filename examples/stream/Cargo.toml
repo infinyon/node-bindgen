@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 [dependencies]
 futures-lite = "1.7.0"
 node-bindgen = { path = "../.." }
-fluvio-future = { version = "0.3.0" }
+fluvio-future = { version = "0.6.0", features = ["timer"]}
 
 
 [build-dependencies]
