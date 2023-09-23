@@ -32,5 +32,5 @@ serde_json = "1.0.53"
 futures-lite = "1.7.0"
 uuid = "1.1.0"
 
-node-bindgen = { path = ".."}
+node-bindgen = { path = "..", features = ["default"]}
 fluvio-future = { version = "0.6.0", features = ["timer"] }
