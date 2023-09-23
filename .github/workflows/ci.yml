@@ -49,9 +49,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
+          profile: minimal
       - name: check clippy
-        run: make check-clippy RUSTV=${{ matrix.rust }}
+        run: make check-clippy
 
   test:
     name: Smoke test (${{ matrix.os }}, ${{ matrix.node }})

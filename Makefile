@@ -29,13 +29,13 @@ install-fmt:
 	rustup component add rustfmt --toolchain $(RUSTV)
 
 check-fmt:
-	cargo +$(RUSTV) fmt -- --check
+	cargo fmt -- --check
 
 install-clippy:
-	rustup component add clippy --toolchain $(RUSTV)
+	rustup component add clippy
 
 check-clippy:	install-clippy check-clippy-examples
-	cargo +$(RUSTV) clippy --all --all-targets --all-features -- \
+	cargo clippy --all --all-features -- \
 		-D warnings \
 		-A clippy::upper_case_acronyms \
 		-A clippy::needless-question-mark
