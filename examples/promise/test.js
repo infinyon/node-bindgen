@@ -1,17 +1,19 @@
 const assert = require('assert');
 let addon = require('./dist');
+const SegfaultHandler = require('segfault-handler');
+SegfaultHandler.registerHandler('crash.log');
 
 
 addon.hello(5).then((val) => {
-  assert.equal(val,15);
-  console.log("promise test succeed: %s",val);
+  assert.equal(val, 15);
+  console.log("promise test succeed: %s", val);
 });
 
 (
-async () => {
-  let val = await addon.hello(5);
-  assert.equal(val,15);
-})();
+  async () => {
+    let val = await addon.hello(5);
+    assert.equal(val, 15);
+  })();
 
 
 (async () => {

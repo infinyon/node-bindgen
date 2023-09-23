@@ -16,8 +16,10 @@ clean:
 	make -C cleanup clean
 	make -C logging clean
 
+install:
+	npm install
 
-test: test-function test-cb test-async-cb test-promise test-json test-class-simple \
+test: install test-function test-cb test-async-cb test-promise test-json test-class-simple \
 	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint test-logging\
 	test-cleanup
 
