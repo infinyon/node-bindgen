@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 uuid = { workspace = true }
-node-bindgen = { workspace = true}
+node-bindgen = { workspace = true, features = ["uuid"]}
 
 [build-dependencies]
 node-bindgen = {workspace = true, features = ["build"] }
