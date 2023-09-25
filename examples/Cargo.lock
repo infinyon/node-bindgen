@@ -714,7 +714,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "3.4.1"
+version = "3.4.2"
 dependencies = [
  "Inflector",
  "proc-macro2",

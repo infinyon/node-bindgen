@@ -136,7 +136,6 @@ pub enum FunctionArgType<'a> {
     Ref(MyReferenceType<'a>), // reference type
     Tuple(MyTupleType<'a>),
     Closure(ClosureType<'a>), // closure callback
-                              // JsEnv(MyReferenceType<'a>),     // indicating that we want to receive JsEnv
 }
 
 /// find generic with match ident
