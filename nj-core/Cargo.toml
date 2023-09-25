@@ -19,7 +19,7 @@ convert-uuid = ["uuid"]
 tracing = "0.1.37"
 ctor = "0.2.4"
 libc = "0.2.66"
-inventory = "0.1.5"
+inventory = "0.3.12"
 async-trait = "0.1.22"
 futures-lite = "1.7.0"
 nj-sys = { version = "4.0.0", path = "../nj-sys" }
