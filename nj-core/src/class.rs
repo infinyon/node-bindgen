@@ -1,6 +1,6 @@
 use std::ptr;
 
-use log::debug;
+use tracing::debug;
 
 use crate::sys::napi_value;
 use crate::sys::napi_env;

@@ -1,5 +1,7 @@
 use std::ptr;
 
+use tracing::debug;
+
 use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
@@ -229,6 +231,7 @@ pub trait JSValue<'a>: Sized {
 impl JSValue<'_> for f64 {
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     fn convert_to_rust(env: &JsEnv, js_value: napi_value) -> Result<Self, NjError> {
+        debug!("convert_to_rust: f64");
         env.assert_type(js_value, crate::sys::napi_valuetype_napi_number)?;
 
         let mut value: f64 = 0.0;

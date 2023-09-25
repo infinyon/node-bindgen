@@ -1,6 +1,5 @@
 use std::ptr;
 
-use log::debug;
 use inventory::Collect;
 use inventory::submit;
 use inventory::iter;
@@ -37,7 +36,9 @@ pub fn submit_register_callback(callback: ClassCallback) {
 
 #[no_mangle]
 pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value {
-    debug!("initializing modules");
+
+    fluvio_future::subscriber::init_tracer(None);
+
 
     let mut js_exports = JsExports::new(env, exports);
     let mut prop_builder = js_exports.prop_builder();
@@ -45,11 +46,9 @@ pub extern "C" fn init_modules(env: napi_env, exports: napi_value) -> napi_value
     for register in iter::<NapiRegister> {
         match register {
             NapiRegister::Property(property) => {
-                debug!("registering property: {:#?}", property);
                 prop_builder.mut_append(property.to_owned());
             }
             NapiRegister::Callback(callback) => {
-                debug!("invoking register callback");
                 if let Err(err) = callback(&mut js_exports) {
                     panic!("error invoking JS callback: {}", err);
                 }

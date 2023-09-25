@@ -1,8 +1,8 @@
 use std::ptr;
 
-use log::error;
-use log::trace;
-use log::debug;
+use tracing::error;
+use tracing::trace;
+use tracing::debug;
 use async_trait::async_trait;
 use futures_lite::Future;
 

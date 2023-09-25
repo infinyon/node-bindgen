@@ -1,6 +1,6 @@
 use std::ptr;
 
-use log::debug;
+use tracing::debug;
 
 use crate::sys::napi_threadsafe_function;
 use crate::NjError;

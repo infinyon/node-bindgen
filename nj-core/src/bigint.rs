@@ -1,6 +1,6 @@
 use std::ptr;
 
-use log::trace;
+use tracing::trace;
 
 use crate::TryIntoJs;
 use crate::JSValue;

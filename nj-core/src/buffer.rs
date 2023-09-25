@@ -1,7 +1,7 @@
 use std::ptr;
 use std::ops::Deref;
 
-use log::trace;
+use tracing::trace;
 
 use crate::TryIntoJs;
 use crate::JSValue;

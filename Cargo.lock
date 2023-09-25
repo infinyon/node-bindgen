@@ -765,11 +765,11 @@ dependencies = [
  "futures-lite",
  "inventory",
  "libc",
- "log",
  "nj-sys",
  "num-bigint",
  "pin-utils",
  "serde_json",
+ "tracing",
  "uuid",
 ]
 
