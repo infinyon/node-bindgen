@@ -53,7 +53,7 @@ impl Property {
     }
 }
 
-#[derive(Default)]
+#[derive(Default,Debug)]
 pub struct PropertiesBuilder(Vec<Property>);
 
 impl PropertiesBuilder {

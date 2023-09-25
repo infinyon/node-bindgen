@@ -1,6 +1,7 @@
 use std::ptr;
 
 use tracing::debug;
+use tracing::instrument;
 
 use crate::sys::napi_value;
 use crate::sys::napi_env;
@@ -34,6 +35,7 @@ where
 {
     /// wrap myself in the JS instance
     /// and saved the reference
+    #[instrument(skip(self))]
     fn wrap(self, js_env: &JsEnv, js_cb: JsCallback) -> Result<napi_value, NjError> {
         let boxed_self = Box::new(self);
         let raw_ptr = Box::into_raw(boxed_self); // rust no longer manages this struct
@@ -73,13 +75,15 @@ pub trait JSClass: Sized {
     fn get_constructor() -> napi_ref;
 
     /// new instance
+    #[instrument]
     fn new_instance(js_env: &JsEnv, js_args: Vec<napi_value>) -> Result<napi_value, NjError> {
-        debug!("new instance with args: {:#?}", js_args);
+        debug!("new instance");
         let constructor = js_env.get_reference_value(Self::get_constructor())?;
         js_env.new_instance(constructor, js_args)
     }
 
     /// given instance, return my object
+    #[instrument]
     fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<&'static mut Self, NjError> {
         Ok(js_env
             .unwrap_mut::<JSObjectWrapper<Self>>(instance)?
@@ -111,23 +115,26 @@ pub trait JSClass: Sized {
 
     /// call when Javascript class constructor is called
     /// For example:  new Car(...)
+    #[instrument]
     extern "C" fn js_new(env: napi_env, info: napi_callback_info) -> napi_value {
         let js_env = JsEnv::new(env);
 
         let result: Result<napi_value, NjError> = (|| {
             debug!(
-                "Class constructor called: {:#?}",
-                std::any::type_name::<Self>()
+                clas = std::any::type_name::<Self>(),
+                "Class constructor called"
             );
 
             let target = js_env.get_new_target(info)?;
 
             if target.is_null() {
+                debug!("no target");
                 Err(NjError::NoPlainConstructor)
             } else {
-                debug!("invoked as constructor");
+                debug!(?target, "invoked as constructor");
 
                 let (rust_obj, js_cb) = Self::create_from_js(&js_env, info)?;
+                debug!(?js_cb, "created rust object");
                 let my_obj = JSObjectWrapper {
                     inner: rust_obj,
                     wrapper: ptr::null_mut(),

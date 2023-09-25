@@ -68,8 +68,9 @@ fn generate_class_helper(class: Class) -> TokenStream {
             impl node_bindgen::core::JSClass for #impl_for_block {
                 const CLASS_NAME: &'static str = #class_type_lit;
 
-
+              //  #[node_bindgen::core::log::instrument]
                 fn set_constructor(constructor: node_bindgen::sys::napi_ref) {
+                    node_bindgen::core::log::trace!("set constructor");
                     unsafe {
                         CLASS_CONSTRUCTOR = constructor;
                     }

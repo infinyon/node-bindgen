@@ -97,6 +97,7 @@ pub fn generate_rust_invocation(ctx: &FnGeneratorCtx, cb_args: &mut CbArgs) -> T
         let async_name = format!("{}_ft", ctx.fn_name());
         let async_lit = LitStr::new(&async_name, Span::call_site());
         quote! {
+            node_bindgen::core::log::debug!("creating JSPromiseFuture");
             (node_bindgen::core::JsPromiseFuture::new(
                 #rust_invoke, #async_lit
             )).try_to_js(&js_env)
@@ -109,6 +110,7 @@ pub fn generate_rust_invocation(ctx: &FnGeneratorCtx, cb_args: &mut CbArgs) -> T
 
     let receiver = if ctx.is_method() {
         quote! {
+            node_bindgen::core::log::debug!("unwrapping receiver for method");
             let receiver = (js_cb.unwrap_mut::<Self>()?);
         }
     } else {
