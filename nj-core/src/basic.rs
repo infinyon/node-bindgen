@@ -855,7 +855,7 @@ where
             T::convert_to_rust(js_cb.env(), js_cb.args[index])
         } else {
             Err(NjError::Other(format!(
-                "arg index: {} out of bound, js_cb.args.len(): {}",
+                "trying to get arg at: {} but only {} args passed",
                 index,
                 js_cb.args.len()
             )))
