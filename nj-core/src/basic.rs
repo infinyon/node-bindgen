@@ -3,7 +3,7 @@ use std::ffi::CString;
 use std::collections::VecDeque;
 
 use tracing::instrument;
-use tracing::{error,debug,trace};
+use tracing::{error, debug, trace};
 
 use crate::sys::napi_env;
 use crate::sys::napi_value;
@@ -516,7 +516,7 @@ impl JsEnv {
     }
 
     pub fn throw_type_error(&self, message: &str) {
-        debug!(message,"type error");
+        debug!(message, "type error");
         // check if there is exception pending, if so log and not do anything
         if self.is_exception_pending() {
             error!(
@@ -673,7 +673,7 @@ impl JsEnv {
     }
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct JsCallback {
     env: JsEnv,
     this: napi_value,
@@ -717,7 +717,7 @@ impl JsCallback {
     where
         T: ExtractFromJs<'a>,
     {
-        trace!(args = self.args.len(),"arg len");
+        trace!(args = self.args.len(), "arg len");
 
         T::extract(self)
     }
@@ -727,7 +727,7 @@ impl JsCallback {
     where
         T: ExtractArgFromJs<'a>,
     {
-        trace!(index , "trying extract value at");
+        trace!(index, "trying extract value at");
         T::convert_arg_at(self, index)
     }
 
@@ -847,7 +847,10 @@ where
 
     #[instrument]
     fn convert_arg_at(js_cb: &'a JsCallback, index: usize) -> Result<Self, NjError> {
-        trace!(ty = std::any::type_name::<T>(),"extract from ExtractArgFromJs");
+        trace!(
+            ty = std::any::type_name::<T>(),
+            "extract from ExtractArgFromJs"
+        );
         if index < js_cb.args.len() {
             T::convert_to_rust(js_cb.env(), js_cb.args[index])
         } else {

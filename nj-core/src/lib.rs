@@ -40,7 +40,9 @@ pub mod val {
     pub use crate::basic::*;
 }
 
-
+pub mod log {
+    pub use ::tracing::*;
+}
 
 /// call napi and assert
 /// used only in this crate
