@@ -7,7 +7,7 @@ addon.hello(2,function(msg){
 });
 
 assert.throws( () => addon.hello(2),{
-  message: 'expected argument of type: callback at: 1'
+  message: 'trying to get arg at: 1 but only 1 args passed'
 }); 
 
 addon.example(function(val){

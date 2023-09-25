@@ -16,7 +16,7 @@ serde-json = ["serde_json"]
 convert-uuid = ["uuid"]
 
 [dependencies]
-log = "0.4.8"
+tracing = "0.1.37"
 ctor = "0.2.4"
 libc = "0.2.66"
 inventory = "0.1.5"

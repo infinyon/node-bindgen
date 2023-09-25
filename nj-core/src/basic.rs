@@ -2,9 +2,8 @@ use std::ptr;
 use std::ffi::CString;
 use std::collections::VecDeque;
 
-use log::error;
-use log::debug;
-use log::trace;
+use tracing::instrument;
+use tracing::{error, debug, trace};
 
 use crate::sys::napi_env;
 use crate::sys::napi_value;
@@ -517,7 +516,7 @@ impl JsEnv {
     }
 
     pub fn throw_type_error(&self, message: &str) {
-        debug!("throwing type error: {}", message);
+        debug!(message, "type error");
         // check if there is exception pending, if so log and not do anything
         if self.is_exception_pending() {
             error!(
@@ -674,7 +673,7 @@ impl JsEnv {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct JsCallback {
     env: JsEnv,
     this: napi_value,
@@ -718,7 +717,7 @@ impl JsCallback {
     where
         T: ExtractFromJs<'a>,
     {
-        trace!("trying extract value out of {} args", self.args.len());
+        trace!(args = self.args.len(), "arg len");
 
         T::extract(self)
     }
@@ -728,7 +727,7 @@ impl JsCallback {
     where
         T: ExtractArgFromJs<'a>,
     {
-        trace!("trying extract value at: {}", index);
+        trace!(index, "trying extract value at");
         T::convert_arg_at(self, index)
     }
 
@@ -791,7 +790,9 @@ where
         T::label()
     }
 
+    #[instrument]
     fn extract(js_cb: &'a mut JsCallback) -> Result<Self, NjError> {
+        trace!("extract from ExtractFromJs");
         if let Some(n_value) = js_cb.remove_napi() {
             T::convert_to_rust(js_cb.env(), n_value)
         } else {
@@ -844,14 +845,19 @@ where
         T::label()
     }
 
+    #[instrument]
     fn convert_arg_at(js_cb: &'a JsCallback, index: usize) -> Result<Self, NjError> {
+        trace!(
+            ty = std::any::type_name::<T>(),
+            "extract from ExtractArgFromJs"
+        );
         if index < js_cb.args.len() {
             T::convert_to_rust(js_cb.env(), js_cb.args[index])
         } else {
             Err(NjError::Other(format!(
-                "expected argument of type: {} at: {}",
-                Self::label(),
-                index
+                "trying to get arg at: {} but only {} args passed",
+                index,
+                js_cb.args.len()
             )))
         }
     }

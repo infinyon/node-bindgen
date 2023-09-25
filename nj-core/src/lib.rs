@@ -41,7 +41,7 @@ pub mod val {
 }
 
 pub mod log {
-    pub use ::log::*;
+    pub use ::tracing::*;
 }
 
 /// call napi and assert
@@ -52,7 +52,7 @@ macro_rules! napi_call_assert {
         let status = unsafe { $napi_expr };
         if status != $crate::sys::napi_status_napi_ok {
             let nj_status: $crate::NapiStatus = status.into();
-            log::error!("error executing napi call {:#?}", nj_status);
+            tracing::error!("error executing napi call {:#?}", nj_status);
         }
     }};
 }
@@ -67,7 +67,7 @@ macro_rules! napi_call_result {
             Ok(())
         } else {
             let nj_status: $crate::NapiStatus = status.into();
-            log::error!("node-bindgen error {:#?}", nj_status);
+            tracing::error!("node-bindgen error {:#?}", nj_status);
             Err(NjError::NapiCall(nj_status))
         }
     }};

@@ -1,7 +1,7 @@
 use std::ptr;
 use std::fmt::Debug;
 
-use log::debug;
+use tracing::debug;
 
 use futures_lite::Stream;
 use futures_lite::stream::StreamExt;

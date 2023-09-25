@@ -10,7 +10,7 @@ assert.throws( () => addon.hello("hello"),{
 });
 
 assert.throws(() => addon.hello(),{
-    message: 'expected argument of type: i32 at: 0'
+    message: 'trying to get arg at: 0 but only 0 args passed'
 });
 
 assert.strictEqual(addon.sum(1,2),3);
