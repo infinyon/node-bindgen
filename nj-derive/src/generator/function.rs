@@ -158,6 +158,7 @@ mod arg_extraction {
 
         quote! {
 
+            node_bindgen::core::log::debug!(args = #js_count, "args count");
             let mut js_cb = js_env.get_cb_info(cb_info, #js_count)?;
 
             #(#rust_args)*

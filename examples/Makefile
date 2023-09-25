@@ -21,7 +21,7 @@ install:
 
 test: install test-function test-cb test-async-cb test-promise test-json test-class-simple \
 	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint test-logging\
-	test-cleanup
+	test-cleanup test-jsenv
 
 test-function:
 	make -C function test
@@ -73,6 +73,9 @@ test-logging:
 
 test-cleanup:
 	make -C cleanup test
+
+test-jsenv:
+	make -C js-env test
 
 check-clippy:
 	cargo clippy --all --all-features -- \
