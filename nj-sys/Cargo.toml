@@ -1,6 +1,6 @@
 [package]
 name = "nj-sys"
-version = "4.0.0"
+version = "4.0.1"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 edition = "2021"
 description = "low level binding to Node N-API"
