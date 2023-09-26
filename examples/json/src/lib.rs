@@ -12,12 +12,12 @@ use serde_json::map::Map;
 #[node_bindgen]
 struct StandardJson {
     some_name: String,
-    a_number: i64
+    a_number: i64,
 }
 
 #[node_bindgen]
 struct Outer {
-    val: Inner
+    val: Inner,
 }
 
 #[node_bindgen]
@@ -29,19 +29,17 @@ struct UnitStruct;
 #[node_bindgen]
 enum ErrorType {
     WithMessage(String, usize),
-    WithFields {
-        val: usize
-    },
-    UnitError
+    WithFields { val: usize },
+    UnitError,
 }
 
 #[node_bindgen]
 struct WithSerdeJson {
-    val: Value
+    val: Value,
 }
 
 struct CustomJson {
-    val: f64
+    val: f64,
 }
 
 impl TryIntoJs for CustomJson {
@@ -67,14 +65,14 @@ fn custom_json() -> CustomJson {
 fn standard_json() -> StandardJson {
     StandardJson {
         some_name: "John".to_owned(),
-        a_number: 1337
+        a_number: 1337,
     }
 }
 
 #[node_bindgen]
 fn multilevel_json() -> Outer {
     Outer {
-        val: Inner("hello".to_owned())
+        val: Inner("hello".to_owned()),
     }
 }
 
@@ -90,9 +88,7 @@ fn with_message() -> ErrorType {
 
 #[node_bindgen]
 fn with_fields() -> ErrorType {
-    ErrorType::WithFields {
-        val: 123
-    }
+    ErrorType::WithFields { val: 123 }
 }
 
 #[node_bindgen]
@@ -102,9 +98,7 @@ fn with_unit() -> ErrorType {
 
 #[node_bindgen]
 fn failed_result_with_fields() -> Result<(), ErrorType> {
-    Err(ErrorType::WithFields {
-        val: 987
-    })
+    Err(ErrorType::WithFields { val: 987 })
 }
 
 #[node_bindgen]
@@ -119,6 +113,6 @@ fn with_serde_json() -> WithSerdeJson {
     map.insert("second".to_owned(), Value::String("hello".to_owned()));
 
     WithSerdeJson {
-        val: Value::Object(map)
+        val: Value::Object(map),
     }
 }

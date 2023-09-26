@@ -1,6 +1,7 @@
 use std::ptr;
 
 use tracing::debug;
+use tracing::instrument;
 
 use crate::sys::napi_value;
 use crate::sys::napi_env;
@@ -34,10 +35,11 @@ where
 {
     /// wrap myself in the JS instance
     /// and saved the reference
+    #[instrument(skip(self))]
     fn wrap(self, js_env: &JsEnv, js_cb: JsCallback) -> Result<napi_value, NjError> {
         let boxed_self = Box::new(self);
         let raw_ptr = Box::into_raw(boxed_self); // rust no longer manages this struct
-
+        debug!(?raw_ptr, "box into raw");
         let wrap = js_env.wrap(js_cb.this(), raw_ptr as *mut u8, T::js_finalize)?;
 
         unsafe {
@@ -45,15 +47,6 @@ where
             let rust_ref: &mut Self = &mut *raw_ptr;
             rust_ref.wrapper = wrap;
         }
-
-        // Finally, remove the reference in response to finalize callback
-        // See footnote on `napi_wrap` documentation: https://nodejs.org/api/n-api.html#n_api_napi_wrap
-        //
-        // "Caution: The optional returned reference (if obtained) should be deleted via napi_delete_reference
-        // ONLY in response to the finalize callback invocation. If it is deleted before then,
-        // then the finalize callback may never be invoked. Therefore, when obtaining a reference a
-        // finalize callback is also required in order to enable correct disposal of the reference."
-        js_env.delete_reference(wrap)?;
 
         Ok(js_cb.this_owned())
     }
@@ -73,13 +66,15 @@ pub trait JSClass: Sized {
     fn get_constructor() -> napi_ref;
 
     /// new instance
+    #[instrument]
     fn new_instance(js_env: &JsEnv, js_args: Vec<napi_value>) -> Result<napi_value, NjError> {
-        debug!("new instance with args: {:#?}", js_args);
+        debug!("new instance");
         let constructor = js_env.get_reference_value(Self::get_constructor())?;
         js_env.new_instance(constructor, js_args)
     }
 
     /// given instance, return my object
+    #[instrument]
     fn unwrap_mut(js_env: &JsEnv, instance: napi_value) -> Result<&'static mut Self, NjError> {
         Ok(js_env
             .unwrap_mut::<JSObjectWrapper<Self>>(instance)?
@@ -95,14 +90,18 @@ pub trait JSClass: Sized {
     }
 
     /// define class and properties under exports
+    #[instrument]
     fn js_init(js_exports: &mut JsExports) -> Result<(), NjError> {
         let js_constructor =
             js_exports
                 .env()
                 .define_class(Self::CLASS_NAME, Self::js_new, Self::properties())?;
 
+        debug!(?js_constructor, "class defined with constructor");
+
         // save the constructor reference, we need this later in order to instantiate
         let js_ref = js_exports.env().create_reference(js_constructor, 1)?;
+        debug!(?js_constructor, "created reference to constructor");
         Self::set_constructor(js_ref);
 
         js_exports.set_name_property(Self::CLASS_NAME, js_constructor)?;
@@ -111,23 +110,23 @@ pub trait JSClass: Sized {
 
     /// call when Javascript class constructor is called
     /// For example:  new Car(...)
+    #[instrument]
     extern "C" fn js_new(env: napi_env, info: napi_callback_info) -> napi_value {
         let js_env = JsEnv::new(env);
 
         let result: Result<napi_value, NjError> = (|| {
-            debug!(
-                "Class constructor called: {:#?}",
-                std::any::type_name::<Self>()
-            );
+            debug!(clas = std::any::type_name::<Self>(), "getting new target");
 
             let target = js_env.get_new_target(info)?;
 
             if target.is_null() {
+                debug!("no target");
                 Err(NjError::NoPlainConstructor)
             } else {
-                debug!("invoked as constructor");
+                debug!(?target, "invoked as constructor");
 
                 let (rust_obj, js_cb) = Self::create_from_js(&js_env, info)?;
+                debug!(?js_cb, "created rust object");
                 let my_obj = JSObjectWrapper {
                     inner: rust_obj,
                     wrapper: ptr::null_mut(),
@@ -139,16 +138,6 @@ pub trait JSClass: Sized {
 
         result.into_js(&js_env)
     }
-
-    /*
-    /// convert my self as JS object
-    fn as_js_instance(self,js_env: &JsEnv,js_args: Vec<napi_value>) -> napi_value {
-
-        let new_instance = Self::new_instance(js_env,args);
-
-        // unwrap the actual inner
-    }
-    */
 
     extern "C" fn js_finalize(
         _env: napi_env,

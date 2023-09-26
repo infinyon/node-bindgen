@@ -1,11 +1,13 @@
+use tracing::{info, warn};
+
 use node_bindgen::derive::node_bindgen;
 use node_bindgen::init::node_bindgen_init_once;
-use log::{info, warn};
+
 
 #[node_bindgen_init_once]
 fn init_logging() {
     // initialize logging framework
-    env_logger::init();
+    // logging is initialized already
     info!("logging initialized");
 }
 

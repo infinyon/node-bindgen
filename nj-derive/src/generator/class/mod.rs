@@ -68,8 +68,8 @@ fn generate_class_helper(class: Class) -> TokenStream {
             impl node_bindgen::core::JSClass for #impl_for_block {
                 const CLASS_NAME: &'static str = #class_type_lit;
 
-
                 fn set_constructor(constructor: node_bindgen::sys::napi_ref) {
+                    node_bindgen::core::log::trace!("set constructor");
                     unsafe {
                         CLASS_CONSTRUCTOR = constructor;
                     }
@@ -97,6 +97,7 @@ fn generate_class_helper(class: Class) -> TokenStream {
 
             #[node_bindgen::core::ctor]
             fn register_class() {
+                node_bindgen::core::log::debug!(class = stringify!(#type_name),"registering class");
                 submit_register_callback(#type_name::js_init);
             }
         }

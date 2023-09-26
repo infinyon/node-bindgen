@@ -264,6 +264,7 @@ impl JsEnv {
 
     /// get callback information
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn get_cb_info(
         &self,
         info: napi_callback_info,
@@ -284,6 +285,7 @@ impl JsEnv {
             ptr::null_mut()
         ))?;
 
+        trace!(argc, "actual argc");
         // truncate arg to actual received count
         args.resize(argc, ptr::null_mut());
 
@@ -291,20 +293,16 @@ impl JsEnv {
     }
 
     /// define classes
+    #[instrument(skip(properties))]
     pub fn define_class(
         &self,
         name: &str,
         constructor: napi_callback_raw,
         properties: PropertiesBuilder,
     ) -> Result<napi_value, NjError> {
+        debug!(?properties, "defining class",);
         let mut js_constructor = ptr::null_mut();
         let mut raw_properties = properties.as_raw_properties();
-
-        debug!(
-            "defining class: {} with {} properties",
-            name,
-            raw_properties.len()
-        );
         napi_call_result!(crate::sys::napi_define_class(
             self.0,
             name.as_ptr() as *const ::std::os::raw::c_char,
@@ -340,14 +338,16 @@ impl JsEnv {
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_get_new_target(self.0, info, &mut result))?;
-
+        debug!(?result, "got new target");
         Ok(result)
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn wrap(
         &self,
         js_object: napi_value,
@@ -356,6 +356,7 @@ impl JsEnv {
     ) -> Result<napi_ref, NjError> {
         let mut result = ptr::null_mut();
 
+        debug!("napi wrap");
         napi_call_result!(crate::sys::napi_wrap(
             self.0,
             js_object,
@@ -369,23 +370,34 @@ impl JsEnv {
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn unwrap<T>(&self, js_this: napi_value) -> Result<&'static T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
 
         Ok(unsafe {
+            debug!(?result, "got back raw pointer");
+            if result.is_null() {
+                return Err(NjError::Other("unwrap got null pointer".to_string()));
+            }
             let rust_ref: &T = &mut *(result as *mut T);
             rust_ref
         })
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn unwrap_mut<T>(&self, js_this: napi_value) -> Result<&'static mut T, NjError> {
         let mut result: *mut ::std::os::raw::c_void = ptr::null_mut();
+        debug!(env = ?self.0,"napi unwrap");
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
-
         Ok(unsafe {
-            let rust_ref: &mut T = &mut *(result as *mut T);
+            debug!(?result, "got back raw pointer");
+            if result.is_null() {
+                return Err(NjError::Other("unwrap mut null pointer".to_string()));
+            }
+            let ptr = result as *mut T;
+            let rust_ref: &mut T = &mut *(ptr);
             rust_ref
         })
     }
@@ -396,7 +408,7 @@ impl JsEnv {
         constructor: napi_value,
         mut args: Vec<napi_value>,
     ) -> Result<napi_value, NjError> {
-        trace!("napi new instance: {}", args.len());
+        trace!(args = args.len(), "napi new instance");
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_new_instance(
             self.0,
@@ -760,6 +772,7 @@ impl JsCallback {
         }
     }
 
+    #[instrument]
     pub fn unwrap_mut<T>(&self) -> Result<&'static mut T, NjError> {
         Ok(self
             .env
@@ -886,6 +899,7 @@ impl ExtractArgFromJs<'_> for JsEnv {
     }
 }
 
+#[derive(Debug)]
 pub struct JsExports {
     inner: napi_value,
     env: JsEnv,

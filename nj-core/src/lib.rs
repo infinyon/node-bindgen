@@ -41,7 +41,7 @@ pub mod val {
 }
 
 pub mod log {
-    pub use ::tracing::*;
+    pub use tracing::*;
 }
 
 /// call napi and assert

@@ -21,4 +21,3 @@ impl TryIntoJs for EnvInterceptor {
         js_env.create_double(self.0 * 2.0)
     }
 }
-
