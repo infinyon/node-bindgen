@@ -9,7 +9,7 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-log = { workspace = true }
+tracing = { workspace = true }
 node-bindgen = { workspace = true}
 fluvio-future = { workspace = true}
 
