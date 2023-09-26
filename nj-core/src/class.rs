@@ -99,14 +99,18 @@ pub trait JSClass: Sized {
     }
 
     /// define class and properties under exports
+    #[instrument]
     fn js_init(js_exports: &mut JsExports) -> Result<(), NjError> {
         let js_constructor =
             js_exports
                 .env()
                 .define_class(Self::CLASS_NAME, Self::js_new, Self::properties())?;
 
+        debug!(?js_constructor, "class defined with constructor");
+
         // save the constructor reference, we need this later in order to instantiate
         let js_ref = js_exports.env().create_reference(js_constructor, 1)?;
+        debug!(?js_constructor, "created reference to constructor");
         Self::set_constructor(js_ref);
 
         js_exports.set_name_property(Self::CLASS_NAME, js_constructor)?;

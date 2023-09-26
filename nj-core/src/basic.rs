@@ -902,6 +902,7 @@ impl ExtractArgFromJs<'_> for JsEnv {
     }
 }
 
+#[derive(Debug)]
 pub struct JsExports {
     inner: napi_value,
     env: JsEnv,

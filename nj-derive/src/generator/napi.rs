@@ -50,6 +50,8 @@ fn raw_napi_function_template(
             use node_bindgen::core::IntoJs;
             use node_bindgen::core::val::JsCallbackFunction;
 
+            node_bindgen::core::log::debug!( napi_fn = stringify!(#ident_n_api_fn),"invoking napi function");
+
             #input_fn
 
             #(#rust_args_struct)*
