@@ -342,10 +342,11 @@ impl JsEnv {
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[instrument]
     pub fn get_new_target(&self, info: napi_callback_info) -> Result<napi_value, NjError> {
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_get_new_target(self.0, info, &mut result))?;
-
+        debug!(?result, "got new target");
         Ok(result)
     }
 
