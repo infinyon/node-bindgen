@@ -46,4 +46,6 @@ jobs:
         with:
           crate: cargo-workspaces
           version: latest
-      - run: cargo workspaces publish --token ${{ secrets.CRATES_TOKEN }} --yes
+      - name: Publish
+        run: cargo workspaces publish --token ${{ secrets.CRATES_TOKEN }} --from-git --yes
+
