@@ -285,7 +285,7 @@ impl JsEnv {
             ptr::null_mut()
         ))?;
 
-        trace!(argc,"actual argc");
+        trace!(argc, "actual argc");
         // truncate arg to actual received count
         args.resize(argc, ptr::null_mut());
 
@@ -300,13 +300,9 @@ impl JsEnv {
         constructor: napi_callback_raw,
         properties: PropertiesBuilder,
     ) -> Result<napi_value, NjError> {
-
-        debug!(
-            ?properties,
-            "defining class",
-        );
+        debug!(?properties, "defining class",);
         let mut js_constructor = ptr::null_mut();
-        let mut raw_properties = properties.as_raw_properties();        
+        let mut raw_properties = properties.as_raw_properties();
         napi_call_result!(crate::sys::napi_define_class(
             self.0,
             name.as_ptr() as *const ::std::os::raw::c_char,
@@ -380,9 +376,9 @@ impl JsEnv {
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
 
         Ok(unsafe {
-            debug!(?result,"got back raw pointer");
+            debug!(?result, "got back raw pointer");
             if result == ptr::null_mut() {
-                return Err(NjError::Other("unwrap got null pointer".to_string()))
+                return Err(NjError::Other("unwrap got null pointer".to_string()));
             }
             let rust_ref: &T = &mut *(result as *mut T);
             rust_ref
@@ -396,9 +392,9 @@ impl JsEnv {
         debug!(env = ?self.0,"napi unwrap");
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
         Ok(unsafe {
-            debug!(?result,"got back raw pointer");
+            debug!(?result, "got back raw pointer");
             if result == ptr::null_mut() {
-                return Err(NjError::Other("unwrap mut null pointer".to_string()))
+                return Err(NjError::Other("unwrap mut null pointer".to_string()));
             }
             let ptr = result as *mut T;
             let rust_ref: &mut T = &mut *(ptr);
@@ -412,7 +408,7 @@ impl JsEnv {
         constructor: napi_value,
         mut args: Vec<napi_value>,
     ) -> Result<napi_value, NjError> {
-        trace!(args =  args.len(), "napi new instance");
+        trace!(args = args.len(), "napi new instance");
         let mut result = ptr::null_mut();
         napi_call_result!(crate::sys::napi_new_instance(
             self.0,

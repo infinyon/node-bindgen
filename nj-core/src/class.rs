@@ -39,7 +39,7 @@ where
     fn wrap(self, js_env: &JsEnv, js_cb: JsCallback) -> Result<napi_value, NjError> {
         let boxed_self = Box::new(self);
         let raw_ptr = Box::into_raw(boxed_self); // rust no longer manages this struct
-        debug!(?raw_ptr,"box into raw");
+        debug!(?raw_ptr, "box into raw");
         let wrap = js_env.wrap(js_cb.this(), raw_ptr as *mut u8, T::js_finalize)?;
 
         unsafe {
@@ -47,7 +47,6 @@ where
             let rust_ref: &mut Self = &mut *raw_ptr;
             rust_ref.wrapper = wrap;
         }
-
 
         Ok(js_cb.this_owned())
     }
@@ -116,10 +115,7 @@ pub trait JSClass: Sized {
         let js_env = JsEnv::new(env);
 
         let result: Result<napi_value, NjError> = (|| {
-            debug!(
-                clas = std::any::type_name::<Self>(),
-                "getting new target"
-            );
+            debug!(clas = std::any::type_name::<Self>(), "getting new target");
 
             let target = js_env.get_new_target(info)?;
 
@@ -142,7 +138,6 @@ pub trait JSClass: Sized {
 
         result.into_js(&js_env)
     }
-
 
     extern "C" fn js_finalize(
         _env: napi_env,
