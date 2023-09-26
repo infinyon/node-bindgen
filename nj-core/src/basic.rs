@@ -377,7 +377,7 @@ impl JsEnv {
 
         Ok(unsafe {
             debug!(?result, "got back raw pointer");
-            if result == ptr::null_mut() {
+            if result.is_null() {
                 return Err(NjError::Other("unwrap got null pointer".to_string()));
             }
             let rust_ref: &T = &mut *(result as *mut T);
@@ -393,7 +393,7 @@ impl JsEnv {
         napi_call_result!(crate::sys::napi_unwrap(self.0, js_this, &mut result))?;
         Ok(unsafe {
             debug!(?result, "got back raw pointer");
-            if result == ptr::null_mut() {
+            if result.is_null() {
                 return Err(NjError::Other("unwrap mut null pointer".to_string()));
             }
             let ptr = result as *mut T;
