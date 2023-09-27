@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## [6.0.0] - 2023-09-27
+
+- Fix segfault exposed due to node api implementation changes [#259](https://github.com/infinyon/node-bindgen/pull/259)
 
 ## [5.1.0] - 2023-01-24
 ### Improvements
