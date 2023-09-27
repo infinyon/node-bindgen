@@ -48,7 +48,7 @@
 
 # Compatibility with Node.js version
 
-This project uses the v7 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
+This project uses the v8 of Node N-API.  Please see following [compatibility](https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix) matrix.
 
 Following OS are supported:
 * Linux
@@ -81,13 +81,13 @@ Add two dependencies to your projects' ```Cargo.toml```.
 Add ```node-bindgen``` as a regular dependency (as below):
 ```
 [dependencies]
-node-bindgen = { version = "5.1" }
+node-bindgen = { version = "6.0" }
 ```
 
 Then add ```node-bindgen```'s procedure macro to your build-dependencies as below:
 ```
 [build-dependencies]
-node-bindgen = { version = "5.1", features = ["build"] }
+node-bindgen = { version = "6.0", features = ["build"] }
 ```
 
 Then update crate type to ```cdylib``` to generate node.js compatible native module:
@@ -155,7 +155,7 @@ Then in the Node.js, rust function can be invoked as normal node.js function:
 
 ```js
 $ node
-Welcome to Node.js v14.0.0.
+Welcome to Node.js v18.18.0.
 Type ".help" for more information.
 > let addon = require('./dist');
 undefined
