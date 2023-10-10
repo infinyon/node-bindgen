@@ -8,5 +8,5 @@ repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
 
 [target.'cfg(windows)'.dependencies]
-http_req = "0.9.3"
+http_req = "0.10.0"
 cc = "1.0.58"
