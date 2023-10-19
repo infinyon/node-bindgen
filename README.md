@@ -87,7 +87,7 @@ node-bindgen = { version = "6.0" }
 Then add ```node-bindgen```'s procedure macro to your build-dependencies as below:
 ```
 [build-dependencies]
-node-bindgen = { version = "6.0", features = ["build"] }
+node-bindgen = { version = "6.0", default-features = false, features = ["build"] }
 ```
 
 Then update crate type to ```cdylib``` to generate node.js compatible native module:
