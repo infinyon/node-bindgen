@@ -21,7 +21,7 @@ ctor = "0.2.4"
 libc = "0.2.66"
 inventory = "0.1.5"
 async-trait = "0.1.22"
-futures-lite = "1.7.0"
+futures-lite = "2.0.1"
 nj-sys = { version = "4.0.0", path = "../nj-sys" }
 fluvio-future = { version = "0.6.0", default-features=false, features=["task","subscriber"]}
 pin-utils = "0.1.0"
