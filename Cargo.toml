@@ -1,6 +1,6 @@
 [package]
 name = "node-bindgen"
-version = "6.0.1"
+version = "6.0.2"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 edition = "2021"
 description = "easy way to write nodejs module using rust"
@@ -17,7 +17,7 @@ uuid = ["nj-core/convert-uuid"]
 
 [dependencies]
 nj-sys = { path = "nj-sys", version = "4.0.0", optional = true }
-nj-core = { path = "nj-core", version = "6.0.0", optional = true }
+nj-core = { path = "nj-core", version = "6.0.1", optional = true }
 nj-build = { path = "nj-build", version = "0.3.0", optional = true }
 nj-derive = { path = "nj-derive", version = "3.2.0", optional = true }
 

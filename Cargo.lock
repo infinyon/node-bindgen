@@ -787,7 +787,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "6.0.0"
+version = "6.0.1"
 dependencies = [
  "async-trait",
  "ctor 0.2.4",
@@ -822,7 +822,7 @@ version = "4.0.0"
 
 [[package]]
 name = "node-bindgen"
-version = "6.0.1"
+version = "6.0.2"
 dependencies = [
  "nj-build",
  "nj-core",

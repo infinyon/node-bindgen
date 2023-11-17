@@ -571,6 +571,14 @@ impl JsEnv {
         Ok(valuetype)
     }
 
+    /// is value undefined or null
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    pub fn is_undefined_or_null(&self, napi_value: napi_value) -> Result<bool, NjError> {
+        let valuetype = self.value_type(napi_value)?;
+        Ok(valuetype == crate::sys::napi_valuetype_napi_undefined
+            || valuetype == crate::sys::napi_valuetype_napi_null)
+    }
+
     /// get string representation of value type
     pub fn value_type_string(&self, napi_value: napi_value) -> Result<&'static str, NjError> {
         Ok(napi_value_type_to_string(self.value_type(napi_value)?))
@@ -886,7 +894,11 @@ where
 
     fn convert_arg_at(js_cb: &'a JsCallback, index: usize) -> Result<Self, NjError> {
         if index < js_cb.args.len() {
-            Ok(Some(T::convert_to_rust(js_cb.env(), js_cb.args[index])?))
+            if js_cb.env().is_undefined_or_null(js_cb.args[index])? {
+                Ok(None)
+            } else {
+                Ok(Some(T::convert_to_rust(js_cb.env(), js_cb.args[index])?))
+            }
         } else {
             Ok(None)
         }

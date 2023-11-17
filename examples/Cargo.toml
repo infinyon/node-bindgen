@@ -20,6 +20,7 @@ members = [
     "tuples",
     "uuid",
     "logging",
+    "option",
 ]
 
 
