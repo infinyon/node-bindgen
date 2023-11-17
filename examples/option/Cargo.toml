@@ -1,0 +1,18 @@
+[package]
+name = "nj-example-option"
+version = "0.0.0"
+authors = ["fluvio.io"]
+edition = "2021"
+publish = false
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+node-bindgen = { workspace = true}
+fluvio-future = { workspace = true}
+
+[build-dependencies]
+node-bindgen = { path = "../../", default-features = false, features = ["build"] }

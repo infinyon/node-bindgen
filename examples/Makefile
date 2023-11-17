@@ -15,13 +15,14 @@ clean:
 	make -C tuple clean
 	make -C cleanup clean
 	make -C logging clean
+	make -C option clean
 
 install:
 	npm install
 
 test: install test-function test-cb test-async-cb test-promise test-json test-class-simple \
 	test-class-wrapper test-class-async test-stream test-buffer test-array test-bigint test-logging\
-	test-cleanup test-jsenv
+	test-cleanup test-jsenv test-option
 
 test-function:
 	make -C function test
@@ -76,6 +77,9 @@ test-cleanup:
 
 test-jsenv:
 	make -C js-env test
+
+test-option:
+	make -C option test
 
 check-clippy:
 	cargo clippy --all --all-features -- \
