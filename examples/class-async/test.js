@@ -1,6 +1,4 @@
 const assert = require('assert');
-const SegfaultHandler = require('segfault-handler');
-SegfaultHandler.registerHandler('crash.log');
 
 let addon = require('./dist');
 
