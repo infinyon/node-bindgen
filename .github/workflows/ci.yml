@@ -5,10 +5,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  push:
-    branches:
-      - staging
-      - trying
+  merge_group:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
