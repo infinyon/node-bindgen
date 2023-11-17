@@ -1,4 +1,7 @@
 # Changelog
+## [6.0.2] - 2023-11-17
+- Consider undefined/null for rust type Option<T>
+
 ## [6.0.1] - 2023-09-27
 - doc update
 
