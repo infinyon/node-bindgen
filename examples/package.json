@@ -8,7 +8,5 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "segfault-handler": "^1.3.0"
-  }
+  "dependencies": {}
 }

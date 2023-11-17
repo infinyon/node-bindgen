@@ -1,8 +1,5 @@
 const assert = require('assert');
 let addon = require('./dist');
-const SegfaultHandler = require('segfault-handler');
-SegfaultHandler.registerHandler('crash.log');
-
 
 const EventEmitter = require('events').EventEmitter;
 const emitter = new EventEmitter();

@@ -1,8 +1,5 @@
 const assert = require('assert');
 let addon = require('./dist');
-const SegfaultHandler = require('segfault-handler');
-SegfaultHandler.registerHandler('crash.log');
-
 
 addon.hello(5).then((val) => {
   assert.equal(val, 15);

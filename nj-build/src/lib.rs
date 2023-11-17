@@ -10,7 +10,7 @@ mod win {
         process::Command,
         env::temp_dir,
         io,
-        path::{PathBuf},
+        path::PathBuf,
         fs::{read_dir, create_dir, DirEntry},
         time::{SystemTime, UNIX_EPOCH},
     };
