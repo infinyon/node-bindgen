@@ -403,22 +403,33 @@ For example,
 use tslink::tslink;
 use node_bindgen::derive::node_bindgen;
 
-struct MyScruct {}
+struct MyScruct {
+    inc: i32,
+}
 
 #[tslink(class)]
 #[node_bindgen]
 impl MyScruct {
     #[tslink(constructor)]
     #[node_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(inc: i32) -> Self {
+        Self { inc }
     }
 
     #[tslink(snake_case_naming)]
     #[node_bindgen]
     fn inc_my_number(&self, a: i32) -> i32 {
-        a + 1
+        a + self.inc
     }
+}
+```
+
+Would be represented (`*.d.ts`) as
+
+```ignore
+export declare class MyStruct {
+    constructor(inc: number);
+    incMyNumber(a: number): number;
 }
 ```
 
