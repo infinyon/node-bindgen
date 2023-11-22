@@ -449,6 +449,8 @@ Full example of usage `tslink` and `node-bindgen` is [here](https://github.com/D
 
 See more API documentation on a `tslink` [crate page](https://docs.rs/tslink/0.1.0/tslink).
 
+**Note**. The node-bindgen's developers are not responsible for the correctness of the work tslink crate. All possible issues and feature requests related to tslink should be addressed to tslink's developers.
+
 ## Contributing
 
 If you'd like to contribute to the project, please read our [Contributing guide](CONTRIBUTING.md).
