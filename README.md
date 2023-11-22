@@ -390,7 +390,7 @@ otherwise you will get dreaded  `A dynamic link library (DLL) initialization rou
 
 Node module generated with `node-bindgen` can be used directly in any node JS project, just copied `index.node` into it. But in case of direct access to a module IDE will not highlight available functions, classes etc. Usually, this is not comfortable and makes the risks of potential bugs higher as soon as the public API of the node module is changed.
 
-To create a full-fledged npm package with TypeScript types definitions and all necessary JavaScript wrappers can be used a crate `tslink`.
+To create a full-fledged npm package with TypeScript types definitions and all necessary JavaScript wrappers can be used a crate [tslink](https://crates.io/crates/tslink).
 
 `tslink` crate generates files `*.d.ts`, `*.js` and `package.json` with a description of the npm module. Such package could be integrated into an end-project with minimal effort. 
 
