@@ -386,6 +386,71 @@ $ npx electron-build-env nj-cli build --release
 
 otherwise you will get dreaded  `A dynamic link library (DLL) initialization routine failed` when importing the rust module in electron
 
+## Preparing npm packages
+
+Node module generated with `node-bindgen` can be used directly in any node JS project, just copied `index.node` into it. But in case of direct access to a module IDE will not highlight available functions, classes etc. Usually, this is not comfortable and makes the risks of potential bugs higher as soon as the public API of the node module is changed.
+
+To create a full-fledged npm package with TypeScript types definitions and all necessary JavaScript wrappers can be used a crate [tslink](https://crates.io/crates/tslink).
+
+`tslink` crate generates files `*.d.ts`, `*.js` and `package.json` with a description of the npm module. Such package could be integrated into an end-project with minimal effort. 
+
+In addition, because `tslink` generates TypeScript types definitions, any changes on the native node module (`index.node`) will be highlighted by `TypeScript` compiler and it makes the risk of bugs (related to changed API or public data types) much lower.
+
+For example,
+
+```ignore
+#[macro_use] extern crate tslink;
+use tslink::tslink;
+use node_bindgen::derive::node_bindgen;
+
+struct MyScruct {
+    inc: i32,
+}
+
+#[tslink(class)]
+#[node_bindgen]
+impl MyScruct {
+    #[tslink(constructor)]
+    #[node_bindgen(constructor)]
+    pub fn new(inc: i32) -> Self {
+        Self { inc }
+    }
+
+    #[tslink(snake_case_naming)]
+    #[node_bindgen]
+    fn inc_my_number(&self, a: i32) -> i32 {
+        a + self.inc
+    }
+}
+```
+
+Would be represented (`*.d.ts`) as
+
+```ignore
+export declare class MyStruct {
+    constructor(inc: number);
+    incMyNumber(a: number): number;
+}
+```
+
+Pay your attention, call of `#[tslink]` should be always above of call `#[node_bindgen]`.
+
+Also, please **note**, `node-bindgen` by default applies snake case naming to methods. You should use `#[tslink(snake_case_naming)]` to consider this moment (see more on [crate page](https://docs.rs/tslink/0.1.0/tslink)).
+
+`tslink` requires a configuration file in the root of your project (`tslink.toml`). Configuration file should include a valid path to the native node module. By default `node-bindgen` creates `index.node` in `./dist` folder of your `root`.
+
+File: `./tslink.toml` (in a `root` of project):
+
+```ignore
+node = "./dist/index.node"
+```
+
+Full example of usage `tslink` and `node-bindgen` is [here](https://github.com/DmitryAstafyev/tslink/tree/master/examples/node_bindgen).
+
+See more API documentation on a `tslink` [crate page](https://docs.rs/tslink/0.1.0/tslink).
+
+**Note**. The node-bindgen's developers are not responsible for the correctness of the work tslink crate. All possible issues and feature requests related to tslink should be addressed to tslink's developers.
+
 ## Contributing
 
 If you'd like to contribute to the project, please read our [Contributing guide](CONTRIBUTING.md).
