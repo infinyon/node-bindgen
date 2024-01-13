@@ -437,15 +437,20 @@ Pay your attention, call of `#[tslink]` should be always above of call `#[node_b
 
 Also, please **note**, `node-bindgen` by default applies snake case naming to methods. You should use `#[tslink(snake_case_naming)]` to consider this moment (see more on [crate page](https://docs.rs/tslink/0.1.0/tslink)).
 
-`tslink` requires a configuration file in the root of your project (`tslink.toml`). Configuration file should include a valid path to the native node module. By default `node-bindgen` creates `index.node` in `./dist` folder of your `root`.
+`tslink` requires a configuration in `Cargo.toml` (section `[tslink]`) of the root of your project. A configuration should include a valid path to the native node module. By default `node-bindgen` creates `index.node` in `./dist` folder of your `root`.
 
-File: `./tslink.toml` (in a `root` of project):
+File: `./Cargo.toml` (in a `root` of project):
 
 ```ignore
+[project]
+...
+[lib]
+...
+[tslink]
 node = "./dist/index.node"
 ```
 
-Full example of usage `tslink` and `node-bindgen` is [here](https://github.com/DmitryAstafyev/tslink/tree/master/examples/node_bindgen).
+Full example of usage `tslink` and `node-bindgen` is [here](https://github.com/icsmw/tslink/tree/master/examples/node_bindgen).
 
 See more API documentation on a `tslink` [crate page](https://docs.rs/tslink/0.1.0/tslink).
 
