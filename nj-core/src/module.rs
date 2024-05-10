@@ -84,6 +84,6 @@ fn init_module() {
     };
 
     unsafe {
-        napi_module_register(&mut _MODULE);
+        napi_module_register(ptr::addr_of_mut!(_MODULE));
     }
 }
