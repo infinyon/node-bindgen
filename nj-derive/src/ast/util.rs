@@ -1,4 +1,3 @@
-use syn::ItemFn;
 use syn::Ident;
 use syn::TypePath;
 use syn::ImplItemMethod;
@@ -6,17 +5,6 @@ use syn::Attribute;
 use syn::PathArguments;
 use syn::Lifetime;
 use syn::GenericArgument;
-
-/// traits for function item
-pub trait FunctionItem {
-    fn name(&self) -> &Ident;
-}
-
-impl FunctionItem for ItemFn {
-    fn name(&self) -> &Ident {
-        &self.sig.ident
-    }
-}
 
 pub trait TypePathUtil {
     fn name_identifier(&self) -> Option<&Ident>;
