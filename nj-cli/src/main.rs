@@ -168,7 +168,13 @@ fn find_cdylib(package: &Package) -> Option<&Target> {
     package
         .targets
         .iter()
-        .find(|&target| target.name == package.name)
+        .find(|&target| target.name == package.name.replace('-', "_"))
+        .or_else(|| {
+            package
+                .targets
+                .iter()
+                .find(|&target| target.name == package.name)
+        })
 }
 
 fn find_current_package<'a>(metadata: &'a Metadata, manifest_path: &Path) -> Option<&'a Package> {
