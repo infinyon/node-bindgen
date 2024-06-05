@@ -40,17 +40,6 @@ fn napi_value_type_to_string(js_type: napi_valuetype) -> &'static str {
     }
 }
 
-#[derive(Clone)]
-pub struct JsNapiValue(napi_value);
-
-unsafe impl Send for JsNapiValue {}
-
-impl From<napi_value> for JsNapiValue {
-    fn from(value: napi_value) -> Self {
-        Self(value)
-    }
-}
-
 #[derive(Clone, Copy, Debug)]
 pub struct JsEnv(napi_env);
 

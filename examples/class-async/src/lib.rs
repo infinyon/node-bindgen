@@ -9,7 +9,7 @@ use node_bindgen::core::val::JsEnv;
 use node_bindgen::core::TryIntoJs;
 use node_bindgen::derive::node_bindgen;
 
-struct MyJson {
+pub struct MyJson {
     val: f64,
 }
 
@@ -24,6 +24,7 @@ impl TryIntoJs for MyJson {
         json.try_to_js(js_env)
     }
 }
+
 
 struct MyObject {
     val: f64,

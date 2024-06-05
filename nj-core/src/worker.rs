@@ -3,7 +3,6 @@ use std::ptr;
 use tracing::error;
 use tracing::trace;
 use tracing::debug;
-use async_trait::async_trait;
 use futures_lite::Future;
 
 use fluvio_future::task::spawn;
@@ -13,9 +12,7 @@ use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
 use crate::sys::napi_env;
-use crate::sys::napi_callback_info;
 use crate::TryIntoJs;
-use crate::IntoJs;
 use crate::assert_napi;
 use crate::ThreadSafeFunction;
 
@@ -117,55 +114,6 @@ where
     if let Err(err) = ts_fn.call(Some(ptr as *mut core::ffi::c_void)) {
         error!("error finishing worker: {}", err);
     }
-}
-
-#[async_trait]
-pub trait JSWorker: Sized + Send + 'static {
-    type Output: TryIntoJs;
-
-    /// create new worker based on argument based in the callback
-    /// only need if it is called as method
-    fn create_worker(_env: &JsEnv, _info: napi_callback_info) -> Result<Self, NjError> {
-        Err(NjError::InvalidType(
-            "worker".to_owned(),
-            "worker".to_owned(),
-        ))
-    }
-
-    /// call by Node to create promise
-    extern "C" fn start_promise(env: napi_env, info: napi_callback_info) -> napi_value {
-        let js_env = JsEnv::new(env);
-
-        let result: Result<napi_value, NjError> = (|| {
-            let worker = Self::create_worker(&js_env, info)?;
-            worker.create_promise(&js_env)
-        })();
-
-        result.into_js(&js_env)
-    }
-
-    /// create promise and schedule work
-    /// when this is finished it will return result in the main thread
-    fn create_promise(self, js_env: &JsEnv) -> Result<napi_value, NjError> {
-        let (promise, deferred) = js_env.create_promise()?;
-        let function_name = format!("async_worker_th_{}", std::any::type_name::<Self>());
-        let ts_fn = js_env.create_thread_safe_function(
-            &function_name,
-            None,
-            Some(promise_complete::<Self::Output>),
-        )?;
-        let js_deferred = JsDeferred(deferred);
-
-        spawn(async move {
-            let result = self.execute().await;
-            finish_worker(ts_fn, result, js_deferred);
-        });
-
-        Ok(promise)
-    }
-
-    /// execute this in async worker thread
-    async fn execute(mut self) -> Self::Output;
 }
 
 pub trait NjFutureExt: Future {
