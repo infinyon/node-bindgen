@@ -29,7 +29,7 @@ members = [
 serde = { version = "1.0.110", features = ["derive"] }
 serde_json = "1.0.53"
 futures-lite = "1.7.0"
-uuid = "1.1.0"
+uuid = "1.8.0"
 tracing = "0.1.37"
 
 node-bindgen = { path = "..", features = ["default"]}
