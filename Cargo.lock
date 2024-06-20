@@ -853,7 +853,7 @@ dependencies = [
 
 [[package]]
 name = "nj-core"
-version = "6.0.1"
+version = "6.0.2"
 dependencies = [
  "async-trait",
  "ctor 0.2.8",
