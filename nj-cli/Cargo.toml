@@ -1,6 +1,6 @@
 [package]
 name = "nj-cli"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["fluvio.io"]
 edition = "2021"
 description = "build tool for node-bindgen"
