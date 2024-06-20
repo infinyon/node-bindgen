@@ -20,11 +20,11 @@ use syn::Path;
 /// mt
 #[derive(Debug)]
 pub enum FunctionAttribute {
-    Getter(Ident),
-    Setter(Ident),
-    Constructor(Ident),
+    Getter,
+    Setter,
+    Constructor,
     Name(LitStr),
-    Mt(Ident),
+    Mt,
 }
 
 impl FunctionAttribute {
@@ -55,24 +55,24 @@ impl FunctionAttribute {
 
     fn from_ident(ident: Ident) -> Result<Self> {
         if ident == "constructor" {
-            Ok(Self::Constructor(ident))
+            Ok(Self::Constructor)
         } else if ident == "getter" {
-            Ok(Self::Getter(ident))
+            Ok(Self::Getter)
         } else if ident == "setter" {
-            Ok(Self::Setter(ident))
+            Ok(Self::Setter)
         } else if ident == "mt" {
-            Ok(Self::Mt(ident))
+            Ok(Self::Mt)
         } else {
             Err(Error::new(ident.span(), "unrecognized attribute name"))
         }
     }
 
     fn is_constructor(&self) -> bool {
-        matches!(self, Self::Constructor(_))
+        matches!(self, Self::Constructor)
     }
 
     fn is_multi_threaded(&self) -> bool {
-        matches!(self, Self::Mt(_))
+        matches!(self, Self::Mt)
     }
 
     /// get function name, if this is not name, return none
@@ -84,11 +84,11 @@ impl FunctionAttribute {
     }
 
     fn is_getter(&self) -> bool {
-        matches!(self, Self::Getter(_))
+        matches!(self, Self::Getter)
     }
 
     fn is_setter(&self) -> bool {
-        matches!(self, Self::Setter(_))
+        matches!(self, Self::Setter)
     }
 }
 

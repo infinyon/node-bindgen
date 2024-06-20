@@ -161,25 +161,25 @@ impl<'a> MyDeriveInput<'a> {
 #[derive(Debug)]
 pub enum MyFields<'a> {
     Named(Vec<MyNamedField<'a>>),
-    Unnamed(Vec<MyUnnamedField<'a>>),
+    Unnamed(Vec<MyUnnamedField>),
     Unit,
 }
 
 #[derive(Debug)]
 pub struct MyNamedField<'a> {
     pub name: &'a Ident,
-    pub ty: MyFieldType<'a>,
+    pub ty: MyFieldType,
 }
 
 #[derive(Debug)]
-pub struct MyUnnamedField<'a> {
-    pub ty: MyFieldType<'a>,
+pub struct MyUnnamedField {
+    pub ty: MyFieldType,
 }
 
 #[derive(Debug)]
-pub enum MyFieldType<'a> {
-    Path(MyTypePath<'a>),
-    Ref(MyReferenceType<'a>),
+pub enum MyFieldType {
+    Path,
+    Ref,
 }
 
 impl<'a> MyFields<'a> {
@@ -202,10 +202,10 @@ impl<'a> MyFields<'a> {
                     .unnamed
                     .iter()
                     .map(|field| MyFieldType::from(&field.ty))
-                    .collect::<Result<Vec<MyFieldType<'a>>>>()?
+                    .collect::<Result<Vec<MyFieldType>>>()?
                     .into_iter()
                     .map(|ty| MyUnnamedField { ty })
-                    .collect::<Vec<MyUnnamedField<'a>>>();
+                    .collect::<Vec<MyUnnamedField>>();
 
                 Ok(MyFields::Unnamed(fields))
             }
@@ -214,11 +214,17 @@ impl<'a> MyFields<'a> {
     }
 }
 
-impl<'a> MyFieldType<'a> {
-    pub fn from(ty: &'a Type) -> Result<MyFieldType> {
+impl MyFieldType {
+    pub fn from(ty: &Type) -> Result<MyFieldType> {
         match ty {
-            Type::Path(type_path) => Ok(MyFieldType::Path(MyTypePath::from(type_path)?)),
-            Type::Reference(reference) => Ok(MyFieldType::Ref(MyReferenceType::from(reference)?)),
+            Type::Path(type_path) => {
+                MyTypePath::from(type_path)?;
+                Ok(MyFieldType::Path)
+            }
+            Type::Reference(reference) => {
+                MyReferenceType::from(reference)?;
+                Ok(MyFieldType::Ref)
+            }
             _ => Err(Error::new(
                 ty.span(),
                 "Only type paths and references \

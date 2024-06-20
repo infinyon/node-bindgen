@@ -35,14 +35,13 @@ impl<'a> FunctionArgs<'a> {
         let is_method = has_receiver(sig);
 
         // extract arguments,
-        let i = 0;
         for ref arg in &sig.inputs {
             // println!("arg: {:#?}",arg);
             match arg {
                 FnArg::Receiver(_) => {}
                 FnArg::Typed(arg_type) => match &*arg_type.pat {
                     Pat::Ident(identity) => {
-                        let arg = FunctionArg::new(i, &identity.ident, &arg_type.ty, generics)?;
+                        let arg = FunctionArg::new(&identity.ident, &arg_type.ty, generics)?;
                         args.push(arg);
                     }
                     _ => return Err(Error::new(arg_type.span(), "not supported type")),
@@ -75,13 +74,12 @@ fn has_receiver(sig: &Signature) -> bool {
 
 #[derive(Debug)]
 pub struct FunctionArg<'a> {
-    pub arg_index: u32,
     pub typ: FunctionArgType<'a>,
 }
 
 impl<'a> FunctionArg<'a> {
     /// given this, convert into normalized type signature
-    fn new(arg_index: u32, ident: &'a Ident, ty: &'a Type, generics: &'a Generics) -> Result<Self> {
+    fn new(ident: &'a Ident, ty: &'a Type, generics: &'a Generics) -> Result<Self> {
         match ty {
             Type::Path(path_type) => {
                 let my_type = MyTypePath::from(path_type)?;
@@ -90,12 +88,10 @@ impl<'a> FunctionArg<'a> {
                 if let Some(param) = find_generic(generics, my_type.ident()) {
                     let closure = ClosureType::from(ident, param)?;
                     Ok(Self {
-                        arg_index,
                         typ: FunctionArgType::Closure(closure),
                     })
                 } else {
                     Ok(Self {
-                        arg_index,
                         typ: FunctionArgType::Path(my_type),
                     })
                 }
@@ -103,7 +99,6 @@ impl<'a> FunctionArg<'a> {
             Type::Reference(ref_type) => {
                 let my_type = MyReferenceType::from(ref_type)?;
                 Ok(Self {
-                    arg_index,
                     typ: FunctionArgType::Ref(my_type),
                 })
             }
@@ -111,7 +106,6 @@ impl<'a> FunctionArg<'a> {
                 let types: Vec<_> = tuple.elems.iter().collect();
                 let tuple = MyTupleType::from(types);
                 Ok(Self {
-                    arg_index,
                     typ: FunctionArgType::Tuple(tuple),
                 })
             }

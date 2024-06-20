@@ -299,8 +299,8 @@ fn generate_named_field_conversions<'a>(
             // References needs to be cloned for try_to_js
             // to take their ownership. Values can be passed as is
             let field_access = match ty {
-                MyFieldType::Path(_) => quote! { #fields_scope #name },
-                MyFieldType::Ref(_) => quote! { #fields_scope #name.clone() },
+                MyFieldType::Path => quote! { #fields_scope #name },
+                MyFieldType::Ref => quote! { #fields_scope #name.clone() },
             };
 
             quote! {
@@ -313,10 +313,10 @@ fn generate_named_field_conversions<'a>(
 }
 
 // Unnamed fields, stored in a tuple and accessed by index
-fn generate_unnamed_field_conversions<'a>(
+fn generate_unnamed_field_conversions(
     output_array: &Ident,
     js_env: &Ident,
-    fields: &'a [MyUnnamedField<'a>],
+    fields: &[MyUnnamedField],
 ) -> Vec<TokenStream> {
     fields
         .iter()
@@ -328,8 +328,8 @@ fn generate_unnamed_field_conversions<'a>(
             };
 
             let field_access = match ty {
-                MyFieldType::Path(_) => quote! { self.#index },
-                MyFieldType::Ref(_) => quote! { self.#index.clone() },
+                MyFieldType::Path => quote! { self.#index },
+                MyFieldType::Ref => quote! { self.#index.clone() },
             };
 
             quote! {
