@@ -1,20 +1,19 @@
 mod init;
 mod watch;
 
-use cargo_metadata::camino::Utf8PathBuf;
-use watch::{WatchOpt};
-use structopt::StructOpt;
-
 use std::process::Command;
 use std::process::Stdio;
 use std::path::Path;
 use std::path::PathBuf;
 use std::io::Result;
 
+use cargo_metadata::camino::Utf8PathBuf;
 use cargo_metadata::{MetadataCommand, CargoOpt};
 use cargo_metadata::Package;
 use cargo_metadata::Metadata;
 use cargo_metadata::Target;
+use structopt::StructOpt;
+use watch::WatchOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -157,10 +156,10 @@ fn copy_lib(out: String, target_mode: &str, target_tripple: Option<String>) {
             let error_msg = format!("copy failed of {lib_path:?}");
             copy_cdylib(&lib_path, &out).expect(&error_msg);
         } else {
-            eprintln!("no cdylib target was founded");
+            eprintln!("no cdylib target was found");
         }
     } else {
-        eprintln!("no valid Cargo.toml was founded");
+        eprintln!("no valid Cargo.toml was found");
     }
 }
 
