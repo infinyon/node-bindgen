@@ -25,11 +25,8 @@ jobs:
         rust: [stable]
     steps:
       - uses: actions/checkout@v4
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          override: true
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
       - name: check fmt
         run: make check-fmt RUSTV=${{ matrix.rust }}
 
@@ -42,11 +39,8 @@ jobs:
         rust: [stable]
     steps:
       - uses: actions/checkout@v4
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          profile: minimal
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
       - name: check clippy
         run: make check-clippy
 
@@ -62,11 +56,8 @@ jobs:
         node-version: [ '16', '18', '20' ]
     steps:
     - uses: actions/checkout@v4
-    - name: Install ${{ matrix.rust }}
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: ${{ matrix.rust }}
-        override: true
+    - name: Install Rust stable
+      uses: dtolnay/rust-toolchain@stable
     - uses: Swatinem/rust-cache@v2
       with:
         key: ${{ matrix.os }}
