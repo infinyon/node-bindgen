@@ -9,6 +9,7 @@ use node_bindgen::core::val::JsEnv;
 use node_bindgen::core::TryIntoJs;
 use node_bindgen::derive::node_bindgen;
 
+#[allow(dead_code)]
 pub struct MyJson {
     val: f64,
 }

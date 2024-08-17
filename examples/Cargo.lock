@@ -404,16 +404,27 @@ checksum = "d7bb78c21409e7d24567b9b8a0d880e13ae5ef8fbbfb2a514c3966cd83e078c9"
 dependencies = [
  "anyhow",
  "async-io 1.13.0",
- "async-std",
- "cfg-if",
  "fluvio-wasm-timer",
  "futures-lite 1.13.0",
  "log",
  "pin-project",
  "thiserror",
  "tracing",
- "tracing-subscriber",
  "ws_stream_wasm",
+]
+
+[[package]]
+name = "fluvio-future"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0a28090046453db33a8bace0e1f71350b9878cd7fb576e48592ae8284bc83c7e"
+dependencies = [
+ "anyhow",
+ "async-std",
+ "cfg-if",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -766,7 +777,7 @@ version = "6.0.2"
 dependencies = [
  "async-trait",
  "ctor 0.2.8",
- "fluvio-future",
+ "fluvio-future 0.7.0",
  "futures-lite 2.3.0",
  "inventory",
  "libc",
@@ -799,7 +810,7 @@ dependencies = [
 name = "nj-example-async-cb"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.2",
  "node-bindgen",
  "tracing",
 ]
@@ -831,7 +842,7 @@ dependencies = [
 name = "nj-example-class-async"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.2",
  "node-bindgen",
 ]
 
@@ -890,7 +901,7 @@ dependencies = [
 name = "nj-example-option"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.2",
  "node-bindgen",
 ]
 
@@ -905,7 +916,7 @@ dependencies = [
 name = "nj-example-promise"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.2",
  "node-bindgen",
 ]
 
@@ -913,7 +924,7 @@ dependencies = [
 name = "nj-example-stream"
 version = "0.0.0"
 dependencies = [
- "fluvio-future",
+ "fluvio-future 0.6.2",
  "futures-lite 1.13.0",
  "node-bindgen",
 ]
