@@ -16,15 +16,19 @@ serde-json = ["serde_json"]
 convert-uuid = ["uuid"]
 
 [dependencies]
-tracing = "0.1.37"
-ctor = "0.2.4"
-libc = "0.2.66"
-inventory = "0.1.5"
-async-trait = "0.1.22"
-futures-lite = "2.0.0"
-nj-sys = { version = "4.0.0", path = "../nj-sys" }
+async-trait = { workspace = true }
+ctor = { workspace = true }
+futures-lite =  { workspace = true }
+libc = { workspace = true }
+
+inventory = { workspace = true }
+tracing = { workspace = true }
+
+
 fluvio-future = { workspace = true, features=["task","subscriber"]}
-pin-utils = "0.1.0"
-num-bigint = "0.4.0"
+pin-utils = { workspace = true }
+num-bigint = { workspace = true }
 serde_json = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
+
+nj-sys = { workspace = true }
