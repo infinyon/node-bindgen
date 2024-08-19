@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-node-bindgen = { workspace = true, features = ["serde-json"]}
+node-bindgen = { workspace = true, features = ["default","serde-json"]}
 serde_json = { workspace = true }
 
 

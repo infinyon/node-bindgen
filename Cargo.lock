@@ -832,7 +832,6 @@ name = "nj-cli"
 version = "0.4.4"
 dependencies = [
  "cargo_metadata",
- "log",
  "serde",
  "structopt",
  "toml 0.8.14",

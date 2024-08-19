@@ -8,8 +8,7 @@ repository = "https://github.com/infinyon/node-bindgen"
 license = "Apache-2.0"
 
 [dependencies]
-cargo_metadata = "0.18.0"
-log = "0.4.8"
+cargo_metadata = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-structopt = { version = "0.3.18", default-features = false }
-toml = "0.8.0"
+structopt = { workspace = true }
+toml = { workspace = true }
