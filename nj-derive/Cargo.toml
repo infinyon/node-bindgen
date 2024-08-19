@@ -13,12 +13,12 @@ proc-macro = true
 
 
 [dependencies]
-proc-macro2 = { workspace = true }
-quote = { workspace = true }
-syn = { workspace = true,  features = ["full", "parsing", "visit-mut","derive","extra-traits"] }
-Inflector = { workspace = true }
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = ["full", "parsing", "visit-mut","derive","extra-traits"] }
+Inflector = "0.11.4"
 
 [dev-dependencies]
-trybuild = { workspace = true }
-node-bindgen = { workspace = true  }
-fluvio-future = { workspace = true,  features = ["timer"] }
+trybuild = { git = "https://github.com/infinyon/trybuild", branch = "check_option" }
+node-bindgen = { path = ".." }
+fluvio-future = { version = "0.7.0", features = ["timer"] }
