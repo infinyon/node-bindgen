@@ -43,7 +43,7 @@ serde = { version = "1", default-features = false }
 structopt = { version = "0.3.18", default-features = false }
 toml = "0.8.0"
 tracing = "0.1.37"
-uuid = { version = "1.8.0" }
+uuid = { version = "1.10.0" }
 
 fluvio-future =  { version = "0.7.0", default-features = false }
 
