@@ -32,5 +32,5 @@ futures-lite = "2.0.0"
 uuid = "1.8.0"
 tracing = "0.1.37"
 
-node-bindgen = { path = "..", features = ["default"]}
+node-bindgen = { path = "..", default-features = false }
 fluvio-future = { version = "0.7.0", features = ["timer"] }
