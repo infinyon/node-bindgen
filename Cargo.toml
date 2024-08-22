@@ -29,7 +29,7 @@ members = ["nj-build", "nj-cli", "nj-core", "nj-derive", "nj-sys"]
 
 [workspace.dependencies]
 cargo_metadata = "0.18.0"
-cc = "1.0.58"
+cc = "1.1.13"
 ctor = "0.2.4"
 libc = "0.2.66"
 http_req = "0.12.0"
