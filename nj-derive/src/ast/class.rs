@@ -42,13 +42,13 @@ impl<'a> Class<'a> {
         Ok(Self { self_ty, methods })
     }
 
-    pub fn constructor(&'a self) -> Option<&'a Method> {
+    pub fn constructor(&'a self) -> Option<&'a Method<'a>> {
         self.methods
             .iter()
             .find(|method| method.attributes.is_constructor())
     }
 
-    pub fn my_type(&'a self) -> &MyTypePath<'a> {
+    pub fn my_type(&'a self) -> &'a MyTypePath<'a> {
         &self.self_ty
     }
 }

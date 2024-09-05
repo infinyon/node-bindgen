@@ -124,7 +124,7 @@ pub enum MyDerivePayload<'a> {
 }
 
 impl<'a> MyDeriveInput<'a> {
-    pub fn from_ast(input: &'a DeriveInput) -> Result<MyDeriveInput> {
+    pub fn from_ast(input: &'a DeriveInput) -> Result<MyDeriveInput<'a>> {
         let name = &input.ident;
         let generic_params = input.generics.params.clone().into_iter().collect();
         let generics = MyGenerics {
@@ -183,7 +183,7 @@ pub enum MyFieldType {
 }
 
 impl<'a> MyFields<'a> {
-    pub fn from_ast(input: &'a Fields) -> Result<MyFields> {
+    pub fn from_ast(input: &'a Fields) -> Result<MyFields<'a>> {
         match &input {
             Fields::Named(named_fields) => {
                 let fields = named_fields
@@ -240,7 +240,7 @@ pub struct MyEnum<'a> {
 }
 
 impl<'a> MyEnum<'a> {
-    pub fn from_ast(enum_data: &'a DataEnum) -> Result<MyEnum> {
+    pub fn from_ast(enum_data: &'a DataEnum) -> Result<MyEnum<'a>> {
         let variants = enum_data
             .variants
             .iter()
@@ -258,7 +258,7 @@ pub struct MyVariant<'a> {
 }
 
 impl<'a> MyVariant<'a> {
-    pub fn from_ast(variant_data: &'a Variant) -> Result<MyVariant> {
+    pub fn from_ast(variant_data: &'a Variant) -> Result<MyVariant<'a>> {
         let fields = MyFields::from_ast(&variant_data.fields)?;
 
         Ok(MyVariant {
@@ -274,7 +274,7 @@ pub struct MyStruct<'a> {
 }
 
 impl<'a> MyStruct<'a> {
-    pub fn from_ast(struct_data: &'a DataStruct) -> Result<MyStruct> {
+    pub fn from_ast(struct_data: &'a DataStruct) -> Result<MyStruct<'a>> {
         let fields = MyFields::from_ast(&struct_data.fields)?;
 
         Ok(MyStruct { fields })
