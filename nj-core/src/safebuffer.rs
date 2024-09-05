@@ -5,7 +5,7 @@ use crate::sys::napi_value;
 use crate::val::JsEnv;
 use crate::NjError;
 
-/// Rust representation of Nodejs [SafeArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+/// Rust representation of Nodejs [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
 /// In regular cases can be used ArrayBuffer and it will be more effective. But in the case of usage node_bindgen in electron context,
 /// ArrayBuffer will not work because of restrictions from electron side. SafeArrayBuffer can be used as an effective workaround. Theoretically,
 /// usage of SafeArrayBuffer might give a very small performance degradation compared to ArrayBuffer, but it can be ignored in most cases.
