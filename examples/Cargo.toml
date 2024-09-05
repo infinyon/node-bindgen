@@ -13,6 +13,7 @@ members = [
     "class-async",
     "stream",
     "buffer",
+    "safebuffer",
     "array",
     "electron",
     "cleanup",

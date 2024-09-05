@@ -1,4 +1,7 @@
 # Changelog
+## [6.0.3] - 2024-09-06
+- Add support SafeBuffer
+
 ## [6.0.2] - 2023-11-17
 - Consider undefined/null for rust type Option<T>
 

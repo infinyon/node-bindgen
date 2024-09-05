@@ -9,6 +9,7 @@ mod module;
 pub mod buffer;
 pub mod bigint;
 pub mod stream;
+pub mod safebuffer;
 
 pub use thread_fn::ThreadSafeFunction;
 pub use error::*;
