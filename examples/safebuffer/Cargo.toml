@@ -1,0 +1,20 @@
+[package]
+name = "nj-example-safebuffer"
+version = "0.0.0"
+authors = ["fluvio.io"]
+edition = "2021"
+publish = false
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+node-bindgen = { workspace = true, features = ["default"] }
+
+
+[build-dependencies]
+node-bindgen = { workspace = true,  default-features = false, features = ["build"] }

@@ -792,7 +792,7 @@ pub trait ExtractFromJs<'a>: Sized {
     fn extract(js_cb: &'a mut JsCallback) -> Result<Self, NjError>;
 }
 
-impl<'a, T: ?Sized> ExtractFromJs<'a> for T
+impl<'a, T> ExtractFromJs<'a> for T
 where
     T: JSValue<'a>,
 {
@@ -847,7 +847,7 @@ pub trait ExtractArgFromJs<'a>: Sized {
     fn convert_arg_at(js_cb: &'a JsCallback, index: usize) -> Result<Self, NjError>;
 }
 
-impl<'a, T: ?Sized> ExtractArgFromJs<'a> for T
+impl<'a, T> ExtractArgFromJs<'a> for T
 where
     T: JSValue<'a>,
 {

@@ -9,6 +9,7 @@ mod module;
 pub mod buffer;
 pub mod bigint;
 pub mod stream;
+pub mod safebuffer;
 
 pub use thread_fn::ThreadSafeFunction;
 pub use error::*;
@@ -49,6 +50,7 @@ pub mod log {
 #[macro_export]
 macro_rules! napi_call_assert {
     ($napi_expr:expr) => {{
+        #[allow(clippy::macro_metavars_in_unsafe)]
         let status = unsafe { $napi_expr };
         if status != $crate::sys::napi_status_napi_ok {
             let nj_status: $crate::NapiStatus = status.into();
@@ -62,6 +64,7 @@ macro_rules! napi_call_assert {
 #[macro_export]
 macro_rules! napi_call_result {
     ($napi_expr:expr) => {{
+        #[allow(clippy::macro_metavars_in_unsafe)]
         let status = unsafe { $napi_expr };
         if status == $crate::sys::napi_status_napi_ok {
             Ok(())
