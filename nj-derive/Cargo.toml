@@ -1,6 +1,6 @@
 [package]
 name = "nj-derive"
-version = "3.4.2"
+version = "3.4.3"
 authors = ["fluvio.io"]
 edition = "2018"
 description = "procedure macro for node-bindgen"
