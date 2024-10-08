@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 #[cfg(feature = "node")]
 pub mod core {
     pub use nj_core::*;
