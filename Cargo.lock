@@ -59,7 +59,7 @@ dependencies = [
  "async-task",
  "concurrent-queue",
  "fastrand 2.1.0",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "slab",
 ]
 
@@ -74,7 +74,7 @@ dependencies = [
  "async-io 2.3.3",
  "async-lock 3.4.0",
  "blocking",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "once_cell",
 ]
 
@@ -108,7 +108,7 @@ dependencies = [
  "cfg-if",
  "concurrent-queue",
  "futures-io",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "parking",
  "polling 3.7.2",
  "rustix 0.38.34",
@@ -249,7 +249,7 @@ dependencies = [
  "async-channel 2.3.1",
  "async-task",
  "futures-io",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "piper",
 ]
 
@@ -448,7 +448,7 @@ dependencies = [
  "async-std",
  "cfg-if",
  "fluvio-wasm-timer",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "pin-project",
  "thiserror",
  "tracing",
@@ -550,9 +550,9 @@ dependencies = [
 
 [[package]]
 name = "futures-lite"
-version = "2.3.0"
+version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52527eb5074e35e9339c6b4e8d12600c7128b68fb25dcb9fa9dec18f7c25f3a5"
+checksum = "3f1fa2f9765705486b33fd2acf1577f8ec449c2ba1f318ae5447697b7c08d210"
 dependencies = [
  "fastrand 2.1.0",
  "futures-core",
@@ -847,7 +847,7 @@ dependencies = [
  "async-trait",
  "ctor 0.2.8",
  "fluvio-future",
- "futures-lite 2.3.0",
+ "futures-lite 2.4.0",
  "inventory",
  "libc",
  "nj-sys",
@@ -860,7 +860,7 @@ dependencies = [
 
 [[package]]
 name = "nj-derive"
-version = "3.4.2"
+version = "3.4.3"
 dependencies = [
  "Inflector",
  "fluvio-future",
